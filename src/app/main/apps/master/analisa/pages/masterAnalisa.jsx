@@ -6,19 +6,18 @@ import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { showMessage } from 'app/store/fuse/messageSlice';
+import MasterAnalisaTable from './MasterAnalisaTable';
+import MasterAnalisaHeader from './MasterAnalisaHeader';
 
-function masterAnalisa() {
+function MasterAnalisa() {
   const dispatch = useDispatch();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
-  // const api = `https://652d2c32f9afa8ef4b26e7f0.mockapi.io/tokoBangunan/v1/suplayer`;
-  const api = `http://ner.grit.id:8006/mstBarangs`;
-  // const api = `http://localhost:3000/mstBarangs`;
   const isMobile = useThemeMediaQuery((theme) => theme.breakpoints.down('lg'));
   const getData = async () => {
     setLoading(true);
     const response = await axios
-      .get(`${process.env.REACT_APP_API_URL_API_}/mstBarangs`)
+      .get(`${process.env.REACT_APP_API_URL_API_}/masterAnalisa`)
       .then((res) => {
         setData(res?.data);
         setLoading(false);
@@ -70,11 +69,11 @@ function masterAnalisa() {
 
   return (
     <FusePageCarded
-      header={<masterAnalisaHeader getData={getData} data={data} loading={loading} />}
-      content={<masterAnalisaTable getData={getData} data={data} loading={loading} />}
+      header={<MasterAnalisaHeader getData={getData} data={data} loading={loading} />}
+      content={<MasterAnalisaTable getData={getData} data={data} loading={loading} />}
       scroll={isMobile ? 'normal' : 'content'}
     />
   );
 }
 
-export default masterAnalisa;
+export default MasterAnalisa;

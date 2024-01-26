@@ -1,16 +1,16 @@
+import MasterAnalisa from "./pages/MasterAnalisa";
 
-import AnalisaConfig from './pages/AnalisaConfig';
 
-const AnalisaConfigConfig = {
+const AnalisaConfig = {
   settings: {
     layout: {},
   },
   routes: [
     {
-      path: '/apps/AnalisaConfig/',
-      element: <AnalisaConfig />,
+      path: '/apps/masterAnalisa/',
+      element: <MasterAnalisa />,
     },
   ],
 };
 
-export default AnalisaConfigConfig;
+export default AnalisaConfig;

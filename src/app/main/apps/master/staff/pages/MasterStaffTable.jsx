@@ -15,7 +15,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import {
   Alert,
-  Autocomplete,
+  Button,
   Dialog,
   DialogActions,
   DialogContent,
@@ -24,67 +24,13 @@ import {
   IconButton,
   TextField,
 } from '@mui/material';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import FuseLoading from '@fuse/core/FuseLoading';
-import Button from '@mui/material/Button';
-import moment from 'moment';
-import dayjs from 'dayjs';
-
-const top100Films = [
-  { label: 'KG', year: 1994 },
-  { label: 'Lusin', year: 1972 },
-  { label: 'Bal', year: 1994 },
-];
 
 const columns = [
   { id: 'no', label: 'NO', minWidth: 170, align: 'left' },
   {
-    id: 'kodeBarang',
-    label: 'Kode Barang',
-    minWidth: 170,
-    align: 'left',
-    // format: (value) => value.toLocaleString('en-US'),
-  },
-  {
-    id: 'namaBarang',
-    label: 'Nama Barang',
-    minWidth: 170,
-    align: 'left',
-    // format: (value) => value.toLocaleString('en-US'),
-  },
-  {
-    id: 'hargaBarang',
-    label: 'Harga Barang',
-    minWidth: 170,
-    align: 'left',
-    // format: (value) => value.toLocaleString('en-US'),
-  },
-  {
-    id: 'tglMasuk',
-    label: 'Tanggal Masuk',
-    minWidth: 170,
-    align: 'left',
-    // format: (value) => value.toLocaleString('en-US'),
-  },
-  {
-    id: 'supllayer',
-    label: 'supllayer',
-    minWidth: 170,
-    align: 'left',
-    // format: (value) => value.toLocaleString('en-US'),
-  },
-  {
-    id: 'jumlahMasuk',
-    label: 'Jumlah Masuk',
-    minWidth: 170,
-    align: 'left',
-    // format: (value) => value.toLocaleString('en-US'),
-  },
-  {
-    id: 'satuan',
-    label: 'Stauan',
+    id: 'nama',
+    label: 'Nama Staff',
     minWidth: 170,
     align: 'left',
     // format: (value) => value.toLocaleString('en-US'),
@@ -98,63 +44,24 @@ const columns = [
   },
 ];
 
-function createData(
-  no,
-  id,
-  kodeBarang,
-  namaBarang,
-  hargaBarang,
-  tglMasuk,
-  supllayer,
-  jumlahMasuk,
-  satuan
-) {
-  return { no, id, kodeBarang, namaBarang, hargaBarang, tglMasuk, supllayer, jumlahMasuk, satuan };
+function createData(no, id, kodeBarang, nama) {
+  return { no, id, kodeBarang, nama };
 }
 
-export default function BarangMasukTable(props) {
-  const userRoles = JSON.parse(localStorage.getItem('userRoles'));
-  let getAllUserResponse;
-  let getResponseName;
-  let dataLogin;
-  if (userRoles) {
-    getAllUserResponse = userRoles?.response?.userRoles;
-    getResponseName = userRoles?.response;
-    dataLogin = JSON.parse(getAllUserResponse);
-  }
-  const dataMasterSuplayer = props?.dataMasterSuplayer;
-  const dataMasterBarang = props?.dataMasterBarang;
-  // console.log(props, 'pp')
+export default function MasterStaffTable(props) {
   const dispatch = useDispatch();
   const [data, setData] = React.useState([]);
   const [dataEdit, setDataEdit] = React.useState({
     kodeBarang: '',
-    namaBarang: '',
-    supllayer: '',
-    jumlahMasuk: '',
-    hargaBarang: '',
-    tglMasuk: null,
-    satuan: null,
+    nama: '',
   });
   const [open, setOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(true);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  // const api = `https://6530fba34d4c2e3f333c280d.mockapi.io/barang/barang`;
-  // const api = `http://ner.grit.id:8006/barangMasuk`;
-  const api = `http://localhost:3000/barangMasuk`;
+
   const rows = props?.data?.map((item, index) =>
-    createData(
-      index + 1,
-      item?.id,
-      item?.kodeBarang,
-      item?.namaBarang,
-      item?.hargaBarang,
-      item?.tglMasuk,
-      item?.supllayer,
-      item?.jumlahMasuk,
-      item?.satuan
-    )
+    createData(index + 1, item?.id, item?.kodeBarang, item?.nama)
   );
 
   const handleChangePage = (event, newPage) => {
@@ -174,20 +81,13 @@ export default function BarangMasukTable(props) {
   };
 
   const body = {
-    kodeBarang: JSON.stringify(dataEdit?.kodeBarang),
-    namaBarang: dataEdit?.namaBarang,
-    hargaBarang: dataEdit?.hargaBarang,
-    tglMasuk: dataEdit?.tglMasuk,
-    supllayer: JSON.stringify(dataEdit?.supllayer),
-    jumlahMasuk: dataEdit?.jumlahMasuk,
-    satuan: JSON.stringify(dataEdit?.satuan),
+    nama: dataEdit?.nama,
   };
-  // console.log(body, 'body');
 
   const HandelEdit = (id) => {
     setLoading(true);
     axios
-      .put(`${process.env.REACT_APP_API_URL_API_}/barangMasuk/${dataEdit?.id}`, body)
+      .put(`${process.env.REACT_APP_API_URL_API_}/masterStaff/${dataEdit?.id}`, body)
       .then((res) => {
         props?.getData();
         handleClose();
@@ -241,7 +141,7 @@ export default function BarangMasukTable(props) {
   const HandelDelete = (id) => {
     setLoading(true);
     axios
-      .delete(`${process.env.REACT_APP_API_URL_API_}/barangMasuk/${id}`)
+      .delete(`${process.env.REACT_APP_API_URL_API_}/masterStaff/${id}`)
       .then((res) => {
         props?.getData();
         setLoading(false);
@@ -303,107 +203,28 @@ export default function BarangMasukTable(props) {
       </div>
     );
   }
-
-  console.log(dataLogin?.roleUser, 'getAllUserResponse');
+  console.log(rows, 'rows')
 
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
       <Dialog
-        className="py-20"
         open={open}
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">Edit Barang Masuk</DialogTitle>
+        <DialogTitle id="alert-dialog-title">Edit Master Barang</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             <div className="grid grid-cols-2 gap-16 mt-10 mb-10">
-              <div className="col-span-2">
-                <Autocomplete
-                  disablePortal
-                  fullWidth
-                  value={dataEdit?.kodeBarang}
-                  getOptionLabel={(option) => option.kodeBarang}
-                  onChange={(_, newValue) => {
-                    if (newValue) {
-                      setDataEdit({
-                        ...dataEdit,
-                        kodeBarang: newValue,
-                        namaBarang: newValue?.namaBarang,
-                      });
-                    }
-                  }}
-                  id="combo-box-demo"
-                  options={dataMasterBarang}
-                  // options={top100Films}
-                  sx={{ width: 300 }}
-                  renderInput={(params) => <TextField {...params} label="Kode Barang" />}
-                />
-              </div>
+              {/* <div> */}
               <div>
                 <TextField
-                  value={dataEdit?.namaBarang}
-                  disabled
-                  onChange={(e) => setDataEdit({ ...dataEdit, namaBarang: e.target.value })}
+                  value={dataEdit?.nama}
+                  onChange={(e) => setDataEdit({ ...dataEdit, nama: e.target.value })}
                   id="outlined-basic"
-                  label="Nama Barang"
+                  label="Nama Staff"
                   variant="outlined"
-                />
-              </div>
-              <div>
-                <TextField
-                  value={dataEdit?.hargaBarang}
-                  onChange={(e) => setDataEdit({ ...dataEdit, hargaBarang: e.target.value })}
-                  id="outlined-basic"
-                  label="Harga Barang"
-                  variant="outlined"
-                />
-              </div>
-              <div>
-                <TextField
-                  value={dataEdit?.jumlahMasuk}
-                  onChange={(e) => setDataEdit({ ...dataEdit, jumlahMasuk: e.target.value })}
-                  id="outlined-basic"
-                  type="number"
-                  label="Jummlah Masuk"
-                  variant="outlined"
-                />
-              </div>
-              <div>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DatePicker
-                    label="Select Date"
-                    value={dayjs(dataEdit.tglMasuk)}
-                    onChange={(date) => setDataEdit({ ...dataEdit, tglMasuk: date })}
-                    renderInput={(params) => <TextField {...params} />}
-                  />
-                </LocalizationProvider>
-              </div>
-              <div className="col-span-2">
-                <Autocomplete
-                  disablePortal
-                  fullWidth
-                  value={dataEdit?.satuan}
-                  onChange={(_, newValue) => setDataEdit({ ...dataEdit, satuan: newValue })}
-                  id="combo-box-demo"
-                  options={top100Films}
-                  sx={{ width: 300 }}
-                  renderInput={(params) => <TextField {...params} label="Satuan" />}
-                />
-              </div>
-              <div className="col-span-2">
-                <Autocomplete
-                  disablePortal
-                  fullWidth
-                  value={dataEdit?.supllayer}
-                  getOptionLabel={(option) => option.name}
-                  onChange={(_, newValue) => setDataEdit({ ...dataEdit, supllayer: newValue })}
-                  id="combo-box-demo"
-                  options={dataMasterSuplayer}
-                  // options={top100Films}
-                  sx={{ width: 300 }}
-                  renderInput={(params) => <TextField {...params} label="Supllayer" />}
                 />
               </div>
             </div>
@@ -438,14 +259,8 @@ export default function BarangMasukTable(props) {
               // console.log(row, 'oo');
               return (
                 <TableRow key={row.id} hover role="checkbox" tabIndex={-1}>
-                  <TableCell>{index + 1}.</TableCell>
-                  <TableCell>{row?.kodeBarang?.kodeBarang}</TableCell>
-                  <TableCell>{row?.namaBarang}</TableCell>
-                  <TableCell>{row?.hargaBarang}</TableCell>
-                  <TableCell>{moment(row?.tglMasuk).format('LL')}</TableCell>
-                  <TableCell>{row?.supllayer?.name}</TableCell>
-                  <TableCell>{row?.jumlahMasuk}</TableCell>
-                  <TableCell>{row?.satuan?.name}</TableCell>
+                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>{row?.nama}</TableCell>
                   <TableCell>
                     <div className="flex justify-center">
                       <div>
@@ -461,7 +276,6 @@ export default function BarangMasukTable(props) {
                         <IconButton
                           onClick={(e) => HandelDelete(row.id)}
                           color="error"
-                          disabled={dataLogin?.roleUser === 'User'}
                           className=""
                         >
                           <DeleteIcon />
@@ -478,7 +292,7 @@ export default function BarangMasukTable(props) {
       <TablePagination
         rowsPerPageOptions={[5, 10, 25, 100]}
         component="div"
-        count={rows.length}
+        count={rows?.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}

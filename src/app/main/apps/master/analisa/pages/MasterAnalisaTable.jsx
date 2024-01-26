@@ -29,15 +29,8 @@ import FuseLoading from '@fuse/core/FuseLoading';
 const columns = [
   { id: 'no', label: 'NO', minWidth: 170, align: 'left' },
   {
-    id: 'kodeBarang',
-    label: 'Kode Barang',
-    minWidth: 170,
-    align: 'left',
-    // format: (value) => value.toLocaleString('en-US'),
-  },
-  {
-    id: 'namaBarang',
-    label: 'Nama Barang',
+    id: 'nama',
+    label: 'Nama',
     minWidth: 170,
     align: 'left',
     // format: (value) => value.toLocaleString('en-US'),
@@ -51,8 +44,8 @@ const columns = [
   },
 ];
 
-function createData(no, id, kodeBarang, namaBarang) {
-  return { no, id, kodeBarang, namaBarang };
+function createData(no, id, nama) {
+  return { no, id, nama };
 }
 
 export default function MasterAnalisaTable(props) {
@@ -60,17 +53,13 @@ export default function MasterAnalisaTable(props) {
   const [data, setData] = React.useState([]);
   const [dataEdit, setDataEdit] = React.useState({
     kodeBarang: '',
-    namaBarang: '',
   });
   const [open, setOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(true);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  // const api = `https://652d2c32f9afa8ef4b26e7f0.mockapi.io/tokoBangunan/v1/mstBarangs`;
-  const api = `http://ner.grit.id:8006/mstBarangs`;
-  // const api = `http://localhost:3000/mstBarangs`;
   const rows = props?.data?.map((item, index) =>
-    createData(index + 1, item?.id, item?.kodeBarang, item?.namaBarang)
+    createData(index + 1, item?.id, item?.nama)
   );
 
   const handleChangePage = (event, newPage) => {
@@ -90,14 +79,13 @@ export default function MasterAnalisaTable(props) {
   };
 
   const body = {
-    kodeBarang: dataEdit?.kodeBarang,
-    namaBarang: dataEdit?.namaBarang,
+    nama: dataEdit?.nama,
   };
 
   const HandelEdit = (id) => {
     setLoading(true);
     axios
-      .put(`${process.env.REACT_APP_API_URL_API_}/mstBarangs/${dataEdit?.id}`, body)
+      .put(`${process.env.REACT_APP_API_URL_API_}/masterAnalisa/${dataEdit?.id}`, body)
       .then((res) => {
         props?.getData();
         handleClose();
@@ -151,7 +139,7 @@ export default function MasterAnalisaTable(props) {
   const HandelDelete = (id) => {
     setLoading(true);
     axios
-      .delete(`${process.env.REACT_APP_API_URL_API_}/mstBarangs/${id}`)
+      .delete(`${process.env.REACT_APP_API_URL_API_}/masterAnalisa/${id}`)
       .then((res) => {
         props?.getData();
         setLoading(false);
@@ -213,8 +201,7 @@ export default function MasterAnalisaTable(props) {
       </div>
     );
   }
-  // console.log(dataEdit, 'dataEdit')
-
+  
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
       <Dialog
@@ -230,17 +217,8 @@ export default function MasterAnalisaTable(props) {
               {/* <div> */}
               <div>
                 <TextField
-                  value={dataEdit?.kodeBarang}
-                  onChange={(e) => setDataEdit({ ...dataEdit, kodeBarang: e.target.value })}
-                  id="outlined-basic"
-                  label="Nama"
-                  variant="outlined"
-                />
-              </div>
-              <div>
-                <TextField
-                  value={dataEdit?.namaBarang}
-                  onChange={(e) => setDataEdit({ ...dataEdit, namaBarang: e.target.value })}
+                  value={dataEdit?.nama}
+                  onChange={(e) => setDataEdit({ ...dataEdit, nama: e.target.value })}
                   id="outlined-basic"
                   label="No Tlp"
                   variant="outlined"
@@ -279,8 +257,7 @@ export default function MasterAnalisaTable(props) {
               return (
                 <TableRow key={row.id} hover role="checkbox" tabIndex={-1}>
                   <TableCell>{index + 1}</TableCell>
-                  <TableCell>{row?.kodeBarang}</TableCell>
-                  <TableCell>{row?.namaBarang}</TableCell>
+                  <TableCell>{row?.nama}</TableCell>
                   <TableCell>
                     <div className="flex justify-center">
                       <div>
@@ -312,7 +289,7 @@ export default function MasterAnalisaTable(props) {
       <TablePagination
         rowsPerPageOptions={[5, 10, 25, 100]}
         component="div"
-        count={rows.length}
+        count={rows?.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}

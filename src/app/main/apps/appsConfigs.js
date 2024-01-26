@@ -1,19 +1,17 @@
 import BarangKeluarConfig from './barangKeluar/BarangKeluarConfig';
-import BarangMasukConfig from './barangMasuk/BarangMasukConfig';
-import DataBarangkConfig from './dataBarang/BarangMasukConfig';
-import MasterBarangConfig from './masterBarang/MasterBarangConfig';
-import SatuanConfig from './masterSatuan/SatuanConfig';
+import AnalisaConfig from './master/analisa/AnalisaConfig';
+import KasirConfig from './master/kasir/KasirConfig';
+import StaffConfig from './master/staff/StaffConfig';
 import SupllayerConfig from './supllayer/SupllayerConfig';
 import UserRolesConfig from './userRoles/UserRolesConfig';
 
 const appsConfigs = [
   BarangKeluarConfig,
-  BarangMasukConfig,
-  DataBarangkConfig,
   SupllayerConfig,
   UserRolesConfig,
-  MasterBarangConfig,
-  SatuanConfig,
+  AnalisaConfig,
+  KasirConfig,
+  StaffConfig
 ];
 
 export default appsConfigs;

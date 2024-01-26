@@ -18,23 +18,19 @@ import {
   TextField,
 } from '@mui/material';
 
-function masterAnalisaHeader(props) {
+function MasterAnalisaHeader(props) {
   const dispatch = useDispatch();
   const [data, setData] = useState({});
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
-  const [namaBarang, setnamaBarang] = useState('');
-  const [kodeBarang, setkodeBarang] = useState('');
-  const [alamat, setalamat] = useState('');
+  const [nama, setnama] = useState('');
 
   const body = {
-    namaBarang,
-    kodeBarang,
-    alamat,
+    nama,
   };
   // const api = `https://652d2c32f9afa8ef4b26e7f0.mockapi.io/tokoBangunan/v1/mstBarangs`;
-  const api = `http://ner.grit.id:8006/mstBarangs`;
-  // const api = `http://localhost:3000/mstBarangs`;
+  const api = `http://ner.grit.id:8006/masterAnalisa`;
+  // const api = `http://localhost:3000/masterAnalisa`;
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -46,7 +42,7 @@ function masterAnalisaHeader(props) {
   const HandelSubmit = () => {
     setLoading(true);
     axios
-      .post(`${process.env.REACT_APP_API_URL_API_}/mstBarangs`, body)
+      .post(`${process.env.REACT_APP_API_URL_API_}/masterAnalisa`, body)
       .then((res) => {
         // setData(res?.data);
         props.getData();
@@ -108,25 +104,16 @@ function masterAnalisaHeader(props) {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">Tambah Master Barang</DialogTitle>
+        <DialogTitle id="alert-dialog-title">Tambah Master Analisa</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             <div className="grid grid-cols-2 gap-16 mt-10 mb-10">
               <div>
                 <TextField
-                  value={kodeBarang}
-                  onChange={(e) => setkodeBarang(e.target.value)}
+                  value={nama}
+                  onChange={(e) => setnama(e.target.value)}
                   id="outlined-basic"
-                  label="Kode Barang"
-                  variant="outlined"
-                />
-              </div>
-              <div>
-                <TextField
-                  value={namaBarang}
-                  onChange={(e) => setnamaBarang(e.target.value)}
-                  id="outlined-basic"
-                  label="Nama Barang"
+                  label="Analisa"
                   variant="outlined"
                 />
               </div>
@@ -149,7 +136,7 @@ function masterAnalisaHeader(props) {
         delay={300}
         className="text-24 md:text-32 font-extrabold tracking-tight"
       >
-        Master Barang
+        Master Analisa
       </Typography>
 
       <div className="flex flex-col w-full sm:w-auto sm:flex-row space-y-16 sm:space-y-0 flex-1 items-center justify-end space-x-8">
@@ -194,4 +181,4 @@ function masterAnalisaHeader(props) {
   );
 }
 
-export default masterAnalisaHeader;
+export default MasterAnalisaHeader;

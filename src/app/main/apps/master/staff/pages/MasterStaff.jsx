@@ -2,29 +2,24 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import FusePageCarded from '@fuse/core/FusePageCarded';
 import { useThemeMediaQuery } from '@fuse/hooks';
-import { useDispatch } from 'react-redux';
-import React from 'react';
 import axios from 'axios';
+import { useDispatch } from 'react-redux';
+import { useEffect, useState } from 'react';
 import { showMessage } from 'app/store/fuse/messageSlice';
-import DataBarangTable from './DataBarangTable';
-import DataBarangHeader from './DataBarangHeader';
+import MasterStaffHeader from './MasterStaffHeader';
+import MasterStaffTable from './MasterStaffTable';
 
-function DataBarang() {
+function MasterStaff() {
   const dispatch = useDispatch();
-  const [data, setData] = React.useState([]);
-  const [loading, setLoading] = React.useState(true);
-  // const api = `https://652d2c32f9afa8ef4b26e7f0.mockapi.io/tokoBangunan/v1/suplayer/1/tokoBangunan`;
-  const api = `http://ner.grit.id:8006/dataBarangs`;
-  // const api = `http://localhost:3000/dataBarangs`;
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
   const isMobile = useThemeMediaQuery((theme) => theme.breakpoints.down('lg'));
   const getData = async () => {
     setLoading(true);
     const response = await axios
-      .get(`${process.env.REACT_APP_API_URL_API_}/dataBarangs`)
+      .get(`${process.env.REACT_APP_API_URL_API_}/masterStaff`)
       .then((res) => {
-        const result = res?.data.filter((word) => word.jumlahMasuk > 0);
-        console.log(result, 'result')
-        setData(result);
+        setData(res?.data);
         setLoading(false);
         // console.log(res.data, 'rrr');
       })
@@ -62,7 +57,7 @@ function DataBarang() {
         console.log(err);
       });
   };
-  React.useEffect(() => {
+  useEffect(() => {
     let isUnmout = false;
     if (!isUnmout) {
       getData();
@@ -71,15 +66,14 @@ function DataBarang() {
       isUnmout = true;
     };
   }, []);
-  // console.log(data, 'data');
 
   return (
     <FusePageCarded
-      header={<DataBarangHeader getData={getData} data={data} loading={loading} />}
-      content={<DataBarangTable getData={getData} data={data} loading={loading} />}
+      header={<MasterStaffHeader getData={getData} data={data} loading={loading} />}
+      content={<MasterStaffTable getData={getData} data={data} loading={loading} />}
       scroll={isMobile ? 'normal' : 'content'}
     />
   );
 }
 
-export default DataBarang;
+export default MasterStaff;

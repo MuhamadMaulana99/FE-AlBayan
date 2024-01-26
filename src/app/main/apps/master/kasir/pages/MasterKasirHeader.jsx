@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import Button from '@mui/material/Button';
 import Input from '@mui/material/Input';
 import Paper from '@mui/material/Paper';
@@ -17,21 +18,19 @@ import {
   TextField,
 } from '@mui/material';
 
-function SatuanHeader(props) {
+function MasterKasirHeader(props) {
   const dispatch = useDispatch();
   const [data, setData] = useState({});
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
-  const [name, setname] = useState('');
-  const [noTlp, setnoTlp] = useState('');
-  const [alamat, setalamat] = useState('');
+  const [nama, setnama] = useState('');
 
   const body = {
-    name,
+    nama,
   };
-  // const api = `https://652d2c32f9afa8ef4b26e7f0.mockapi.io/tokoBangunan/v1/suplayer`;
-  const api = `http://ner.grit.id:8006/mstSatuan`;
-  // const api = `http://localhost:3000/mstSatuan`;
+  // const api = `https://652d2c32f9afa8ef4b26e7f0.mockapi.io/tokoBangunan/v1/masterKasir`;
+  const api = `http://ner.grit.id:8006/masterKasir`;
+  // const api = `http://localhost:3000/masterKasir`;
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -39,11 +38,12 @@ function SatuanHeader(props) {
 
   const handleClose = () => {
     setOpen(false);
+    setnama('');
   };
   const HandelSubmit = () => {
     setLoading(true);
     axios
-      .post(`${process.env.REACT_APP_API_URL_API_}/mstSatuan`, body)
+      .post(`${process.env.REACT_APP_API_URL_API_}/masterKasir`, body)
       .then((res) => {
         // setData(res?.data);
         props.getData();
@@ -105,16 +105,25 @@ function SatuanHeader(props) {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">Tambah Satuan</DialogTitle>
+        <DialogTitle id="alert-dialog-title">Tambah Master Kasir</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             <div className="grid grid-cols-2 gap-16 mt-10 mb-10">
+              {/* <div>
+                <TextField
+                  value={kodeBarang}
+                  onChange={(e) => setkodeBarang(e.target.value)}
+                  id="outlined-basic"
+                  label="Kode Barang"
+                  variant="outlined"
+                />
+              </div> */}
               <div>
                 <TextField
-                  value={name}
-                  onChange={(e) => setname(e.target.value)}
+                  value={nama}
+                  onChange={(e) => setnama(e.target.value)}
                   id="outlined-basic"
-                  label="Satuan"
+                  label="Nama Barang"
                   variant="outlined"
                 />
               </div>
@@ -137,7 +146,7 @@ function SatuanHeader(props) {
         delay={300}
         className="text-24 md:text-32 font-extrabold tracking-tight"
       >
-        Master Satuan
+        Master Kasir
       </Typography>
 
       <div className="flex flex-col w-full sm:w-auto sm:flex-row space-y-16 sm:space-y-0 flex-1 items-center justify-end space-x-8">
@@ -150,7 +159,7 @@ function SatuanHeader(props) {
           <FuseSvgIcon color="disabled">heroicons-solid:search</FuseSvgIcon>
 
           <Input
-            placeholder="Cari Satuan"
+            placeholder="Cari Barang"
             className="flex flex-1"
             disableUnderline
             fullWidth
@@ -182,4 +191,4 @@ function SatuanHeader(props) {
   );
 }
 
-export default SatuanHeader;
+export default MasterKasirHeader;

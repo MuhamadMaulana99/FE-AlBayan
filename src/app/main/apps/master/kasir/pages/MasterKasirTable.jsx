@@ -29,8 +29,8 @@ import FuseLoading from '@fuse/core/FuseLoading';
 const columns = [
   { id: 'no', label: 'NO', minWidth: 170, align: 'left' },
   {
-    id: 'satuan',
-    label: 'Satuan',
+    id: 'nama',
+    label: 'Nama',
     minWidth: 170,
     align: 'left',
     // format: (value) => value.toLocaleString('en-US'),
@@ -44,24 +44,26 @@ const columns = [
   },
 ];
 
-function createData(no, id, name) {
-  return { no, id, name };
+function createData(no, id, nama) {
+  return { no, id, nama };
 }
 
-export default function SatuanTable(props) {
+export default function MasterKasirTable(props) {
   const dispatch = useDispatch();
   const [data, setData] = React.useState([]);
   const [dataEdit, setDataEdit] = React.useState({
-    name: '',
+    nama: '',
   });
   const [open, setOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(true);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  // const api = `https://652d2c32f9afa8ef4b26e7f0.mockapi.io/tokoBangunan/v1/suplayer`;
-  const api = `http://ner.grit.id:8006/mstSatuan`;
-  // const api = `http://localhost:3000/mstSatuan`;
-  const rows = props?.data?.map((item, index) => createData(index + 1, item?.id, item?.name));
+  // const api = `https://652d2c32f9afa8ef4b26e7f0.mockapi.io/tokoBangunan/v1/masterKasir`;
+  const api = `http://ner.grit.id:8006/masterKasir`;
+  // const api = `http://localhost:3000/masterKasir`;
+  const rows = props?.data?.map((item, index) =>
+    createData(index + 1, item?.id, item?.nama)
+  );
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -80,13 +82,13 @@ export default function SatuanTable(props) {
   };
 
   const body = {
-    name: dataEdit?.name,
+    nama: dataEdit?.nama,
   };
 
   const HandelEdit = (id) => {
     setLoading(true);
     axios
-      .put(`${process.env.REACT_APP_API_URL_API_}/mstSatuan/${dataEdit?.id}`, body)
+      .put(`${process.env.REACT_APP_API_URL_API_}/masterKasir/${dataEdit?.id}`, body)
       .then((res) => {
         props?.getData();
         handleClose();
@@ -140,7 +142,7 @@ export default function SatuanTable(props) {
   const HandelDelete = (id) => {
     setLoading(true);
     axios
-      .delete(`${process.env.REACT_APP_API_URL_API_}/mstSatuan/${id}`)
+      .delete(`${process.env.REACT_APP_API_URL_API_}/masterKasir/${id}`)
       .then((res) => {
         props?.getData();
         setLoading(false);
@@ -202,7 +204,7 @@ export default function SatuanTable(props) {
       </div>
     );
   }
-  // console.log(dataEdit, 'dataEdit')
+  // console.log(rows, 'rows')
 
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
@@ -212,17 +214,17 @@ export default function SatuanTable(props) {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">Edit Satuan</DialogTitle>
+        <DialogTitle id="alert-dialog-title">Edit Master Barang</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             <div className="grid grid-cols-2 gap-16 mt-10 mb-10">
               {/* <div> */}
               <div>
                 <TextField
-                  value={dataEdit?.name}
-                  onChange={(e) => setDataEdit({ ...dataEdit, name: e.target.value })}
+                  value={dataEdit?.nama}
+                  onChange={(e) => setDataEdit({ ...dataEdit, nama: e.target.value })}
                   id="outlined-basic"
-                  label="Satuan"
+                  label="Nama"
                   variant="outlined"
                 />
               </div>
@@ -259,7 +261,7 @@ export default function SatuanTable(props) {
               return (
                 <TableRow key={row.id} hover role="checkbox" tabIndex={-1}>
                   <TableCell>{index + 1}</TableCell>
-                  <TableCell>{row?.name}</TableCell>
+                  <TableCell>{row?.nama}</TableCell>
                   <TableCell>
                     <div className="flex justify-center">
                       <div>
@@ -291,7 +293,7 @@ export default function SatuanTable(props) {
       <TablePagination
         rowsPerPageOptions={[5, 10, 25, 100]}
         component="div"
-        count={rows.length}
+        count={rows?.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}
