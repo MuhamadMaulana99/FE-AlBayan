@@ -1,0 +1,1 @@
+affah iya boleh sesakit ini
