@@ -1,4 +1,5 @@
 import BarangKeluarConfig from './barangKeluar/BarangKeluarConfig';
+import AngsuranConfig from './koperasi/angsuran/AngsuranConfig';
 import AnalisaConfig from './master/analisa/AnalisaConfig';
 import KasirConfig from './master/kasir/KasirConfig';
 import StaffConfig from './master/staff/StaffConfig';
@@ -11,7 +12,8 @@ const appsConfigs = [
   UserRolesConfig,
   AnalisaConfig,
   KasirConfig,
-  StaffConfig
+  StaffConfig,
+  AngsuranConfig
 ];
 
 export default appsConfigs;
