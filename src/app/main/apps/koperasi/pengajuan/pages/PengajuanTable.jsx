@@ -41,35 +41,71 @@ const top100Films = [
 const columns = [
   { id: 'no', label: 'NO', minWidth: 170, align: 'left' },
   {
-    id: 'kodeBarang',
-    label: 'Kode Barang',
+    id: 'nomorAkad',
+    label: 'Nomor Akad',
     minWidth: 170,
     align: 'left',
   },
   {
-    id: 'namaBarang',
-    label: 'Nama Barang',
+    id: 'staffBasil',
+    label: 'Staff Basil',
     minWidth: 170,
     align: 'left',
   },
   {
-    id: 'tglKleuar',
-    label: 'Tanggal Keluar',
+    id: 'staffPokok',
+    label: 'Staff Pokok',
     minWidth: 170,
     align: 'left',
   },
   {
-    id: 'jumlahKeluar',
-    label: 'Jumalah Keluar',
+    id: 'accBasil',
+    label: 'Acc Basil',
     minWidth: 170,
     align: 'left',
   },
-  // {
-  //   id: 'hargaBarang',
-  //   label: 'Harga Barang',
-  //   minWidth: 170,
-  //   align: 'left',
-  // },
+  {
+    id: 'accPokok',
+    label: 'Acc Pokok',
+    minWidth: 170,
+    align: 'left',
+  },
+  {
+    id: 'staffBy',
+    label: 'Staff By',
+    minWidth: 170,
+    align: 'left',
+  },
+  {
+    id: 'staffAt',
+    label: 'Staff At',
+    minWidth: 170,
+    align: 'left',
+  },
+  {
+    id: 'KasirBy',
+    label: 'Kasir By',
+    minWidth: 170,
+    align: 'left',
+  },
+  {
+    id: 'KasirAt',
+    label: 'Kasir At',
+    minWidth: 170,
+    align: 'left',
+  },
+  {
+    id: 'lokasiPembayaran',
+    label: 'Lokasi Pembayaran',
+    minWidth: 170,
+    align: 'left',
+  },
+  {
+    id: 'status',
+    label: 'Status',
+    minWidth: 170,
+    align: 'left',
+  },
   // {
   //   id: 'stokBarang',
   //   label: 'Stok Barang',
@@ -97,11 +133,11 @@ const columns = [
   },
 ];
 
-function createData(no, id, kodeBarang, namaBarang, jmlKeluar, tglKeluar) {
-  return { no, id, kodeBarang, namaBarang, jmlKeluar, tglKeluar };
+function createData(no, id, nomorAkad, staffBasil, staffPokok, accBasil, accPokok, staffBy, staffAt, kasirBy, kasirAtt, lokasiPembayaran, status) {
+  return { no, id, nomorAkad, staffBasil, staffPokok, accBasil, accPokok, staffBy, staffAt, kasirBy, kasirAtt, lokasiPembayaran, status };
 }
 
-export default function BarangKeluarTable(props) {
+export default function PengajuanTable(props) {
   const userRoles = JSON.parse(localStorage.getItem('userRoles'));
   let getAllUserResponse;
   let getResponseName;
@@ -116,27 +152,45 @@ export default function BarangKeluarTable(props) {
   const { dataMasterBarang } = props;
   // console.log(dataMasterBarang, 'dataMasterBarang');
   const [data, setData] = useState([]);
+  const [getDataEdit, setgetDataEdit] = useState({});
   const [dataEdit, setDataEdit] = useState({
-    kodeBarang: null,
-    namaBarang: '',
-    jmlKeluar: '',
-    tglKeluar: null,
+    id: null,
+    nomorAkad: null,
+    staffBasil: '',
+    staffPokok: '',
+    accBasil: null,
+    accPokok: null,
+    staffBy: null,
+    staffAt: null,
+    kasirBy: null,
+    kasirAtt: null,
+    lokasiPembayaran: null,
+
   });
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  // const api = `https://652d2c32f9afa8ef4b26e7f0.mockapi.io/tokoBangunan/v1/suplayer/1/tokoBangunan`;
-  const api = `http://ner.grit.id:8006/barangKeluar`;
-  // const api = `http://localhost:3000/barangKeluar`;
-  const rows = props?.data?.map((item, index) =>
+  let rows = props?.data
+  if (dataLogin?.roleUser === 'Staff') {
+    rows = props?.data.filter((word) => word.staffBy === getResponseName?.name);
+
+  }
+
+  rows?.map((item, index) =>
     createData(
       index + 1,
       item?.id,
-      item?.kodeBarang,
-      item?.namaBarang,
-      item?.jmlKeluar,
-      item?.tglKeluar
+      item?.nomorAkad,
+      item?.staffBasil,
+      item?.staffPokok,
+      item?.accBasil,
+      item?.accPokok,
+      item?.staffBy,
+      item?.staffAt,
+      item?.kasirBy,
+      item?.kasirAtt,
+      item?.lokasiPembayaran,
     )
   );
 
@@ -151,23 +205,44 @@ export default function BarangKeluarTable(props) {
   const handleClickOpen = (id, row) => {
     setOpen(true);
     setDataEdit(row);
+    setDataEdit({
+      id: row?.id,
+      nomorAkad: row?.nomorAkad,
+      staffBasil: row?.staffBasil,
+      staffPokok: row?.staffPokok,
+      accBasil: row?.staffBasil,
+      accPokok: row?.staffPokok,
+      staffBy: row?.staffBy,
+      staffAt: row?.staffAt,
+      kasirBy: row?.kasirBy,
+      kasirAtt: row?.kasirAtt,
+      lokasiPembayaran: row?.lokasiPembayaran,
+    })
+    setgetDataEdit(row)
   };
   const handleClose = () => {
     setOpen(false);
   };
 
   const body = {
-    kodeBarang: JSON.stringify(dataEdit?.kodeBarang),
-    namaBarang: dataEdit?.namaBarang,
-    jmlKeluar: dataEdit?.jmlKeluar,
-    tglKeluar: dataEdit?.tglKeluar,
+    nomorAkad: dataEdit?.nomorAkad,
+    staffBasil: dataEdit?.staffBasil,
+    staffPokok: dataEdit?.staffPokok,
+    accBasil: dataEdit?.accBasil,
+    accPokok: dataEdit?.accPokok,
+    staffBy: dataEdit?.staffBy,
+    staffAt: dataEdit?.staffAt,
+    kasirBy: dataEdit?.kasirBy,
+    kasirAtt: dataEdit?.kasirAtt,
+    lokasiPembayaran: dataEdit?.lokasiPembayaran,
+
   };
-  // console.log(dataEdit, 'dataEdit');
+  console.log(body, 'body');
 
   const HandelEdit = (id) => {
     setLoading(true);
     axios
-      .put(`${process.env.REACT_APP_API_URL_API_}/barangKeluar/${dataEdit?.id}`, body)
+      .put(`${process.env.REACT_APP_API_URL_API_}/angsuran/${dataEdit?.id}`, body)
       .then((res) => {
         props?.getData();
         handleClose();
@@ -221,7 +296,7 @@ export default function BarangKeluarTable(props) {
   const HandelDelete = (id) => {
     setLoading(true);
     axios
-      .delete(`${process.env.REACT_APP_API_URL_API_}/barangKeluar/${id}`)
+      .delete(`${process.env.REACT_APP_API_URL_API_}/angsuran/${id}`)
       .then((res) => {
         props?.getData();
         setLoading(false);
@@ -298,73 +373,170 @@ export default function BarangKeluarTable(props) {
         <DialogTitle id="alert-dialog-title">Edit Barang Keluar</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            <div className="m-10">
-              <div className="flex justify-between w-full mb-10">
-                <div>
-                  <Autocomplete
-                    disablePortal
-                    value={dataEdit?.kodeBarang}
-                    getOptionLabel={(option) => option.kodeBarang}
-                    onChange={(_, newValue) => {
-                      if (newValue) {
-                        setDataEdit({
-                          ...dataEdit,
-                          kodeBarang: newValue,
-                          namaBarang: newValue?.namaBarang,
-                        });
-                      } else {
-                        // setDataEdit(null);
-                        // setDataEdit('');
-                        setDataEdit({ ...dataEdit, kodeBarang: null, namaBarang: '' });
-                      }
-                    }}
-                    id="combo-box-demo"
-                    options={dataMasterBarang}
-                    // options={top100Films}
-                    sx={{ width: 220 }}
-                    renderInput={(params) => <TextField {...params} label="Kode Barang" />}
-                  />
-                </div>
-                <div>
-                  <TextField
-                    value={dataEdit?.namaBarang}
-                    disabled
-                    onFocus
-                    // onChange={(e) => setDataEdit({ ...dataEdit, namaBarang: e.target.value })}
-                    id="outlined-basic"
-                    label="Nama Barang"
-                    variant="outlined"
-                  />
-                </div>
-              </div>
-              <div className="flex justify-between w-full gap-10">
-                <div className="">
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DatePicker
-                      label="Select Date"
-                      value={dayjs(dataEdit?.tglKeluar)}
-                      onChange={(date) => {
-                        if (date) {
-                          setDataEdit({ ...dataEdit, tglKeluar: date });
-                        }
-                      }}
-                      sx={{ width: 220 }}
-                      renderInput={(params) => <TextField {...params} />}
-                    />
-                  </LocalizationProvider>
-                </div>
-                <div className="">
+            <div className='mt-10'>
+              {dataLogin?.roleUser === 'admin' ? (
+                <div className="flex gap-5">
                   <TextField
                     fullWidth
-                    value={dataEdit?.jmlKeluar}
-                    onChange={(e) => setDataEdit({ ...dataEdit, jmlKeluar: e.target.value })}
+                    value={dataEdit?.nomorAkad}
+                    onChange={(e) => {
+                      setDataEdit({
+                        ...dataEdit,
+                        nomorAkad: e.target.value,
+                      });
+                    }}
                     id="outlined-basic"
-                    label="jmlKeluar"
+                    label="No Akad"
+                    type="number"
+                    variant="outlined"
+                  />
+                  <TextField
+                    fullWidth
+                    value={dataEdit?.staffBasil}
+                    onChange={(e) => {
+                      setDataEdit({
+                        ...dataEdit,
+                        staffBasil: e.target.value,
+                      });
+                    }}
+                    id="outlined-basic"
+                    label="Staff Basil"
+                    type="number"
+                    variant="outlined"
+                  />
+                  <TextField
+                    fullWidth
+                    value={dataEdit?.staffPokok}
+                    onChange={(e) => {
+                      setDataEdit({
+                        ...dataEdit,
+                        staffPokok: e.target.value,
+                      });
+                    }}
+                    id="outlined-basic"
+                    label="Staff Pokok"
+                    type="number"
+                    variant="outlined"
+                  />
+                  <TextField
+                    fullWidth
+                    value={dataEdit?.accBasil}
+                    onChange={(e) => {
+                      setDataEdit({
+                        ...dataEdit,
+                        accBasil: e.target.value,
+                      });
+                    }}
+                    id="outlined-basic"
+                    label="Acc Basil"
+                    type="number"
+                    variant="outlined"
+                  />
+                  <TextField
+                    fullWidth
+                    value={dataEdit?.accPokok}
+                    onChange={(e) => {
+                      setDataEdit({
+                        ...dataEdit,
+                        accPokok: e.target.value,
+                      });
+                    }}
+                    id="outlined-basic"
+                    label="Acc Pokok"
                     type="number"
                     variant="outlined"
                   />
                 </div>
-              </div>
+              ) : dataLogin?.roleUser === 'Kasir' ? (
+                <div className="flex gap-5">
+                  <TextField
+                    fullWidth
+                    value={dataEdit?.staffPokok}
+                    onChange={(e) => {
+                      setDataEdit({
+                        ...dataEdit,
+                        staffPokok: e.target.value,
+                      });
+                    }}
+                    id="outlined-basic"
+                    label="Staff Pokok"
+                    type="number"
+                    variant="outlined"
+                  />
+                  <TextField
+                    fullWidth
+                    value={dataEdit?.accBasil}
+                    // defaultValue={stateBody?.staffBasil}
+                    onChange={(e) => {
+                      setDataEdit({
+                        ...dataEdit,
+                        accBasil: e.target.value,
+                      });
+                    }}
+                    id="outlined-basic"
+                    label="Acc Basil"
+                    type="number"
+                    variant="outlined"
+                  />
+                  <TextField
+                    fullWidth
+                    value={dataEdit?.accPokok}
+                    onChange={(e) => {
+                      setDataEdit({
+                        ...dataEdit,
+                        accPokok: e.target.value,
+                      });
+                    }}
+                    id="outlined-basic"
+                    label="Acc Pokok"
+                    type="number"
+                    variant="outlined"
+                  />
+                </div>
+              ) : <div className="flex gap-5">
+                <TextField
+                  fullWidth
+                  value={dataEdit?.nomorAkad}
+                  onChange={(e) => {
+                    setDataEdit({
+                      ...dataEdit,
+                      nomorAkad: e.target.value,
+                    });
+                  }}
+                  id="outlined-basic"
+                  label="No Akad"
+                  type="number"
+                  variant="outlined"
+                />
+                <TextField
+                  fullWidth
+                  value={dataEdit?.staffBasil}
+                  onChange={(e) => {
+                    setDataEdit({
+                      ...dataEdit,
+                      staffBasil: e.target.value,
+                    });
+                  }}
+                  id="outlined-basic"
+                  label="Staff Basil"
+                  type="number"
+                  variant="outlined"
+                />
+                <TextField
+                  fullWidth
+                  value={dataEdit?.staffPokok}
+                  onChange={(e) => {
+                    setDataEdit({
+                      ...dataEdit,
+                      staffPokok: e.target.value,
+                    });
+                  }}
+                  id="outlined-basic"
+                  label="Staff Pokok"
+                  type="number"
+                  variant="outlined"
+                />
+              </div>}
             </div>
           </DialogContentText>
         </DialogContent>
@@ -398,18 +570,26 @@ export default function BarangKeluarTable(props) {
               return (
                 <TableRow key={row.id} hover role="checkbox" tabIndex={-1}>
                   <TableCell>{index + 1}.</TableCell>
-                  <TableCell>{row?.kodeBarang?.kodeBarang}</TableCell>
-                  <TableCell>{row?.namaBarang}</TableCell>
-                  <TableCell>{moment(row?.tglKeluar).format('lll')}</TableCell>
-                  <TableCell>{row?.jmlKeluar}</TableCell>
-                  {/* <TableCell>{row?.satuan?.label}</TableCell> */}
+                  <TableCell>{row?.nomorAkad === null ? '-' : row?.nomorAkad}</TableCell>
+                  <TableCell>{row?.staffBasil === null ? '-' : row?.staffBasil}</TableCell>
+                  <TableCell>{row?.staffPokok === null ? '-' : row?.staffPokok}</TableCell>
+                  <TableCell>{row?.accBasil === null ? '-' : row?.accBasil}</TableCell>
+                  <TableCell>{row?.accPokok === null ? '-' : row?.accPokok}</TableCell>
+                  <TableCell>{row?.staffBy === null ? '-' : row?.staffBy}</TableCell>
+                  <TableCell>{row?.staffAt === null ? '-' : moment(row?.staffAt).format('MMMM Do YYYY, h:mm:ss a')}</TableCell>
+                  <TableCell>{row?.kasirBy === null ? '-' : row?.kasirBy}</TableCell>
+                  <TableCell>{row?.kasirAtt === null ? '-' : moment(row?.kasirAtt).format('MMMM Do YYYY, h:mm:ss a')}</TableCell>
+                  <TableCell>{row?.lokasiPembayaran === null ? '-' : row?.lokasiPembayaran}</TableCell>
+                  <TableCell>{row?.accBasil === null ? <Button color='warning' variant="contained">Uncompleted</Button> : <Button color='success' variant="contained">Completed</Button>}</TableCell>
                   {/* <TableCell>{row?.deskripsi}</TableCell> */}
                   <TableCell>
                     <div className="flex justify-center">
                       <div>
+                        {console.log(dataLogin?.roleUser === 'Staff' && row?.accBasil === null, 'sss')}
                         <IconButton
                           onClick={() => handleClickOpen(row.id, row)}
                           color="info"
+                          disabled={dataLogin?.roleUser === 'Staff' && row?.accBasil !== null}
                           className=""
                         >
                           <EditIcon />
@@ -419,7 +599,7 @@ export default function BarangKeluarTable(props) {
                         <IconButton
                           onClick={(e) => HandelDelete(row.id)}
                           color="error"
-                          disabled={dataLogin?.roleUser === 'User'}
+                          disabled={dataLogin?.roleUser === 'Staff' && row?.accBasil !== null}
                           className=""
                         >
                           <DeleteIcon />

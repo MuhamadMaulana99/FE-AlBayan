@@ -6,22 +6,20 @@ import { useDispatch } from 'react-redux';
 import React, { useState } from 'react';
 import axios from 'axios';
 import { showMessage } from 'app/store/fuse/messageSlice';
-import BarangKeluarTable from './BarangKeluarTable';
-import BarangKeluarHeader from './BarangKeluarHeader';
+import PengajuanHeader from './PengajuanHeader';
+import PengajuanTable from './PengajuanTable';
 
-function BarangKeluar() {
+function Pengajuan() {
   const dispatch = useDispatch();
   const [data, setData] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
-  const [dataMasterBarang, setDataMasterBarang] = useState([]);
-  // const api = `https://652d2c32f9afa8ef4b26e7f0.mockapi.io/tokoBangunan/v1/suplayer/1/tokoBangunan`;
-  const api = `http://ner.grit.id:8006`;
-  // const api = `http://localhost:3000`;
+  const [masterStaff, setDataMasterStaff] = useState([]);
+
   const isMobile = useThemeMediaQuery((theme) => theme.breakpoints.down('lg'));
   const getData = async () => {
     setLoading(true);
     const response = await axios
-      .get(`${process.env.REACT_APP_API_URL_API_}/barangKeluar`)
+      .get(`${process.env.REACT_APP_API_URL_API_}/Pengajuan`)
       .then((res) => {
         setData(res?.data);
         setLoading(false);
@@ -61,16 +59,16 @@ function BarangKeluar() {
         console.log(err);
       });
   };
-  const getMasterBarang = () => {
+  const getMasterStaff = () => {
     setLoading(true);
     axios
-      .get(`${process.env.REACT_APP_API_URL_API_}/mstBarangs`)
+      .get(`${process.env.REACT_APP_API_URL_API_}/masterStaff`)
       .then((res) => {
-        setDataMasterBarang(res?.data);
+        setDataMasterStaff(res?.data);
         setLoading(false);
       })
       .catch((err) => {
-        setDataMasterBarang([]);
+        setDataMasterStaff([]);
         setLoading(false);
         const errStatus = err?.response?.status;
         const errMessage = err?.response?.data?.message;
@@ -107,7 +105,7 @@ function BarangKeluar() {
     let isUnmout = false;
     if (!isUnmout) {
       getData();
-      getMasterBarang();
+      getMasterStaff();
     }
     return () => {
       isUnmout = true;
@@ -117,16 +115,16 @@ function BarangKeluar() {
   return (
     <FusePageCarded
       header={
-        <BarangKeluarHeader
-          dataMasterBarang={dataMasterBarang}
+        <PengajuanHeader
+          masterStaff={masterStaff}
           getData={getData}
           data={data}
           loading={loading}
         />
       }
       content={
-        <BarangKeluarTable
-          dataMasterBarang={dataMasterBarang}
+        <PengajuanTable
+          masterStaff={masterStaff}
           getData={getData}
           data={data}
           loading={loading}
@@ -137,4 +135,4 @@ function BarangKeluar() {
   );
 }
 
-export default BarangKeluar;
+export default Pengajuan;

@@ -37,30 +37,48 @@ const top100Films = [
   { label: 'Bal', year: 1994 },
 ];
 
-function BarangKeluarHeader(props) {
+function PengajuanHeader(props) {
   const dispatch = useDispatch();
+  const currentDate = moment().format();
+  const userRoles = JSON.parse(localStorage.getItem('userRoles'));
+  let getAllUserResponse;
+  let getResponseName;
+  let dataLogin;
+  if (userRoles) {
+    getAllUserResponse = userRoles?.response?.userRoles;
+    getResponseName = userRoles?.response;
+    dataLogin = JSON.parse(getAllUserResponse);
+  }
   const data = props?.data;
-  const { dataMasterBarang } = props;
+  const { masterStaff } = props;
   const [loading, setLoading] = React.useState(true);
   const [open, setOpen] = React.useState(false);
-  const [kodeBarang, setkodeBarang] = useState(null);
-  const [namaBarang, setnamaBarang] = useState('');
-  const [tglKeluar, settglKeluar] = useState(null);
-  const [jmlKeluar, setjmlKeluar] = useState('');
-  const [stokBarang, setstokBarang] = useState(0);
-  const [satuan, setsatuan] = useState(null);
 
-  const body = {
-    kodeBarang: JSON.stringify(kodeBarang),
-    namaBarang,
-    tglKeluar,
-    jmlKeluar,
-    stokBarang,
-    satuan,
-  };
-  // const api = `https://652d2c32f9afa8ef4b26e7f0.mockapi.io/tokoBangunan/v1/suplayer/1/tokoBangunan`;
-  const api = `http://ner.grit.id:8006/barangKeluar`;
-  // const api = `http://localhost:3000/barangKeluar`;
+  const [stateBody, setStateBody] = useState({
+    penjualan: null,
+    hargaPokok: null,
+    biaya: null,
+    labaUsaha: null,
+    pendapatanLain: null,
+    jumlahPendapatan: null,
+    kebutuhanRumahTangga: null,
+    biayaPendidikan: null,
+    jumlahBiayaLuarUsaha: null,
+    pendapatanBersih: null,
+    rasioAngsuran: null,
+    jangkaWaktu: null,
+    nominalPermohonan: null,
+    tujuanPembiayaan: null,
+    jaminan: null,
+    accPermohonan: null,
+    nomorAkad: null,
+    status: null,
+    statusBy: null,
+    statusAt: null,
+    foto: null,
+  });
+
+  console.log(stateBody, 'stateBody')
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -68,16 +86,12 @@ function BarangKeluarHeader(props) {
 
   const handleClose = () => {
     setOpen(false);
-    setkodeBarang('');
-    setnamaBarang('');
-    settglKeluar('');
-    setjmlKeluar('');
-    setstokBarang(0);
   };
+
   const HandelSubmit = () => {
     setLoading(true);
     axios
-      .post(`${process.env.REACT_APP_API_URL_API_}/barangKeluar`, body)
+      .post(`${process.env.REACT_APP_API_URL_API_}/Pengajuan`, stateBody)
       .then((res) => {
         // setData(res?.data);
         props.getData();
@@ -228,8 +242,8 @@ function BarangKeluarHeader(props) {
       { key: 'data_e', width: 20 },
     ];
     /* Now we use the keys we defined earlier to insert your data by iterating through arrData
-		and calling worksheet.addRow()
-		*/
+    and calling worksheet.addRow()
+    */
     data.forEach(function (data, index) {
       worksheet.addRow({
         data_a: `${index + 1}`,
@@ -255,72 +269,192 @@ function BarangKeluarHeader(props) {
     <div className="flex flex-col sm:flex-row space-y-16 sm:space-y-0 flex-1 w-full items-center justify-between py-32 px-24 md:px-32">
       <Dialog
         open={open}
+        maxWidth="lg"
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">Tambah Barang Keluar</DialogTitle>
+        <DialogTitle id="alert-dialog-title">Tambah Pengajuan</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            <div className="m-10">
-              <div className="flex justify-between w-full mb-10">
-                <div>
-                  <Autocomplete
-                    disablePortal
-                    value={kodeBarang}
-                    getOptionLabel={(option) => option.kodeBarang}
-                    onChange={(_, newValue) => {
-                      if (newValue) {
-                        setkodeBarang(newValue);
-                        setnamaBarang(newValue?.namaBarang);
-                      } else {
-                        setkodeBarang(null);
-                        setnamaBarang('');
-                      }
-                    }}
-                    id="combo-box-demo"
-                    options={dataMasterBarang}
-                    // options={top100Films}
-                    sx={{ width: 220 }}
-                    renderInput={(params) => <TextField {...params} label="Kode Barang" />}
+            <div class="flex flex-wrap gap-5 p-10">
+              <TextField
+                  value={stateBody?.penjualan}
+                  onChange={(e) => {
+                    setStateBody({ ...stateBody, penjualan: e.target.value })
+                    // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
+                  }}
+                  id="outlined-basic"
+                  label="Penjualan"
+                  type="number"
+                  variant="outlined"
                   />
-                </div>
-                <div>
-                  <TextField
-                    value={namaBarang}
-                    onChange={(e) => setnamaBarang(e.target.value)}
-                    id="outlined-basic"
-                    label="Nama Barang"
-                    variant="outlined"
+                <TextField
+                  value={stateBody?.hargaPokok}
+                  onChange={(e) => {
+                    setStateBody({ ...stateBody, hargaPokok: e.target.value })
+                    // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
+                  }}
+                  id="outlined-basic"
+                  label="Harga Pokok"
+                  type="number"
+                  variant="outlined"
                   />
-                </div>
-              </div>
-              <div className="flex justify-between w-full gap-10">
-                <div className="">
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DatePicker
-                      label="Select Date"
-                      value={tglKeluar}
-                      onChange={(date) => {
-                        settglKeluar(date);
-                      }}
-                      sx={{ width: 220 }}
-                      renderInput={(params) => <TextField {...params} />}
-                    />
-                  </LocalizationProvider>
-                </div>
-                <div className="">
-                  <TextField
-                    fullWidth
-                    value={jmlKeluar}
-                    onChange={(e) => setjmlKeluar(e.target.value)}
-                    id="outlined-basic"
-                    label="jmlKeluar"
-                    type="number"
-                    variant="outlined"
+                <TextField
+                  value={stateBody?.biaya}
+                  onChange={(e) => setStateBody({ ...stateBody, biaya: e.target.value })}
+                  id="outlined-basic"
+                  label="Biaya"
+                  type="number"
+                  variant="outlined"
                   />
-                </div>
-              </div>
+                <TextField
+                  value={stateBody?.labaUsaha}
+                  // defaultValue={stateBody?.staffBasil}
+                  onChange={(e) => setStateBody({ ...stateBody, labaUsaha: e.target.value })}
+                  id="outlined-basic"
+                  label="Laba Usaha"
+                  type="number"
+                  variant="outlined"
+                  />
+                <TextField
+                  value={stateBody?.pendapatanLain}
+                  onChange={(e) => setStateBody({ ...stateBody, pendapatanLain: e.target.value })}
+                  id="outlined-basic"
+                  label="Pendapatan Lain"
+                  type="number"
+                  variant="outlined"
+                  />
+                <TextField
+                  value={stateBody?.kebutuhanRumahTangga}
+                  onChange={(e) => setStateBody({ ...stateBody, kebutuhanRumahTangga: e.target.value })}
+                  id="outlined-basic"
+                  label="Kebutuhan Rumah Tangga"
+                  type="number"
+                  variant="outlined"
+                  />
+                <TextField
+                  value={stateBody?.biayaPendidikan}
+                  onChange={(e) => setStateBody({ ...stateBody, biayaPendidikan: e.target.value })}
+                  id="outlined-basic"
+                  label="Biaya Pendidikan"
+                  type="number"
+                  variant="outlined"
+                  />
+                <TextField
+                  value={stateBody?.jumlahBiayaLuarUsaha}
+                  onChange={(e) => setStateBody({ ...stateBody, jumlahBiayaLuarUsaha: e.target.value })}
+                  id="outlined-basic"
+                  label="Jumlah Biaya Luar Usaha"
+                  type="number"
+                  variant="outlined"
+                  />
+                <TextField
+                  value={stateBody?.pendapatanBersih}
+                  onChange={(e) => setStateBody({ ...stateBody, pendapatanBersih: e.target.value })}
+                  id="outlined-basic"
+                  label="Pendapatan Bersih"
+                  type="number"
+                  variant="outlined"
+                  />
+                <TextField
+                  value={stateBody?.jumlahPendapatan}
+                  onChange={(e) => setStateBody({ ...stateBody, jumlahPendapatan: e.target.value })}
+                  id="outlined-basic"
+                  label="Pendapatan Bersih"
+                  type="number"
+                  variant="outlined"
+                  />
+                <TextField
+                  value={stateBody?.rasioAngsuran}
+                  onChange={(e) => setStateBody({ ...stateBody, rasioAngsuran: e.target.value })}
+                  id="outlined-basic"
+                  label="Rasio Angsuran"
+                  type="number"
+                  variant="outlined"
+                  />
+
+                <TextField
+                  value={stateBody?.jangkaWaktu}
+                  onChange={(e) => setStateBody({ ...stateBody, jangkaWaktu: e.target.value })}
+                  id="outlined-basic"
+                  label="Jangka Waktu"
+                  type="number"
+                  variant="outlined"
+                  />
+                <TextField
+                  value={stateBody?.nominalPermohonan}
+                  onChange={(e) => setStateBody({ ...stateBody, nominalPermohonan: e.target.value })}
+                  id="outlined-basic"
+                  label="Nominal Pemohonan"
+                  type="number"
+                  variant="outlined"
+                  />
+                <TextField
+                  value={stateBody?.tujuanPembiayaan}
+                  onChange={(e) => setStateBody({ ...stateBody, tujuanPembiayaan: e.target.value })}
+                  id="outlined-basic"
+                  label="Tujuan Pembiyaan"
+                  type="number"
+                  variant="outlined"
+                  />
+                <TextField
+                  value={stateBody?.jaminan}
+                  onChange={(e) => setStateBody({ ...stateBody, jaminan: e.target.value })}
+                  id="outlined-basic"
+                  label="Jaminan"
+                  type="number"
+                  variant="outlined"
+                  />
+                <TextField
+                  value={stateBody?.accPermohonan}
+                  onChange={(e) => setStateBody({ ...stateBody, accPermohonan: e.target.value })}
+                  id="outlined-basic"
+                  label="Acc Permohonan"
+                  type="number"
+                  variant="outlined"
+                  />
+                <TextField
+                  value={stateBody?.nomorAkad}
+                  onChange={(e) => setStateBody({ ...stateBody, nomorAkad: e.target.value })}
+                  id="outlined-basic"
+                  label="Nomor Akad"
+                  type="number"
+                  variant="outlined"
+                  />
+                <TextField
+                  value={stateBody?.status}
+                  onChange={(e) => setStateBody({ ...stateBody, status: e.target.value })}
+                  id="outlined-basic"
+                  label="Status"
+                  type="number"
+                  variant="outlined"
+                  />
+                <TextField
+                  value={stateBody?.statusBy}
+                  onChange={(e) => setStateBody({ ...stateBody, statusBy: e.target.value })}
+                  id="outlined-basic"
+                  label="Status By"
+                  type="number"
+                  variant="outlined"
+                  />
+                <TextField
+                  value={stateBody?.statusAt}
+                  onChange={(e) => setStateBody({ ...stateBody, statusAt: e.target.value })}
+                  id="outlined-basic"
+                  label="Status At"
+                  type="number"
+                  variant="outlined"
+                  />
+
+                <TextField
+                  value={stateBody?.foto}
+                  onChange={(e) => setStateBody({ ...stateBody, foto: e.target.value })}
+                  id="outlined-basic"
+                  label="Foto"
+                  type="number"
+                  variant="outlined"
+                  />
             </div>
           </DialogContentText>
         </DialogContent>
@@ -330,12 +464,12 @@ function BarangKeluarHeader(props) {
           </Button>
           <Button
             variant="contained"
-            disabled={
-              kodeBarang === '' || namaBarang === '' || tglKeluar === '' || jmlKeluar === ''
-            }
-            onClick={HandelSubmit}
-            autoFocus
-          >
+            // disabled={
+              //   kodeBarang === '' || namaBarang === '' || tglKeluar === '' || jmlKeluar === ''
+              // }
+              onClick={HandelSubmit}
+              autoFocus
+              >
             Save
           </Button>
         </DialogActions>
@@ -348,7 +482,7 @@ function BarangKeluarHeader(props) {
           delay={300}
           className="text-24 md:text-32 font-extrabold tracking-tight"
         >
-          Barang Keluar
+          Pengajuan
         </Typography>
         <div className="flex flex-auto items-center gap-4 grid-rows-1 ">
           <div className="flex items-left mt-10 ml-20 w-1/2 flex-col md:flex-row md:items-center md:mt-0">
@@ -385,34 +519,54 @@ function BarangKeluarHeader(props) {
           <Input
             placeholder="Cari Barang"
             className="flex flex-1"
-            disableUnderline
-            fullWidth
+            disableUnderl
             // value={searchText}
             inputProps={{
               'aria-label': 'Search',
             }}
-            // onChange={(ev) => dispatch(setProductsSearchText(ev))}
+          // onChange={(ev) => dispatch(setProductsSearchText(ev))}
           />
         </Paper>
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0, transition: { delay: 0.2 } }}
         >
-          <Button
-            className=""
-            // component={Link}
-            // to="/apps/e-commerce/products/new"
-            onClick={handleClickOpen}
-            variant="contained"
-            color="secondary"
-            startIcon={<FuseSvgIcon>heroicons-outline:plus</FuseSvgIcon>}
-          >
-            Add
-          </Button>
+          {dataLogin?.roleUser === 'admin' ? (
+            <Button
+              className=""
+              onClick={handleClickOpen}
+              variant="contained"
+              color="secondary"
+              startIcon={<FuseSvgIcon>heroicons-outline:plus</FuseSvgIcon>}
+            >
+              Add
+            </Button>
+          ) : dataLogin?.roleUser === 'Kasir' ? (
+            <Button
+              className=""
+              onClick={handleClickOpen}
+              variant="contained"
+              color="secondary"
+              startIcon={<FuseSvgIcon>heroicons-outline:plus</FuseSvgIcon>}
+            >
+              Add
+            </Button>
+          ) : (
+            <Button
+              className=""
+              onClick={handleClickOpen}
+              variant="contained"
+              color="secondary"
+              startIcon={<FuseSvgIcon>heroicons-outline:plus</FuseSvgIcon>}
+            >
+              Add
+            </Button>
+          )}
+
         </motion.div>
       </div>
     </div>
   );
 }
 
-export default BarangKeluarHeader;
+export default PengajuanHeader;
