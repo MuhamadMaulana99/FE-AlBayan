@@ -23,12 +23,12 @@ const navigationConfig = [
         url: '/apps/masterAnalisa/',
       },
       {
-        id: 'masterKasir',
-        title: 'Kasir',
+        id: 'masterNasabah',
+        title: 'Nasabah',
         // translate: 'Stok Barang',
         type: 'item',
         icon: 'heroicons-outline:collection',
-        url: '/apps/masterKasir/',
+        url: '/apps/masterNasabah/',
       },
       {
         id: 'masterStaff',

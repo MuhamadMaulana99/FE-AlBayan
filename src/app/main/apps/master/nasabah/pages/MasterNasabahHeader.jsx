@@ -18,19 +18,26 @@ import {
   TextField,
 } from '@mui/material';
 
-function MasterKasirHeader(props) {
+function MasterNasabahHeader(props) {
   const dispatch = useDispatch();
   const [data, setData] = useState({});
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [nama, setnama] = useState('');
+  const [stateBody, setStateBody] = useState({
+    nama: null,
+    mstRekening: null,
+    mstjenisKelamin: null,
+    mstAlamat: null,
+    mstKecamatan: null,
+    mstKabupaten: null,
+    mstProvinsi: null,
+  });
+
 
   const body = {
     nama,
   };
-  // const api = `https://652d2c32f9afa8ef4b26e7f0.mockapi.io/tokoBangunan/v1/masterKasir`;
-  const api = `http://ner.grit.id:8006/masterKasir`;
-  // const api = `http://localhost:3000/masterKasir`;
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -43,7 +50,7 @@ function MasterKasirHeader(props) {
   const HandelSubmit = () => {
     setLoading(true);
     axios
-      .post(`${process.env.REACT_APP_API_URL_API_}/masterKasir`, body)
+      .post(`${process.env.REACT_APP_API_URL_API_}/masterNasabah`, stateBody)
       .then((res) => {
         // setData(res?.data);
         props.getData();
@@ -109,21 +116,75 @@ function MasterKasirHeader(props) {
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             <div className="grid grid-cols-2 gap-16 mt-10 mb-10">
-              {/* <div>
+              <div class="flex flex-wrap gap-5 p-10">
                 <TextField
-                  value={kodeBarang}
-                  onChange={(e) => setkodeBarang(e.target.value)}
+                  value={stateBody?.nama}
+                  onChange={(e) => {
+                    setStateBody({ ...stateBody, nama: e.target.value })
+                    // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
+                  }}
                   id="outlined-basic"
-                  label="Kode Barang"
+                  label="Nama Nasabah"
                   variant="outlined"
                 />
-              </div> */}
-              <div>
                 <TextField
-                  value={nama}
-                  onChange={(e) => setnama(e.target.value)}
+                  value={stateBody?.mstRekening}
+                  onChange={(e) => {
+                    setStateBody({ ...stateBody, mstRekening: e.target.value })
+                    // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
+                  }}
                   id="outlined-basic"
-                  label="Nama Barang"
+                  label="No Rek"
+                  variant="outlined"
+                />
+                <TextField
+                  value={stateBody?.mstjenisKelamin}
+                  onChange={(e) => {
+                    setStateBody({ ...stateBody, mstjenisKelamin: e.target.value })
+                    // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
+                  }}
+                  id="outlined-basic"
+                  label="Jenis Kelamin"
+                  variant="outlined"
+                />
+                <TextField
+                  value={stateBody?.mstAlamat}
+                  onChange={(e) => {
+                    setStateBody({ ...stateBody, mstAlamat: e.target.value })
+                    // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
+                  }}
+                  id="outlined-basic"
+                  label="Alamat"
+                  variant="outlined"
+                />
+                <TextField
+                  value={stateBody?.mstKecamatan}
+                  onChange={(e) => {
+                    setStateBody({ ...stateBody, mstKecamatan: e.target.value })
+                    // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
+                  }}
+                  id="outlined-basic"
+                  label="Kecamatan"
+                  variant="outlined"
+                />
+                <TextField
+                  value={stateBody?.mstKabupaten}
+                  onChange={(e) => {
+                    setStateBody({ ...stateBody, mstKabupaten: e.target.value })
+                    // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
+                  }}
+                  id="outlined-basic"
+                  label="Kabupaten"
+                  variant="outlined"
+                />
+                <TextField
+                  value={stateBody?.mstProvinsi}
+                  onChange={(e) => {
+                    setStateBody({ ...stateBody, mstProvinsi: e.target.value })
+                    // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
+                  }}
+                  id="outlined-basic"
+                  label="Provinsi"
                   variant="outlined"
                 />
               </div>
@@ -146,7 +207,7 @@ function MasterKasirHeader(props) {
         delay={300}
         className="text-24 md:text-32 font-extrabold tracking-tight"
       >
-        Master Kasir
+        Master Nasabah
       </Typography>
 
       <div className="flex flex-col w-full sm:w-auto sm:flex-row space-y-16 sm:space-y-0 flex-1 items-center justify-end space-x-8">
@@ -167,7 +228,7 @@ function MasterKasirHeader(props) {
             inputProps={{
               'aria-label': 'Search',
             }}
-            // onChange={(ev) => dispatch(setProductsSearchText(ev))}
+          // onChange={(ev) => dispatch(setProductsSearchText(ev))}
           />
         </Paper>
         <motion.div
@@ -191,4 +252,4 @@ function MasterKasirHeader(props) {
   );
 }
 
-export default MasterKasirHeader;
+export default MasterNasabahHeader;

@@ -6,25 +6,24 @@ import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { showMessage } from 'app/store/fuse/messageSlice';
-import MasterKasirHeader from './MasterKasirHeader';
-import MasterKasirTable from './MasterKasirTable';
+import MasterNasabahTable from './MasterNasabahTable';
+import MasterNasabahHeader from './MasterNasabahHeader';
 
-function MasterKasir() {
+
+function MasterNasabah() {
   const dispatch = useDispatch();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
-  // const api = `https://652d2c32f9afa8ef4b26e7f0.mockapi.io/tokoBangunan/v1/suplayer`;
-  const api = `http://ner.grit.id:8006/masterKasir`;
-  // const api = `http://localhost:3000/masterKasir`;
   const isMobile = useThemeMediaQuery((theme) => theme.breakpoints.down('lg'));
+
   const getData = async () => {
     setLoading(true);
     const response = await axios
-      .get(`${process.env.REACT_APP_API_URL_API_}/masterKasir`)
+      .get(`${process.env.REACT_APP_API_URL_API_}/masterNasabah`)
       .then((res) => {
         setData(res?.data);
         setLoading(false);
-        // console.log(res.data, 'rrr');
+        console.log(res.data, 'rrr');
       })
       .catch((err) => {
         setData([]);
@@ -72,11 +71,11 @@ function MasterKasir() {
 
   return (
     <FusePageCarded
-      header={<MasterKasirHeader getData={getData} data={data} loading={loading} />}
-      content={<MasterKasirTable getData={getData} data={data} loading={loading} />}
+      header={<MasterNasabahHeader getData={getData} data={data} loading={loading} />}
+      content={<MasterNasabahTable getData={getData} data={data} loading={loading} />}
       scroll={isMobile ? 'normal' : 'content'}
     />
   );
 }
 
-export default MasterKasir;
+export default MasterNasabah;

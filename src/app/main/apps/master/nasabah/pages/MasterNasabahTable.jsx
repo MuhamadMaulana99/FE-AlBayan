@@ -36,6 +36,48 @@ const columns = [
     // format: (value) => value.toLocaleString('en-US'),
   },
   {
+    id: 'norek',
+    label: 'No Rek',
+    minWidth: 170,
+    align: 'left',
+    // format: (value) => value.toLocaleString('en-US'),
+  },
+  {
+    id: 'jenisKelamin',
+    label: 'Jenis Kelamin',
+    minWidth: 170,
+    align: 'left',
+    // format: (value) => value.toLocaleString('en-US'),
+  },
+  {
+    id: 'alamat',
+    label: 'Alamat',
+    minWidth: 170,
+    align: 'left',
+    // format: (value) => value.toLocaleString('en-US'),
+  },
+  {
+    id: 'kecamatan',
+    label: 'Kecamatan',
+    minWidth: 170,
+    align: 'left',
+    // format: (value) => value.toLocaleString('en-US'),
+  },
+  {
+    id: 'kabupaten',
+    label: 'Kabupaten',
+    minWidth: 170,
+    align: 'left',
+    // format: (value) => value.toLocaleString('en-US'),
+  },
+  {
+    id: 'provinsi',
+    label: 'Provinsi',
+    minWidth: 170,
+    align: 'left',
+    // format: (value) => value.toLocaleString('en-US'),
+  },
+  {
     id: 'aksi',
     label: 'Aksi',
     minWidth: 170,
@@ -44,25 +86,30 @@ const columns = [
   },
 ];
 
-function createData(no, id, nama) {
-  return { no, id, nama };
+function createData(no, id, nama, mstRekening, mstjenisKelamin, mstAlamat, mstKecamatan, mstKabupaten, mstProvinsi) {
+  return { no, id, nama, mstRekening, mstjenisKelamin, mstAlamat, mstKecamatan, mstKabupaten, mstProvinsi };
 }
 
-export default function MasterKasirTable(props) {
+export default function MasterNasabahTable(props) {
   const dispatch = useDispatch();
   const [data, setData] = React.useState([]);
   const [dataEdit, setDataEdit] = React.useState({
-    nama: '',
+    id: null,
+    nama: null,
+    mstRekening: null,
+    mstjenisKelamin: null,
+    mstAlamat: null,
+    mstKecamatan: null,
+    mstKabupaten: null,
+    mstProvinsi: null,
   });
   const [open, setOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(true);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  // const api = `https://652d2c32f9afa8ef4b26e7f0.mockapi.io/tokoBangunan/v1/masterKasir`;
-  const api = `http://ner.grit.id:8006/masterKasir`;
-  // const api = `http://localhost:3000/masterKasir`;
+
   const rows = props?.data?.map((item, index) =>
-    createData(index + 1, item?.id, item?.nama)
+    createData(index + 1, item?.id, item?.nama, item?.mstRekening, item?.mstjenisKelamin, item?.mstAlamat, item?.mstKecamatan, item?.mstKecamatan, item?.mstKabupaten, item?.mstProvinsi)
   );
 
   const handleChangePage = (event, newPage) => {
@@ -75,7 +122,16 @@ export default function MasterKasirTable(props) {
   };
   const handleClickOpen = (id, row) => {
     setOpen(true);
-    setDataEdit(row);
+    setDataEdit({
+      id: row?.id,
+      nama: row?.nama,
+      mstRekening: row?.mstRekening,
+      mstjenisKelamin: row?.mstjenisKelamin,
+      mstAlamat: row?.mstAlamat,
+      mstKecamatan: row?.mstKecamatan,
+      mstKabupaten: row?.mstKabupaten,
+      mstProvinsi: row?.mstProvinsi,
+    });
   };
   const handleClose = () => {
     setOpen(false);
@@ -88,7 +144,7 @@ export default function MasterKasirTable(props) {
   const HandelEdit = (id) => {
     setLoading(true);
     axios
-      .put(`${process.env.REACT_APP_API_URL_API_}/masterKasir/${dataEdit?.id}`, body)
+      .put(`${process.env.REACT_APP_API_URL_API_}/masterNasabah/${dataEdit?.id}`, body)
       .then((res) => {
         props?.getData();
         handleClose();
@@ -142,7 +198,7 @@ export default function MasterKasirTable(props) {
   const HandelDelete = (id) => {
     setLoading(true);
     axios
-      .delete(`${process.env.REACT_APP_API_URL_API_}/masterKasir/${id}`)
+      .delete(`${process.env.REACT_APP_API_URL_API_}/masterNasabah/${id}`)
       .then((res) => {
         props?.getData();
         setLoading(false);
@@ -262,6 +318,12 @@ export default function MasterKasirTable(props) {
                 <TableRow key={row.id} hover role="checkbox" tabIndex={-1}>
                   <TableCell>{index + 1}</TableCell>
                   <TableCell>{row?.nama}</TableCell>
+                  <TableCell>{row?.mstRekening}</TableCell>
+                  <TableCell>{row?.mstjenisKelamin}</TableCell>
+                  <TableCell>{row?.mstAlamat}</TableCell>
+                  <TableCell>{row?.mstKecamatan}</TableCell>
+                  <TableCell>{row?.mstKabupaten}</TableCell>
+                  <TableCell>{row?.mstProvinsi}</TableCell>
                   <TableCell>
                     <div className="flex justify-center">
                       <div>
