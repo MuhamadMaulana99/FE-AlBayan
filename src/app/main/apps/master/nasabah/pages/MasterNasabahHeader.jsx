@@ -10,6 +10,7 @@ import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import { useState } from 'react';
 import {
+  Autocomplete,
   Dialog,
   DialogActions,
   DialogContent,
@@ -17,6 +18,11 @@ import {
   DialogTitle,
   TextField,
 } from '@mui/material';
+
+const jenKel = [
+  { kelamin: 'Laki-laki', id: 1 },
+  { kelamin: 'Perempuan', id: 2 },
+];
 
 function MasterNasabahHeader(props) {
   const dispatch = useDispatch();
@@ -33,10 +39,15 @@ function MasterNasabahHeader(props) {
     mstKabupaten: null,
     mstProvinsi: null,
   });
-
-
+  // console.log(stateBody, 'stateBody')
   const body = {
-    nama,
+    nama: stateBody?.nama,
+    mstjenisKelamin: JSON.stringify(stateBody?.mstjenisKelamin),
+    mstRekening: stateBody?.mstRekening,
+    mstAlamat: stateBody?.mstAlamat,
+    mstKecamatan: stateBody?.mstKecamatan,
+    mstKabupaten: stateBody?.mstKabupaten,
+    mstProvinsi: stateBody?.mstProvinsi,
   };
 
   const handleClickOpen = () => {
@@ -50,7 +61,7 @@ function MasterNasabahHeader(props) {
   const HandelSubmit = () => {
     setLoading(true);
     axios
-      .post(`${process.env.REACT_APP_API_URL_API_}/masterNasabah`, stateBody)
+      .post(`${process.env.REACT_APP_API_URL_API_}/masterNasabah`, body)
       .then((res) => {
         // setData(res?.data);
         props.getData();
@@ -116,11 +127,11 @@ function MasterNasabahHeader(props) {
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             <div className="grid grid-cols-2 gap-16 mt-10 mb-10">
-              <div class="flex flex-wrap gap-5 p-10">
+              <div className="flex flex-wrap gap-5 p-10">
                 <TextField
                   value={stateBody?.nama}
                   onChange={(e) => {
-                    setStateBody({ ...stateBody, nama: e.target.value })
+                    setStateBody({ ...stateBody, nama: e.target.value });
                     // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
                   }}
                   id="outlined-basic"
@@ -130,27 +141,33 @@ function MasterNasabahHeader(props) {
                 <TextField
                   value={stateBody?.mstRekening}
                   onChange={(e) => {
-                    setStateBody({ ...stateBody, mstRekening: e.target.value })
+                    setStateBody({ ...stateBody, mstRekening: e.target.value });
                     // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
                   }}
                   id="outlined-basic"
                   label="No Rek"
                   variant="outlined"
                 />
-                <TextField
-                  value={stateBody?.mstjenisKelamin}
-                  onChange={(e) => {
-                    setStateBody({ ...stateBody, mstjenisKelamin: e.target.value })
-                    // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
-                  }}
-                  id="outlined-basic"
-                  label="Jenis Kelamin"
-                  variant="outlined"
-                />
+                <div className="mt-10 w-full">
+                  <Autocomplete
+                    disablePortal
+                    fullWidth
+                    id="combo-box-demo"
+                    getOptionLabel={(option) => option.kelamin}
+                    value={stateBody?.mstjenisKelamin}
+                    onChange={(e, newValue) => {
+                      setStateBody({ ...stateBody, mstjenisKelamin: newValue });
+                      // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
+                    }}
+                    options={jenKel}
+                    sx={{ width: '100%' }}
+                    renderInput={(params) => <TextField {...params} label="Jenis Kelamin" />}
+                  />
+                </div>
                 <TextField
                   value={stateBody?.mstAlamat}
                   onChange={(e) => {
-                    setStateBody({ ...stateBody, mstAlamat: e.target.value })
+                    setStateBody({ ...stateBody, mstAlamat: e.target.value });
                     // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
                   }}
                   id="outlined-basic"
@@ -160,7 +177,7 @@ function MasterNasabahHeader(props) {
                 <TextField
                   value={stateBody?.mstKecamatan}
                   onChange={(e) => {
-                    setStateBody({ ...stateBody, mstKecamatan: e.target.value })
+                    setStateBody({ ...stateBody, mstKecamatan: e.target.value });
                     // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
                   }}
                   id="outlined-basic"
@@ -170,7 +187,7 @@ function MasterNasabahHeader(props) {
                 <TextField
                   value={stateBody?.mstKabupaten}
                   onChange={(e) => {
-                    setStateBody({ ...stateBody, mstKabupaten: e.target.value })
+                    setStateBody({ ...stateBody, mstKabupaten: e.target.value });
                     // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
                   }}
                   id="outlined-basic"
@@ -180,7 +197,7 @@ function MasterNasabahHeader(props) {
                 <TextField
                   value={stateBody?.mstProvinsi}
                   onChange={(e) => {
-                    setStateBody({ ...stateBody, mstProvinsi: e.target.value })
+                    setStateBody({ ...stateBody, mstProvinsi: e.target.value });
                     // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
                   }}
                   id="outlined-basic"
@@ -228,7 +245,7 @@ function MasterNasabahHeader(props) {
             inputProps={{
               'aria-label': 'Search',
             }}
-          // onChange={(ev) => dispatch(setProductsSearchText(ev))}
+            // onChange={(ev) => dispatch(setProductsSearchText(ev))}
           />
         </Paper>
         <motion.div

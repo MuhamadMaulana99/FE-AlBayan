@@ -28,9 +28,6 @@ function MasterAnalisaHeader(props) {
   const body = {
     nama,
   };
-  // const api = `https://652d2c32f9afa8ef4b26e7f0.mockapi.io/tokoBangunan/v1/mstBarangs`;
-  const api = `http://ner.grit.id:8006/masterAnalisa`;
-  // const api = `http://localhost:3000/masterAnalisa`;
 
   const handleClickOpen = () => {
     setOpen(true);

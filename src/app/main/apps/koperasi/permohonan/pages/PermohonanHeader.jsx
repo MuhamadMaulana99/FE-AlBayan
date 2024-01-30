@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable new-cap */
 /* eslint-disable no-plusplus */
 /* eslint-disable func-names */
@@ -9,7 +10,7 @@ import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import { motion } from 'framer-motion';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -18,9 +19,6 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { useDispatch } from 'react-redux';
 import axios from 'axios';
 import { showMessage } from 'app/store/fuse/messageSlice';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { Autocomplete, TextField } from '@mui/material';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import moment from 'moment';
@@ -30,7 +28,6 @@ import PrintIcon from '@mui/icons-material/Print';
 import autoTable from 'jspdf-autotable';
 import FuseAnimate from '@fuse/core/FuseAnimate';
 import { Workbook } from 'exceljs';
-import { useEffect } from 'react';
 
 const top100Films = [
   { label: 'KG', year: 1994 },
@@ -41,7 +38,7 @@ const top100Films = [
 function PermohonanHeader(props) {
   const dispatch = useDispatch();
   const currentDate = moment().format();
-  const { dataNasabah } = props
+  const { dataNasabah } = props;
   const userRoles = JSON.parse(localStorage.getItem('userRoles'));
   let getAllUserResponse;
   let getResponseName;
@@ -68,14 +65,24 @@ function PermohonanHeader(props) {
     saldoTabungan: null,
   });
 
-
   useEffect(() => {
-    const result = dataNasabah.filter((item) => item.mstRekening === stateBody?.rekening?.mstRekening);
-    setgetDataNasabahById(result)
+    const result = dataNasabah.filter(
+      (item) => item.mstRekening === stateBody?.rekening?.mstRekening
+    );
+    setgetDataNasabahById(result);
   }, [stateBody?.rekening, dataNasabah]);
-  console.log(getDataNasabahById, 'dataNasabah');
-  console.log(stateBody, 'dataNasabah');
-
+  // console.log(getDataNasabahById, 'sss');
+  const body = {
+    namaNasabah: getDataNasabahById[0]?.nama,
+    rekening: getDataNasabahById[0]?.mstRekening,
+    jenisKelamin: getDataNasabahById[0]?.mstjenisKelamin?.kelamin,
+    alamat: getDataNasabahById[0]?.mstAlamat,
+    kecamatan: getDataNasabahById[0]?.mstKecamatan,
+    kabupaten: getDataNasabahById[0]?.mstKabupaten,
+    provinsi: getDataNasabahById[0]?.mstProvinsi,
+    saldoTabungan: stateBody?.saldoTabungan,
+  };
+  console.log(body, 'body');
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -88,7 +95,7 @@ function PermohonanHeader(props) {
   const HandelSubmit = () => {
     setLoading(true);
     axios
-      .post(`${process.env.REACT_APP_API_URL_API_}/permohonan`, stateBody)
+      .post(`${process.env.REACT_APP_API_URL_API_}/permohonan`, body)
       .then((res) => {
         // setData(res?.data);
         props.getData();
@@ -274,18 +281,7 @@ function PermohonanHeader(props) {
         <DialogTitle id="alert-dialog-title">Tambah Pengajuan</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            <div class="flex flex-wrap gap-5 p-10">
-              {/* <TextField
-                value={stateBody?.rekening}
-                disabled
-                onChange={(e) => {
-                  setStateBody({ ...stateBody, rekening: e.target.value })
-                  // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
-                }}
-                id="outlined-basic"
-                label="Rekeningt"
-                variant="outlined"
-              /> */}
+            <div className="flex flex-wrap gap-5 p-10">
               <Autocomplete
                 disablePortal
                 id="combo-box-demo"
@@ -294,10 +290,10 @@ function PermohonanHeader(props) {
                 getOptionLabel={(option) => option.mstRekening}
                 sx={{ width: 300 }}
                 onChange={(e, newValue) => {
-                  setStateBody({ ...stateBody, rekening: newValue })
+                  setStateBody({ ...stateBody, rekening: newValue });
                   // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
                 }}
-                renderInput={(params) => <TextField {...params} label="Movie" />}
+                renderInput={(params) => <TextField {...params} label="Data Nasabah" />}
               />
               <TextField
                 value={getDataNasabahById[0]?.nama}
@@ -305,7 +301,7 @@ function PermohonanHeader(props) {
                   readOnly: true,
                 }}
                 onChange={(e) => {
-                  setStateBody({ ...stateBody, namaNasabah: getDataNasabahById?.nama })
+                  setStateBody({ ...stateBody, namaNasabah: getDataNasabahById?.nama });
                   // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
                 }}
                 id="outlined-basic"
@@ -319,9 +315,24 @@ function PermohonanHeader(props) {
                   readOnly: true,
                 }}
                 focused
-                value={getDataNasabahById[0]?.mstjenisKelamin}
+                value={getDataNasabahById[0]?.mstRekening}
                 onChange={(e) => {
-                  setStateBody({ ...stateBody, jenisKelamin: e.target.value })
+                  setStateBody({ ...stateBody, rekening: e.target.value });
+                  // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
+                }}
+                id="outlined-basic"
+                label="Rekening"
+                variant="outlined"
+              />
+              <TextField
+                // value={stateBody?.jenisKelamin}
+                InputProps={{
+                  readOnly: true,
+                }}
+                focused
+                value={getDataNasabahById[0]?.mstjenisKelamin?.kelamin}
+                onChange={(e) => {
+                  setStateBody({ ...stateBody, jenisKelamin: e.target.value });
                   // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
                 }}
                 id="outlined-basic"
@@ -336,7 +347,7 @@ function PermohonanHeader(props) {
                 focused
                 value={getDataNasabahById[0]?.mstAlamat}
                 onChange={(e) => {
-                  setStateBody({ ...stateBody, alamat: e.target.value })
+                  setStateBody({ ...stateBody, alamat: e.target.value });
                   // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
                 }}
                 id="outlined-basic"
@@ -351,7 +362,7 @@ function PermohonanHeader(props) {
                 focused
                 value={getDataNasabahById[0]?.mstKecamatan}
                 onChange={(e) => {
-                  setStateBody({ ...stateBody, kecamatan: e.target.value })
+                  setStateBody({ ...stateBody, kecamatan: e.target.value });
                   // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
                 }}
                 id="outlined-basic"
@@ -366,7 +377,7 @@ function PermohonanHeader(props) {
                 focused
                 value={getDataNasabahById[0]?.mstKabupaten}
                 onChange={(e) => {
-                  setStateBody({ ...stateBody, kabupaten: e.target.value })
+                  setStateBody({ ...stateBody, kabupaten: e.target.value });
                   // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
                 }}
                 id="outlined-basic"
@@ -381,7 +392,7 @@ function PermohonanHeader(props) {
                 focused
                 value={getDataNasabahById[0]?.mstProvinsi}
                 onChange={(e) => {
-                  setStateBody({ ...stateBody, provinsi: e.target.value })
+                  setStateBody({ ...stateBody, provinsi: e.target.value });
                   // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
                 }}
                 id="outlined-basic"
@@ -391,7 +402,7 @@ function PermohonanHeader(props) {
               <TextField
                 value={stateBody?.saldoTabungan}
                 onChange={(e) => {
-                  setStateBody({ ...stateBody, saldoTabungan: e.target.value })
+                  setStateBody({ ...stateBody, saldoTabungan: e.target.value });
                   // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
                 }}
                 id="outlined-basic"
@@ -467,7 +478,7 @@ function PermohonanHeader(props) {
             inputProps={{
               'aria-label': 'Search',
             }}
-          // onChange={(ev) => dispatch(setProductsSearchText(ev))}
+            // onChange={(ev) => dispatch(setProductsSearchText(ev))}
           />
         </Paper>
         <motion.div
@@ -505,7 +516,6 @@ function PermohonanHeader(props) {
               Add
             </Button>
           )}
-
         </motion.div>
       </div>
     </div>

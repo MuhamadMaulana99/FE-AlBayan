@@ -23,7 +23,7 @@ function UserMenu(props) {
     dataLogin = JSON.parse(getAllUserResponse);
   }
   // const dataLogin = JSON.parse(getAllUserResponse);
-  console.log(dataLogin);
+  // console.log(dataLogin);
 
   const [userMenu, setUserMenu] = useState(null);
 

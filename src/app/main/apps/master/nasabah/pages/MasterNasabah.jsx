@@ -9,7 +9,6 @@ import { showMessage } from 'app/store/fuse/messageSlice';
 import MasterNasabahTable from './MasterNasabahTable';
 import MasterNasabahHeader from './MasterNasabahHeader';
 
-
 function MasterNasabah() {
   const dispatch = useDispatch();
   const [data, setData] = useState([]);
@@ -23,7 +22,7 @@ function MasterNasabah() {
       .then((res) => {
         setData(res?.data);
         setLoading(false);
-        console.log(res.data, 'rrr');
+        // console.log(res.data, 'rrr');
       })
       .catch((err) => {
         setData([]);

@@ -6,8 +6,10 @@ import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { showMessage } from 'app/store/fuse/messageSlice';
-import MasterAnalisaTable from './MasterAnalisaTable';
 import MasterAnalisaHeader from './MasterAnalisaHeader';
+import MasterAnalisaTable from './MasterAnalisaTable';
+// import MasterAnalisaTable from './MasterAnalisaTable';
+// import MasterAnalisaHeader from './MasterAnalisaHeader';
 
 function MasterAnalisa() {
   const dispatch = useDispatch();

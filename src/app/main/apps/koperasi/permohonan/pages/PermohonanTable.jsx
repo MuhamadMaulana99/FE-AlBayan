@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable react-hooks/exhaustive-deps */
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
@@ -9,9 +10,6 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import { showMessage } from 'app/store/fuse/messageSlice';
 import { useDispatch } from 'react-redux';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import axios from 'axios';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -28,9 +26,7 @@ import {
 } from '@mui/material';
 import FuseLoading from '@fuse/core/FuseLoading';
 import Button from '@mui/material/Button';
-import dayjs from 'dayjs';
-import { useState } from 'react';
-import moment from 'moment';
+import { useEffect, useState } from 'react';
 
 const top100Films = [
   { label: 'KG', year: 1994 },
@@ -41,89 +37,53 @@ const top100Films = [
 const columns = [
   { id: 'no', label: 'NO', minWidth: 170, align: 'left' },
   {
-    id: 'nomorAkad',
-    label: 'Nomor Akad',
+    id: 'namaNasabah',
+    label: 'Nama Nasabah',
     minWidth: 170,
     align: 'left',
   },
   {
-    id: 'staffBasil',
-    label: 'Staff Basil',
+    id: 'rekening',
+    label: 'Rekening',
     minWidth: 170,
     align: 'left',
   },
   {
-    id: 'staffPokok',
-    label: 'Staff Pokok',
+    id: 'jenisKelamin',
+    label: 'Jenis Kelamin',
     minWidth: 170,
     align: 'left',
   },
   {
-    id: 'accBasil',
-    label: 'Acc Basil',
+    id: 'alamat',
+    label: 'Alamat',
     minWidth: 170,
     align: 'left',
   },
   {
-    id: 'accPokok',
-    label: 'Acc Pokok',
+    id: 'kecamatan',
+    label: 'Kecamatan',
     minWidth: 170,
     align: 'left',
   },
   {
-    id: 'staffBy',
-    label: 'Staff By',
+    id: 'kabupaten',
+    label: 'Kabupaten',
     minWidth: 170,
     align: 'left',
   },
   {
-    id: 'staffAt',
-    label: 'Staff At',
+    id: 'provinsi',
+    label: 'Provinsi',
     minWidth: 170,
     align: 'left',
   },
   {
-    id: 'KasirBy',
-    label: 'Kasir By',
+    id: 'saldoTabungan',
+    label: 'Saldo Tabungan',
     minWidth: 170,
     align: 'left',
   },
-  {
-    id: 'KasirAt',
-    label: 'Kasir At',
-    minWidth: 170,
-    align: 'left',
-  },
-  {
-    id: 'lokasiPembayaran',
-    label: 'Lokasi Pembayaran',
-    minWidth: 170,
-    align: 'left',
-  },
-  {
-    id: 'status',
-    label: 'Status',
-    minWidth: 170,
-    align: 'left',
-  },
-  // {
-  //   id: 'stokBarang',
-  //   label: 'Stok Barang',
-  //   minWidth: 170,
-  //   align: 'left',
-  // },
-  // {
-  //   id: 'satuan',
-  //   label: 'Satuan',
-  //   minWidth: 170,
-  //   align: 'left',
-  // },
-  // {
-  //   id: 'deskripsi',
-  //   label: 'Desskripsi',
-  //   minWidth: 170,
-  //   align: 'left',
-  // },
   {
     id: 'aksi',
     label: 'Aksi',
@@ -133,11 +93,34 @@ const columns = [
   },
 ];
 
-function createData(no, id, nomorAkad, staffBasil, staffPokok, accBasil, accPokok, staffBy, staffAt, kasirBy, kasirAtt, lokasiPembayaran, status) {
-  return { no, id, nomorAkad, staffBasil, staffPokok, accBasil, accPokok, staffBy, staffAt, kasirBy, kasirAtt, lokasiPembayaran, status };
+function createData(
+  no,
+  id,
+  namaNasabah,
+  rekening,
+  jenisKelamin,
+  alamat,
+  kecamatan,
+  kabupaten,
+  provinsi,
+  saldoTabungan
+) {
+  return {
+    no,
+    id,
+    namaNasabah,
+    rekening,
+    jenisKelamin,
+    alamat,
+    kecamatan,
+    kabupaten,
+    provinsi,
+    saldoTabungan,
+  };
 }
 
 export default function PermohonanTable(props) {
+  const { dataNasabah } = props;
   const userRoles = JSON.parse(localStorage.getItem('userRoles'));
   let getAllUserResponse;
   let getResponseName;
@@ -155,42 +138,36 @@ export default function PermohonanTable(props) {
   const [getDataEdit, setgetDataEdit] = useState({});
   const [dataEdit, setDataEdit] = useState({
     id: null,
-    nomorAkad: null,
-    staffBasil: '',
-    staffPokok: '',
-    accBasil: null,
-    accPokok: null,
-    staffBy: null,
-    staffAt: null,
-    kasirBy: null,
-    kasirAtt: null,
-    lokasiPembayaran: null,
-
+    namaNasabah: null,
+    rekening: null,
+    jenisKelamin: null,
+    alamat: null,
+    kecamatan: null,
+    kabupaten: null,
+    provinsi: null,
+    saldoTabungan: null,
   });
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  let rows = props?.data
+  let rows = props?.data;
   if (dataLogin?.roleUser === 'Staff') {
-    rows = props?.data.filter((word) => word.staffBy === getResponseName?.name);
-
+    rows = props?.data.filter((word) => word.kabupaten === getResponseName?.name);
   }
 
   rows?.map((item, index) =>
     createData(
       index + 1,
       item?.id,
-      item?.nomorAkad,
-      item?.staffBasil,
-      item?.staffPokok,
-      item?.accBasil,
-      item?.accPokok,
-      item?.staffBy,
-      item?.staffAt,
-      item?.kasirBy,
-      item?.kasirAtt,
-      item?.lokasiPembayaran,
+      item?.namaNasabah,
+      item?.rekening,
+      item?.jenisKelamin,
+      item?.alamat,
+      item?.kecamatan,
+      item?.kabupaten,
+      item?.provinsi,
+      item?.saldoTabungan
     )
   );
 
@@ -204,45 +181,63 @@ export default function PermohonanTable(props) {
   };
   const handleClickOpen = (id, row) => {
     setOpen(true);
-    setDataEdit(row);
+    // setDataEdit(row);
     setDataEdit({
       id: row?.id,
-      nomorAkad: row?.nomorAkad,
-      staffBasil: row?.staffBasil,
-      staffPokok: row?.staffPokok,
-      accBasil: row?.staffBasil,
-      accPokok: row?.staffPokok,
-      staffBy: row?.staffBy,
-      staffAt: row?.staffAt,
-      kasirBy: row?.kasirBy,
-      kasirAtt: row?.kasirAtt,
-      lokasiPembayaran: row?.lokasiPembayaran,
-    })
-    setgetDataEdit(row)
+      namaNasabah: row?.namaNasabah,
+      rekening: row?.rekening,
+      jenisKelamin: row?.jenisKelamin,
+      alamat: row?.alamat,
+      kecamatan: row?.kecamatan,
+      kabupaten: row?.kabupaten,
+      provinsi: row?.provinsi,
+      saldoTabungan: row?.saldoTabungan,
+    });
+    // setgetDataEdit(row);
+    console.log(row,'rrrr')
   };
   const handleClose = () => {
     setOpen(false);
+    setDataEdit({
+      id: null,
+      namaNasabah: null,
+      rekening: null,
+      jenisKelamin: null,
+      alamat: null,
+      kecamatan: null,
+      kabupaten: null,
+      provinsi: null,
+      saldoTabungan: null,
+    })
   };
+
+  const [getDataNasabahById, setgetDataNasabahById] = useState([]);
+  useEffect(() => {
+    const result = dataNasabah.filter(
+      (item) => item.mstRekening === dataEdit?.rekening?.mstRekening
+    );
+    setgetDataNasabahById(result);
+  }, [dataEdit?.rekening, dataNasabah]);
 
   const body = {
-    nomorAkad: dataEdit?.nomorAkad,
-    staffBasil: dataEdit?.staffBasil,
-    staffPokok: dataEdit?.staffPokok,
-    accBasil: dataEdit?.accBasil,
-    accPokok: dataEdit?.accPokok,
-    staffBy: dataEdit?.staffBy,
-    staffAt: dataEdit?.staffAt,
-    kasirBy: dataEdit?.kasirBy,
-    kasirAtt: dataEdit?.kasirAtt,
-    lokasiPembayaran: dataEdit?.lokasiPembayaran,
-
+    namaNasabah: dataEdit?.namaNasabah,
+    rekening: dataEdit?.rekening,
+    jenisKelamin: dataEdit?.jenisKelamin,
+    alamat: dataEdit?.alamat,
+    kecamatan: dataEdit?.kecamatan,
+    kabupaten: dataEdit?.kabupaten,
+    provinsi: dataEdit?.provinsi,
+    saldoTabungan: dataEdit?.saldoTabungan,
   };
   console.log(body, 'body');
+  console.log(dataEdit, 'dataEdit');
+  console.log(getDataNasabahById, 'getDataNasabahById');
+  console.log(rows, 'rows');
 
   const HandelEdit = (id) => {
     setLoading(true);
     axios
-      .put(`${process.env.REACT_APP_API_URL_API_}/angsuran/${dataEdit?.id}`, body)
+      .put(`${process.env.REACT_APP_API_URL_API_}/Permohonan/${dataEdit?.id}`, body)
       .then((res) => {
         props?.getData();
         handleClose();
@@ -296,7 +291,7 @@ export default function PermohonanTable(props) {
   const HandelDelete = (id) => {
     setLoading(true);
     axios
-      .delete(`${process.env.REACT_APP_API_URL_API_}/angsuran/${id}`)
+      .delete(`${process.env.REACT_APP_API_URL_API_}/Permohonan/${id}`)
       .then((res) => {
         props?.getData();
         setLoading(false);
@@ -358,7 +353,6 @@ export default function PermohonanTable(props) {
       </div>
     );
   }
-
   // console.log(dataEdit, 'dataEdit')
 
   return (
@@ -373,170 +367,112 @@ export default function PermohonanTable(props) {
         <DialogTitle id="alert-dialog-title">Edit Barang Keluar</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            <div className='mt-10'>
-              {dataLogin?.roleUser === 'admin' ? (
-                <div className="flex gap-5">
-                  <TextField
-                    fullWidth
-                    value={dataEdit?.nomorAkad}
-                    onChange={(e) => {
-                      setDataEdit({
-                        ...dataEdit,
-                        nomorAkad: e.target.value,
-                      });
-                    }}
-                    id="outlined-basic"
-                    label="No Akad"
-                    type="number"
-                    variant="outlined"
-                  />
-                  <TextField
-                    fullWidth
-                    value={dataEdit?.staffBasil}
-                    onChange={(e) => {
-                      setDataEdit({
-                        ...dataEdit,
-                        staffBasil: e.target.value,
-                      });
-                    }}
-                    id="outlined-basic"
-                    label="Staff Basil"
-                    type="number"
-                    variant="outlined"
-                  />
-                  <TextField
-                    fullWidth
-                    value={dataEdit?.staffPokok}
-                    onChange={(e) => {
-                      setDataEdit({
-                        ...dataEdit,
-                        staffPokok: e.target.value,
-                      });
-                    }}
-                    id="outlined-basic"
-                    label="Staff Pokok"
-                    type="number"
-                    variant="outlined"
-                  />
-                  <TextField
-                    fullWidth
-                    value={dataEdit?.accBasil}
-                    onChange={(e) => {
-                      setDataEdit({
-                        ...dataEdit,
-                        accBasil: e.target.value,
-                      });
-                    }}
-                    id="outlined-basic"
-                    label="Acc Basil"
-                    type="number"
-                    variant="outlined"
-                  />
-                  <TextField
-                    fullWidth
-                    value={dataEdit?.accPokok}
-                    onChange={(e) => {
-                      setDataEdit({
-                        ...dataEdit,
-                        accPokok: e.target.value,
-                      });
-                    }}
-                    id="outlined-basic"
-                    label="Acc Pokok"
-                    type="number"
-                    variant="outlined"
-                  />
-                </div>
-              ) : dataLogin?.roleUser === 'Kasir' ? (
-                <div className="flex gap-5">
-                  <TextField
-                    fullWidth
-                    value={dataEdit?.staffPokok}
-                    onChange={(e) => {
-                      setDataEdit({
-                        ...dataEdit,
-                        staffPokok: e.target.value,
-                      });
-                    }}
-                    id="outlined-basic"
-                    label="Staff Pokok"
-                    type="number"
-                    variant="outlined"
-                  />
-                  <TextField
-                    fullWidth
-                    value={dataEdit?.accBasil}
-                    // defaultValue={stateBody?.staffBasil}
-                    onChange={(e) => {
-                      setDataEdit({
-                        ...dataEdit,
-                        accBasil: e.target.value,
-                      });
-                    }}
-                    id="outlined-basic"
-                    label="Acc Basil"
-                    type="number"
-                    variant="outlined"
-                  />
-                  <TextField
-                    fullWidth
-                    value={dataEdit?.accPokok}
-                    onChange={(e) => {
-                      setDataEdit({
-                        ...dataEdit,
-                        accPokok: e.target.value,
-                      });
-                    }}
-                    id="outlined-basic"
-                    label="Acc Pokok"
-                    type="number"
-                    variant="outlined"
-                  />
-                </div>
-              ) : <div className="flex gap-5">
-                <TextField
-                  fullWidth
-                  value={dataEdit?.nomorAkad}
-                  onChange={(e) => {
-                    setDataEdit({
-                      ...dataEdit,
-                      nomorAkad: e.target.value,
-                    });
-                  }}
-                  id="outlined-basic"
-                  label="No Akad"
-                  type="number"
-                  variant="outlined"
-                />
-                <TextField
-                  fullWidth
-                  value={dataEdit?.staffBasil}
-                  onChange={(e) => {
-                    setDataEdit({
-                      ...dataEdit,
-                      staffBasil: e.target.value,
-                    });
-                  }}
-                  id="outlined-basic"
-                  label="Staff Basil"
-                  type="number"
-                  variant="outlined"
-                />
-                <TextField
-                  fullWidth
-                  value={dataEdit?.staffPokok}
-                  onChange={(e) => {
-                    setDataEdit({
-                      ...dataEdit,
-                      staffPokok: e.target.value,
-                    });
-                  }}
-                  id="outlined-basic"
-                  label="Staff Pokok"
-                  type="number"
-                  variant="outlined"
-                />
-              </div>}
+            <div className="flex flex-wrap gap-5 p-10">
+              <Autocomplete
+                disablePortal
+                id="combo-box-demo"
+                options={dataNasabah}
+                value={dataEdit?.rekening}
+                getOptionLabel={(option) => option.mstRekening}
+                sx={{ width: 300 }}
+                onChange={(e, newValue) => {
+                  setDataEdit({ ...dataEdit, rekening: newValue });
+                }}
+                renderInput={(params) => <TextField {...params} label="Data Nasabah" />}
+              />
+              <TextField
+                value={getDataNasabahById[0]?.nama}
+                InputProps={{
+                  readOnly: true,
+                }}
+                onChange={(e) => {
+                  setDataEdit({ ...dataEdit, namaNasabah: getDataNasabahById?.nama });
+                }}
+                id="outlined-basic"
+                focused
+                label="Nama Nasabah"
+                variant="outlined"
+              />
+              <TextField
+                // value={dataEdit?.jenisKelamin}
+                InputProps={{
+                  readOnly: true,
+                }}
+                focused
+                value={getDataNasabahById[0]?.mstjenisKelamin?.kelamin}
+                onChange={(e) => {
+                  setDataEdit({ ...dataEdit, jenisKelamin: e.target.value });
+                }}
+                id="outlined-basic"
+                label="Jenis Kelamin"
+                variant="outlined"
+              />
+              <TextField
+                // value={dataEdit?.alamat}
+                InputProps={{
+                  readOnly: true,
+                }}
+                focused
+                value={getDataNasabahById[0]?.mstAlamat}
+                onChange={(e) => {
+                  setDataEdit({ ...dataEdit, alamat: e.target.value });
+                }}
+                id="outlined-basic"
+                label="Alamat"
+                variant="outlined"
+              />
+              <TextField
+                // value={dataEdit?.kecamatan}
+                InputProps={{
+                  readOnly: true,
+                }}
+                focused
+                value={getDataNasabahById[0]?.mstKecamatan}
+                onChange={(e) => {
+                  setDataEdit({ ...dataEdit, kecamatan: e.target.value });
+                }}
+                id="outlined-basic"
+                label="Kecamatan"
+                variant="outlined"
+              />
+              <TextField
+                // value={dataEdit?.kabupaten}
+                InputProps={{
+                  readOnly: true,
+                }}
+                focused
+                value={getDataNasabahById[0]?.mstKabupaten}
+                onChange={(e) => {
+                  setDataEdit({ ...dataEdit, kabupaten: e.target.value });
+                }}
+                id="outlined-basic"
+                label="Kabupaten"
+                variant="outlined"
+              />
+              <TextField
+                // value={dataEdit?.provinsi}
+                InputProps={{
+                  readOnly: true,
+                }}
+                focused
+                value={getDataNasabahById[0]?.mstProvinsi}
+                onChange={(e) => {
+                  setDataEdit({ ...dataEdit, provinsi: e.target.value });
+                }}
+                id="outlined-basic"
+                label="Provinsi"
+                variant="outlined"
+              />
+              <TextField
+                value={dataEdit?.saldoTabungan}
+                onChange={(e) => {
+                  setDataEdit({ ...dataEdit, saldoTabungan: e.target.value });
+                  // settriggeralamat({ ...stateBody, alamat: stateBody?.rekening})
+                }}
+                id="outlined-basic"
+                label="Saldo "
+                variant="outlined"
+              />
             </div>
           </DialogContentText>
         </DialogContent>
@@ -570,22 +506,17 @@ export default function PermohonanTable(props) {
               return (
                 <TableRow key={row.id} hover role="checkbox" tabIndex={-1}>
                   <TableCell>{index + 1}.</TableCell>
-                  <TableCell>{row?.nomorAkad === null ? '-' : row?.nomorAkad}</TableCell>
-                  <TableCell>{row?.staffBasil === null ? '-' : row?.staffBasil}</TableCell>
-                  <TableCell>{row?.staffPokok === null ? '-' : row?.staffPokok}</TableCell>
-                  <TableCell>{row?.accBasil === null ? '-' : row?.accBasil}</TableCell>
-                  <TableCell>{row?.accPokok === null ? '-' : row?.accPokok}</TableCell>
-                  <TableCell>{row?.staffBy === null ? '-' : row?.staffBy}</TableCell>
-                  <TableCell>{row?.staffAt === null ? '-' : moment(row?.staffAt).format('MMMM Do YYYY, h:mm:ss a')}</TableCell>
-                  <TableCell>{row?.kasirBy === null ? '-' : row?.kasirBy}</TableCell>
-                  <TableCell>{row?.kasirAtt === null ? '-' : moment(row?.kasirAtt).format('MMMM Do YYYY, h:mm:ss a')}</TableCell>
-                  <TableCell>{row?.lokasiPembayaran === null ? '-' : row?.lokasiPembayaran}</TableCell>
-                  <TableCell>{row?.accBasil === null ? <Button color='warning' variant="contained">Uncompleted</Button> : <Button color='success' variant="contained">Completed</Button>}</TableCell>
-                  {/* <TableCell>{row?.deskripsi}</TableCell> */}
+                  <TableCell>{row?.namaNasabah === null ? '-' : row?.namaNasabah}</TableCell>
+                  <TableCell>{row?.rekening === null ? '-' : row?.rekening}</TableCell>
+                  <TableCell>{row?.jenisKelamin === null ? '-' : row?.jenisKelamin}</TableCell>
+                  <TableCell>{row?.alamat === null ? '-' : row?.alamat}</TableCell>
+                  <TableCell>{row?.kecamatan === null ? '-' : row?.kecamatan}</TableCell>
+                  <TableCell>{row?.kabupaten === null ? '-' : row?.kabupaten}</TableCell>
+                  <TableCell>{row?.provinsi === null ? '-' : row?.provinsi}</TableCell>
+                  <TableCell>{row?.saldoTabungan === null ? '-' : row?.saldoTabungan}</TableCell>
                   <TableCell>
                     <div className="flex justify-center">
                       <div>
-                        {console.log(dataLogin?.roleUser === 'Staff' && row?.accBasil === null, 'sss')}
                         <IconButton
                           onClick={() => handleClickOpen(row.id, row)}
                           color="info"

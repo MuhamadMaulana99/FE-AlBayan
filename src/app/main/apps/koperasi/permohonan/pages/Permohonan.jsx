@@ -14,7 +14,7 @@ function Permohonan() {
   const [data, setData] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const [dataNasabah, setDataNasabah] = useState([]);
-  console.log(dataNasabah, 'dataNasabah');
+  // console.log(dataNasabah, 'dataNasabah');
 
   const isMobile = useThemeMediaQuery((theme) => theme.breakpoints.down('lg'));
 

@@ -1,5 +1,4 @@
-import MasterAnalisa from "./pages/MasterAnalisa";
-
+import MasterAnalisa from './pages/MasterAnalisa';
 
 const AnalisaConfig = {
   settings: {

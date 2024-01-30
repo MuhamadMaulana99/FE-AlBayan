@@ -15,6 +15,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import {
   Alert,
+  Autocomplete,
   Button,
   Dialog,
   DialogActions,
@@ -86,9 +87,34 @@ const columns = [
   },
 ];
 
-function createData(no, id, nama, mstRekening, mstjenisKelamin, mstAlamat, mstKecamatan, mstKabupaten, mstProvinsi) {
-  return { no, id, nama, mstRekening, mstjenisKelamin, mstAlamat, mstKecamatan, mstKabupaten, mstProvinsi };
+function createData(
+  no,
+  id,
+  nama,
+  mstRekening,
+  mstjenisKelamin,
+  mstAlamat,
+  mstKecamatan,
+  mstKabupaten,
+  mstProvinsi
+) {
+  return {
+    no,
+    id,
+    nama,
+    mstRekening,
+    mstjenisKelamin,
+    mstAlamat,
+    mstKecamatan,
+    mstKabupaten,
+    mstProvinsi,
+  };
 }
+
+const jenKel = [
+  { kelamin: 'Laki-laki', id: 1 },
+  { kelamin: 'Perempuan', id: 2 },
+];
 
 export default function MasterNasabahTable(props) {
   const dispatch = useDispatch();
@@ -109,7 +135,18 @@ export default function MasterNasabahTable(props) {
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
   const rows = props?.data?.map((item, index) =>
-    createData(index + 1, item?.id, item?.nama, item?.mstRekening, item?.mstjenisKelamin, item?.mstAlamat, item?.mstKecamatan, item?.mstKecamatan, item?.mstKabupaten, item?.mstProvinsi)
+    createData(
+      index + 1,
+      item?.id,
+      item?.nama,
+      item?.mstRekening,
+      item?.mstjenisKelamin,
+      item?.mstAlamat,
+      item?.mstKecamatan,
+      item?.mstKecamatan,
+      item?.mstKabupaten,
+      item?.mstProvinsi
+    )
   );
 
   const handleChangePage = (event, newPage) => {
@@ -139,6 +176,12 @@ export default function MasterNasabahTable(props) {
 
   const body = {
     nama: dataEdit?.nama,
+    mstRekening: dataEdit?.mstRekening,
+    mstjenisKelamin: JSON.stringify(dataEdit?.mstjenisKelamin),
+    mstAlamat: dataEdit?.mstAlamat,
+    mstKecamatan: dataEdit?.mstKecamatan,
+    mstKabupaten: dataEdit?.mstKabupaten,
+    mstProvinsi: dataEdit?.mstProvinsi,
   };
 
   const HandelEdit = (id) => {
@@ -274,13 +317,81 @@ export default function MasterNasabahTable(props) {
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             <div className="grid grid-cols-2 gap-16 mt-10 mb-10">
-              {/* <div> */}
-              <div>
+              <div className="flex flex-wrap gap-5 p-10">
                 <TextField
                   value={dataEdit?.nama}
-                  onChange={(e) => setDataEdit({ ...dataEdit, nama: e.target.value })}
+                  onChange={(e) => {
+                    setDataEdit({ ...dataEdit, nama: e.target.value });
+                    // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
+                  }}
                   id="outlined-basic"
-                  label="Nama"
+                  label="Nama Nasabah"
+                  variant="outlined"
+                />
+                <TextField
+                  value={dataEdit?.mstRekening}
+                  onChange={(e) => {
+                    setDataEdit({ ...dataEdit, mstRekening: e.target.value });
+                    // settriggerAccBasil({ ...dataEdit, accBasil: dataEdit?.staffBasil})
+                  }}
+                  id="outlined-basic"
+                  label="No Rek"
+                  variant="outlined"
+                />
+                <div className="mt-10 w-full">
+                  <Autocomplete
+                    disablePortal
+                    fullWidth
+                    id="combo-box-demo"
+                    getOptionLabel={(option) => option.kelamin}
+                    value={dataEdit?.mstjenisKelamin}
+                    onChange={(e, newValue) => {
+                      setDataEdit({ ...dataEdit, mstjenisKelamin: newValue });
+                      // settriggerAccBasil({ ...dataEdit, accBasil: dataEdit?.staffBasil})
+                    }}
+                    options={jenKel}
+                    sx={{ width: '100%' }}
+                    renderInput={(params) => <TextField {...params} label="Jenis Kelamin" />}
+                  />
+                </div>
+                <TextField
+                  value={dataEdit?.mstAlamat}
+                  onChange={(e) => {
+                    setDataEdit({ ...dataEdit, mstAlamat: e.target.value });
+                    // settriggerAccBasil({ ...dataEdit, accBasil: dataEdit?.staffBasil})
+                  }}
+                  id="outlined-basic"
+                  label="Alamat"
+                  variant="outlined"
+                />
+                <TextField
+                  value={dataEdit?.mstKecamatan}
+                  onChange={(e) => {
+                    setDataEdit({ ...dataEdit, mstKecamatan: e.target.value });
+                    // settriggerAccBasil({ ...dataEdit, accBasil: dataEdit?.staffBasil})
+                  }}
+                  id="outlined-basic"
+                  label="Kecamatan"
+                  variant="outlined"
+                />
+                <TextField
+                  value={dataEdit?.mstKabupaten}
+                  onChange={(e) => {
+                    setDataEdit({ ...dataEdit, mstKabupaten: e.target.value });
+                    // settriggerAccBasil({ ...dataEdit, accBasil: dataEdit?.staffBasil})
+                  }}
+                  id="outlined-basic"
+                  label="Kabupaten"
+                  variant="outlined"
+                />
+                <TextField
+                  value={dataEdit?.mstProvinsi}
+                  onChange={(e) => {
+                    setDataEdit({ ...dataEdit, mstProvinsi: e.target.value });
+                    // settriggerAccBasil({ ...dataEdit, accBasil: stateBody?.staffBasil})
+                  }}
+                  id="outlined-basic"
+                  label="Provinsi"
                   variant="outlined"
                 />
               </div>
@@ -319,7 +430,7 @@ export default function MasterNasabahTable(props) {
                   <TableCell>{index + 1}</TableCell>
                   <TableCell>{row?.nama}</TableCell>
                   <TableCell>{row?.mstRekening}</TableCell>
-                  <TableCell>{row?.mstjenisKelamin}</TableCell>
+                  <TableCell>{row?.mstjenisKelamin?.kelamin}</TableCell>
                   <TableCell>{row?.mstAlamat}</TableCell>
                   <TableCell>{row?.mstKecamatan}</TableCell>
                   <TableCell>{row?.mstKabupaten}</TableCell>
