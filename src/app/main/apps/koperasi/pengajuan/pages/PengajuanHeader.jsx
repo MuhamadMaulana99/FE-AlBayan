@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable no-unsafe-optional-chaining */
 /* eslint-disable no-nested-ternary */
 /* eslint-disable new-cap */
 /* eslint-disable no-plusplus */
@@ -10,7 +12,7 @@ import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import { motion } from 'framer-motion';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -51,32 +53,32 @@ function PengajuanHeader(props) {
   const { masterStaff } = props;
   const [loading, setLoading] = React.useState(true);
   const [open, setOpen] = React.useState(false);
-
   const [stateBody, setStateBody] = useState({
-    penjualan: null,
-    hargaPokok: null,
-    biaya: null,
-    labaUsaha: null,
-    pendapatanLain: null,
-    jumlahPendapatan: null,
-    kebutuhanRumahTangga: null,
-    biayaPendidikan: null,
-    jumlahBiayaLuarUsaha: null,
+    penjualan: 0,
+    hargaPokok: 0,
+    biaya: 0,
+    labaUsaha: 0,
+    pendapatanLain: 0,
+    jumlahPendapatan: 0,
+    kebutuhanRumahTangga: 0,
+    biayaPendidikan: 0,
+    biayaLainnya: 0,
+    jumlahBiayaLuarUsaha: 0,
     pendapatanBersih: null,
-    rasioAngsuran: null,
-    jangkaWaktu: null,
-    nominalPermohonan: null,
+    rasioAngsuran: 0,
+    jangkaWaktu: 0,
+    nominalPermohonan: 0,
     tujuanPembiayaan: null,
     jaminan: null,
-    accPermohonan: null,
+    accPermohonan: 0,
     nomorAkad: null,
     status: null,
     statusBy: null,
     statusAt: null,
     foto: null,
   });
-
-  console.log(stateBody, 'stateBody');
+  const [getDataBody, setgetDataBody] = useState({});
+  console.log(getDataBody, 'stateBody');
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -86,6 +88,29 @@ function PengajuanHeader(props) {
     setOpen(false);
   };
 
+  const body = {
+    penjualan: getDataBody?.penjualan,
+    hargaPokok: getDataBody?.hargaPokok,
+    biaya: getDataBody?.biaya,
+    labaUsaha: getDataBody?.labaUsaha,
+    pendapatanLain: getDataBody?.pendapatanLain,
+    jumlahPendapatan: getDataBody?.penjualan,
+    kebutuhanRumahTangga: getDataBody?.penjualan,
+    biayaPendidikan: getDataBody?.penjualan,
+    jumlahBiayaLuarUsaha: getDataBody?.penjualan,
+    pendapatanBersih: getDataBody?.penjualan,
+    rasioAngsuran: getDataBody?.penjualan,
+    jangkaWaktu: getDataBody?.penjualan,
+    nominalPermohonan: getDataBody?.penjualan,
+    tujuanPembiayaan: getDataBody?.penjualan,
+    jaminan: getDataBody?.penjualan,
+    accPermohonan: getDataBody?.penjualan,
+    nomorAkad: getDataBody?.penjualan,
+    status: getDataBody?.penjualan,
+    statusBy: getDataBody?.penjualan,
+    statusAt: getDataBody?.penjualan,
+    foto: getDataBody?.penjualan,
+  };
   const HandelSubmit = () => {
     setLoading(true);
     axios
@@ -142,6 +167,55 @@ function PengajuanHeader(props) {
         );
       });
   };
+
+  function calculatePercentage(part, whole) {
+    return (part / whole) * 100;
+  }
+
+  const countLabaUsaha =
+    parseInt(stateBody?.penjualan, 10) -
+    parseInt(stateBody?.hargaPokok, 10) -
+    parseInt(stateBody?.biaya, 10);
+  const countJumlahPendapatan =
+    parseInt(countLabaUsaha, 10) + parseInt(stateBody?.pendapatanLain, 10);
+  const countJumlahBiayaLuarUsaha =
+    parseInt(stateBody?.kebutuhanRumahTangga, 10) +
+    parseInt(stateBody?.biayaPendidikan, 10) +
+    parseInt(stateBody?.biayaLainnya, 10);
+  const countPendapatanBersih = countLabaUsaha - countJumlahPendapatan - countJumlahBiayaLuarUsaha;
+  const countAccPermohonan =
+    (parseInt(stateBody?.rasioAngsuran, 10) / 100) *
+    countPendapatanBersih *
+    parseInt(stateBody?.jangkaWaktu, 10);
+
+  const resultAcc = calculatePercentage(100, countAccPermohonan);
+  console.log(`${Math.round(resultAcc)}%`, 'resss');
+
+  useEffect(() => {
+    setgetDataBody({
+      penjualan: stateBody?.penjualan,
+      hargaPokok: stateBody?.hargaPokok,
+      biaya: stateBody?.biaya,
+      labaUsaha: countLabaUsaha,
+      pendapatanLain: stateBody?.pendapatanLain,
+      jumlahPendapatan: countJumlahPendapatan,
+      kebutuhanRumahTangga: stateBody?.kebutuhanRumahTangga,
+      biayaPendidikan: stateBody?.biayaPendidikan,
+      jumlahBiayaLuarUsaha: countJumlahBiayaLuarUsaha,
+      pendapatanBersih: countPendapatanBersih,
+      rasioAngsuran: stateBody?.rasioAngsuran,
+      jangkaWaktu: stateBody?.jangkaWaktu,
+      nominalPermohonan: stateBody?.nominalPermohonan,
+      tujuanPembiayaan: stateBody?.tujuanPembiayaan,
+      jaminan: stateBody?.jaminan,
+      accPermohonan: resultAcc,
+      nomorAkad: stateBody?.nomorAkad,
+      status: stateBody?.status,
+      statusBy: stateBody?.statusBy,
+      statusAt: stateBody?.statusAt,
+      foto: stateBody?.foto,
+    });
+  }, [stateBody]);
 
   const DataForBody = [];
   const dataFinal = [];
@@ -306,16 +380,7 @@ function PengajuanHeader(props) {
                 type="number"
                 variant="outlined"
               />
-              <TextField
-                value={stateBody?.labaUsaha}
-                // defaultValue={stateBody?.staffBasil}
-                onChange={(e) => setStateBody({ ...stateBody, labaUsaha: e.target.value })}
-                id="outlined-basic"
-                label="Laba Usaha"
-                type="number"
-                helperText="penjualan - hargaPokok - biayaUsaha"
-                variant="outlined"
-              />
+
               <TextField
                 value={stateBody?.pendapatanLain}
                 onChange={(e) => setStateBody({ ...stateBody, pendapatanLain: e.target.value })}
@@ -324,15 +389,7 @@ function PengajuanHeader(props) {
                 type="number"
                 variant="outlined"
               />
-              <TextField
-                value={stateBody?.jumlahPendapatan}
-                onChange={(e) => setStateBody({ ...stateBody, jumlahPendapatan: e.target.value })}
-                id="outlined-basic"
-                label="Jumlah Pendapatan"
-                helperText="labaUsaha + pendapatanLain"
-                type="number"
-                variant="outlined"
-              />
+
               <TextField
                 value={stateBody?.kebutuhanRumahTangga}
                 onChange={(e) =>
@@ -353,32 +410,13 @@ function PengajuanHeader(props) {
               />
               <TextField
                 value={stateBody?.biayaLainnya}
-                onChange={(e) => setStateBody({ ...stateBody, biayaPendidikan: e.target.value })}
+                onChange={(e) => setStateBody({ ...stateBody, biayaLainnya: e.target.value })}
                 id="outlined-basic"
                 label="Biaya Lainnya"
                 type="number"
                 variant="outlined"
               />
-              <TextField
-                value={stateBody?.jumlahBiayaLuarUsaha}
-                onChange={(e) =>
-                  setStateBody({ ...stateBody, jumlahBiayaLuarUsaha: e.target.value })
-                }
-                id="outlined-basic"
-                label="Jumlah Biaya Luar Usaha"
-                type="number"
-                helperText="kebutuhanRumahTangga  + biayaPendidikan + Biaya Lainnya"
-                variant="outlined"
-              />
-              <TextField
-                value={stateBody?.pendapatanBersih}
-                onChange={(e) => setStateBody({ ...stateBody, pendapatanBersih: e.target.value })}
-                id="outlined-basic"
-                label="Pendapatan Bersih"
-                helperText="labaUsaha - JumlahPendapatan - jumlahBiayaLuarUsaha"
-                type="number"
-                variant="outlined"
-              />
+
               <TextField
                 value={stateBody?.rasioAngsuran}
                 onChange={(e) => setStateBody({ ...stateBody, rasioAngsuran: e.target.value })}
@@ -422,15 +460,7 @@ function PengajuanHeader(props) {
                 type="text"
                 variant="outlined"
               />
-              <TextField
-                value={stateBody?.accPermohonan}
-                onChange={(e) => setStateBody({ ...stateBody, accPermohonan: e.target.value })}
-                id="outlined-basic"
-                label="Acc Permohonan"
-                helperText="(rasio angsuran / 100) * pendapatanBersih * jangkaWaktu"
-                type="number"
-                variant="outlined"
-              />
+
               <TextField
                 value={stateBody?.nomorAkad}
                 onChange={(e) => setStateBody({ ...stateBody, nomorAkad: e.target.value })}
@@ -472,6 +502,56 @@ function PengajuanHeader(props) {
                 onChange={(e) => setStateBody({ ...stateBody, foto: e.target.value })}
                 id="outlined-basic"
                 label="Foto"
+                type="number"
+                variant="outlined"
+              />
+            </div>
+            <div className='"flex flex-wrap gap-5 p-10'>
+              <TextField
+                value={stateBody?.labaUsaha}
+                // defaultValue={stateBody?.staffBasil}
+                onChange={(e) => setStateBody({ ...stateBody, labaUsaha: e.target.value })}
+                id="outlined-basic"
+                label="Laba Usaha"
+                type="number"
+                helperText="penjualan - hargaPokok - biayaUsaha"
+                variant="outlined"
+              />
+              <TextField
+                value={stateBody?.jumlahPendapatan}
+                onChange={(e) => setStateBody({ ...stateBody, jumlahPendapatan: e.target.value })}
+                id="outlined-basic"
+                label="Jumlah Pendapatan"
+                helperText="labaUsaha + pendapatanLain"
+                type="number"
+                variant="outlined"
+              />
+              <TextField
+                value={stateBody?.jumlahBiayaLuarUsaha}
+                onChange={(e) =>
+                  setStateBody({ ...stateBody, jumlahBiayaLuarUsaha: e.target.value })
+                }
+                id="outlined-basic"
+                label="Jumlah Biaya Luar Usaha"
+                type="number"
+                helperText="kebutuhanRumahTangga  + biayaPendidikan + Biaya Lainnya"
+                variant="outlined"
+              />
+              <TextField
+                value={stateBody?.pendapatanBersih}
+                onChange={(e) => setStateBody({ ...stateBody, pendapatanBersih: e.target.value })}
+                id="outlined-basic"
+                label="Pendapatan Bersih"
+                helperText="labaUsaha - JumlahPendapatan - jumlahBiayaLuarUsaha"
+                type="number"
+                variant="outlined"
+              />
+              <TextField
+                value={stateBody?.accPermohonan}
+                onChange={(e) => setStateBody({ ...stateBody, accPermohonan: e.target.value })}
+                id="outlined-basic"
+                label="Acc Permohonan"
+                helperText="(rasio angsuran / 100) * pendapatanBersih * jangkaWaktu"
                 type="number"
                 variant="outlined"
               />

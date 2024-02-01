@@ -58,7 +58,7 @@ function PermohonanHeader(props) {
     namaNasabah: getDataNasabahById?.nama,
     rekening: null,
     jenisKelamin: null,
-    alamat: null,
+    alamat: null, 
     kecamatan: null,
     kabupaten: null,
     provinsi: null,
