@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable react-hooks/exhaustive-deps */
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
@@ -9,15 +10,11 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import { showMessage } from 'app/store/fuse/messageSlice';
 import { useDispatch } from 'react-redux';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import axios from 'axios';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import {
   Alert,
-  Autocomplete,
   Dialog,
   DialogActions,
   DialogContent,
@@ -28,9 +25,7 @@ import {
 } from '@mui/material';
 import FuseLoading from '@fuse/core/FuseLoading';
 import Button from '@mui/material/Button';
-import dayjs from 'dayjs';
 import { useState } from 'react';
-import moment from 'moment';
 
 const top100Films = [
   { label: 'KG', year: 1994 },
@@ -41,89 +36,137 @@ const top100Films = [
 const columns = [
   { id: 'no', label: 'NO', minWidth: 170, align: 'left' },
   {
-    id: 'nomorAkad',
-    label: 'Nomor Akad',
+    id: 'penjualan',
+    label: 'Penjualan',
     minWidth: 170,
     align: 'left',
   },
   {
-    id: 'staffBasil',
-    label: 'Staff Basil',
+    id: 'hargaPokok',
+    label: 'Harga Pokok',
     minWidth: 170,
     align: 'left',
   },
   {
-    id: 'staffPokok',
-    label: 'Staff Pokok',
+    id: 'biaya',
+    label: 'Biaya',
     minWidth: 170,
     align: 'left',
   },
   {
-    id: 'accBasil',
-    label: 'Acc Basil',
+    id: 'labaUsaha',
+    label: 'Laba Usaha',
     minWidth: 170,
     align: 'left',
   },
   {
-    id: 'accPokok',
-    label: 'Acc Pokok',
+    id: 'pendapatanLain',
+    label: 'Pemdapatan Lain',
     minWidth: 170,
     align: 'left',
   },
   {
-    id: 'staffBy',
-    label: 'Staff By',
+    id: 'jumlahPendapatan',
+    label: 'Jumlah Pendapatan',
     minWidth: 170,
     align: 'left',
   },
   {
-    id: 'staffAt',
-    label: 'Staff At',
+    id: 'kebutuhanRumahTangga',
+    label: 'Kebutuhan Rumah Tangga',
     minWidth: 170,
     align: 'left',
   },
   {
-    id: 'KasirBy',
-    label: 'Kasir By',
+    id: 'biayaPendidikan',
+    label: 'Biaya Pendidikan',
     minWidth: 170,
     align: 'left',
   },
   {
     id: 'KasirAt',
-    label: 'Kasir At',
+    label: 'Biaya Lainnya',
     minWidth: 170,
     align: 'left',
   },
   {
-    id: 'lokasiPembayaran',
-    label: 'Lokasi Pembayaran',
+    id: 'KasirAt',
+    label: 'Jumlah Biaya Luar Usaha',
+    minWidth: 170,
+    align: 'left',
+  },
+  {
+    id: 'pendapatanBersih',
+    label: 'Pendapatan Bersih',
     minWidth: 170,
     align: 'left',
   },
   {
     id: 'status',
+    label: 'Rasio Angsuran',
+    minWidth: 170,
+    align: 'left',
+  },
+  {
+    id: 'stokBarang',
+    label: 'Jangka Waktu',
+    minWidth: 170,
+    align: 'left',
+  },
+  {
+    id: 'satuan',
+    label: 'Nominal Permohonan',
+    minWidth: 170,
+    align: 'left',
+  },
+  {
+    id: 'deskripsi',
+    label: 'Tujuan Pembiayaan',
+    minWidth: 170,
+    align: 'left',
+  },
+  {
+    id: 'deskripsi',
+    label: 'Jaminan',
+    minWidth: 170,
+    align: 'left',
+  },
+  {
+    id: 'deskripsi',
+    label: 'Acc Permohonan',
+    minWidth: 170,
+    align: 'left',
+  },
+  {
+    id: 'deskripsi',
+    label: 'No Akad',
+    minWidth: 170,
+    align: 'left',
+  },
+  {
+    id: 'deskripsi',
     label: 'Status',
     minWidth: 170,
     align: 'left',
   },
-  // {
-  //   id: 'stokBarang',
-  //   label: 'Stok Barang',
-  //   minWidth: 170,
-  //   align: 'left',
-  // },
-  // {
-  //   id: 'satuan',
-  //   label: 'Satuan',
-  //   minWidth: 170,
-  //   align: 'left',
-  // },
-  // {
-  //   id: 'deskripsi',
-  //   label: 'Desskripsi',
-  //   minWidth: 170,
-  //   align: 'left',
-  // },
+  {
+    id: 'deskripsi',
+    label: 'StatusBy',
+    minWidth: 170,
+    align: 'left',
+  },
+  {
+    id: 'deskripsi',
+    label: 'StatusAt',
+    minWidth: 170,
+    align: 'left',
+  },
+  {
+    id: 'deskripsi',
+    label: 'Foto',
+    minWidth: 170,
+    align: 'left',
+  },
   {
     id: 'aksi',
     label: 'Aksi',
@@ -133,8 +176,58 @@ const columns = [
   },
 ];
 
-function createData(no, id, nomorAkad, staffBasil, staffPokok, accBasil, accPokok, staffBy, staffAt, kasirBy, kasirAtt, lokasiPembayaran, status) {
-  return { no, id, nomorAkad, staffBasil, staffPokok, accBasil, accPokok, staffBy, staffAt, kasirBy, kasirAtt, lokasiPembayaran, status };
+function createData(
+  no,
+  id,
+  penjualan,
+  hargaPokok,
+  biaya,
+  labaUsaha,
+  pendapatanLain,
+  jumlahPendapatan,
+  kebutuhanRumahTangga,
+  biayaPendidikan,
+  biayaLainnya,
+  jumlahBiayaLuarUsaha,
+  pendapatanBersih,
+  rasioAngsuran,
+  jangkaWaktu,
+  nominalPermohonan,
+  tujuanPembiayaan,
+  jaminan,
+  accPermohonan,
+  nomorAkad,
+  status,
+  statusBy,
+  statusAt,
+  foto
+) {
+  return {
+    no,
+    id,
+    penjualan,
+    hargaPokok,
+    biaya,
+    labaUsaha,
+    pendapatanLain,
+    jumlahPendapatan,
+    kebutuhanRumahTangga,
+    biayaPendidikan,
+    biayaLainnya,
+    jumlahBiayaLuarUsaha,
+    pendapatanBersih,
+    rasioAngsuran,
+    jangkaWaktu,
+    nominalPermohonan,
+    tujuanPembiayaan,
+    jaminan,
+    accPermohonan,
+    nomorAkad,
+    status,
+    statusBy,
+    statusAt,
+    foto,
+  };
 }
 
 export default function PengajuanTable(props) {
@@ -155,42 +248,64 @@ export default function PengajuanTable(props) {
   const [getDataEdit, setgetDataEdit] = useState({});
   const [dataEdit, setDataEdit] = useState({
     id: null,
+    penjualan: null,
+    hargaPokok: '',
+    biaya: '',
+    labaUsaha: null,
+    pendapatanLain: null,
+    jumlahPendapatan: null,
+    kebutuhanRumahTangga: null,
+    biayaPendidikan: null,
+    biayaLainnya: null,
+    jumlahBiayaLuarUsaha: null,
+    pendapatanBersih: null,
+    rasioAngsuran: null,
+    jangkaWaktu: null,
+    nominalPermohonan: null,
+    tujuanPembiayaan: null,
+    jaminan: null,
+    accPermohonan: null,
     nomorAkad: null,
-    staffBasil: '',
-    staffPokok: '',
-    accBasil: null,
-    accPokok: null,
-    staffBy: null,
-    staffAt: null,
-    kasirBy: null,
-    kasirAtt: null,
-    lokasiPembayaran: null,
-
+    status: null,
+    statusBy: null,
+    statusAt: null,
+    foto: null,
   });
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  let rows = props?.data
+  let rows = props?.data;
   if (dataLogin?.roleUser === 'Staff') {
-    rows = props?.data.filter((word) => word.staffBy === getResponseName?.name);
-
+    rows = props?.data.filter((word) => word.jumlahPendapatan === getResponseName?.name);
   }
 
   rows?.map((item, index) =>
     createData(
       index + 1,
       item?.id,
+      item?.penjualan,
+      item?.hargaPokok,
+      item?.biaya,
+      item?.labaUsaha,
+      item?.pendapatanLain,
+      item?.jumlahPendapatan,
+      item?.kebutuhanRumahTangga,
+      item?.biayaPendidikan,
+      item?.biayaLainnya,
+      item?.jumlahBiayaLuarUsaha,
+      item?.pendapatanBersih,
+      item?.rasioAngsuran,
+      item?.jangkaWaktu,
+      item?.nominalPermohonan,
+      item?.tujuanPembiayaan,
+      item?.jaminan,
+      item?.accPermohonan,
       item?.nomorAkad,
-      item?.staffBasil,
-      item?.staffPokok,
-      item?.accBasil,
-      item?.accPokok,
-      item?.staffBy,
-      item?.staffAt,
-      item?.kasirBy,
-      item?.kasirAtt,
-      item?.lokasiPembayaran,
+      item?.status,
+      item?.statusBy,
+      item?.statusAt,
+      item?.foto
     )
   );
 
@@ -207,35 +322,37 @@ export default function PengajuanTable(props) {
     setDataEdit(row);
     setDataEdit({
       id: row?.id,
-      nomorAkad: row?.nomorAkad,
-      staffBasil: row?.staffBasil,
-      staffPokok: row?.staffPokok,
-      accBasil: row?.staffBasil,
-      accPokok: row?.staffPokok,
-      staffBy: row?.staffBy,
-      staffAt: row?.staffAt,
-      kasirBy: row?.kasirBy,
-      kasirAtt: row?.kasirAtt,
-      lokasiPembayaran: row?.lokasiPembayaran,
-    })
-    setgetDataEdit(row)
+      penjualan: row?.penjualan,
+      hargaPokok: row?.hargaPokok,
+      biaya: row?.biaya,
+      labaUsaha: row?.hargaPokok,
+      pendapatanLain: row?.biaya,
+      jumlahPendapatan: row?.jumlahPendapatan,
+      kebutuhanRumahTangga: row?.kebutuhanRumahTangga,
+      biayaPendidikan: row?.biayaPendidikan,
+      biayaLainnya: row?.biayaLainnya,
+      jumlahBiayaLuarUsaha: row?.jumlahBiayaLuarUsaha,
+      pendapatanBersih: row?.pendapatanBersih,
+      rasioAngsuran: row?.rasioAngsuran,
+    });
+    setgetDataEdit(row);
   };
   const handleClose = () => {
     setOpen(false);
   };
 
   const body = {
-    nomorAkad: dataEdit?.nomorAkad,
-    staffBasil: dataEdit?.staffBasil,
-    staffPokok: dataEdit?.staffPokok,
-    accBasil: dataEdit?.accBasil,
-    accPokok: dataEdit?.accPokok,
-    staffBy: dataEdit?.staffBy,
-    staffAt: dataEdit?.staffAt,
-    kasirBy: dataEdit?.kasirBy,
-    kasirAtt: dataEdit?.kasirAtt,
-    lokasiPembayaran: dataEdit?.lokasiPembayaran,
-
+    penjualan: dataEdit?.penjualan,
+    hargaPokok: dataEdit?.hargaPokok,
+    biaya: dataEdit?.biaya,
+    labaUsaha: dataEdit?.labaUsaha,
+    pendapatanLain: dataEdit?.pendapatanLain,
+    jumlahPendapatan: dataEdit?.jumlahPendapatan,
+    kebutuhanRumahTangga: dataEdit?.kebutuhanRumahTangga,
+    biayaPendidikan: dataEdit?.biayaPendidikan,
+    jumlahBiayaLuarUsaha: dataEdit?.jumlahBiayaLuarUsaha,
+    pendapatanBersih: dataEdit?.pendapatanBersih,
+    rasioAngsuran: dataEdit?.rasioAngsuran,
   };
   console.log(body, 'body');
 
@@ -373,134 +490,15 @@ export default function PengajuanTable(props) {
         <DialogTitle id="alert-dialog-title">Edit Barang Keluar</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            <div className='mt-10'>
-              {dataLogin?.roleUser === 'admin' ? (
-                <div className="flex gap-5">
-                  <TextField
-                    fullWidth
-                    value={dataEdit?.nomorAkad}
-                    onChange={(e) => {
-                      setDataEdit({
-                        ...dataEdit,
-                        nomorAkad: e.target.value,
-                      });
-                    }}
-                    id="outlined-basic"
-                    label="No Akad"
-                    type="number"
-                    variant="outlined"
-                  />
-                  <TextField
-                    fullWidth
-                    value={dataEdit?.staffBasil}
-                    onChange={(e) => {
-                      setDataEdit({
-                        ...dataEdit,
-                        staffBasil: e.target.value,
-                      });
-                    }}
-                    id="outlined-basic"
-                    label="Staff Basil"
-                    type="number"
-                    variant="outlined"
-                  />
-                  <TextField
-                    fullWidth
-                    value={dataEdit?.staffPokok}
-                    onChange={(e) => {
-                      setDataEdit({
-                        ...dataEdit,
-                        staffPokok: e.target.value,
-                      });
-                    }}
-                    id="outlined-basic"
-                    label="Staff Pokok"
-                    type="number"
-                    variant="outlined"
-                  />
-                  <TextField
-                    fullWidth
-                    value={dataEdit?.accBasil}
-                    onChange={(e) => {
-                      setDataEdit({
-                        ...dataEdit,
-                        accBasil: e.target.value,
-                      });
-                    }}
-                    id="outlined-basic"
-                    label="Acc Basil"
-                    type="number"
-                    variant="outlined"
-                  />
-                  <TextField
-                    fullWidth
-                    value={dataEdit?.accPokok}
-                    onChange={(e) => {
-                      setDataEdit({
-                        ...dataEdit,
-                        accPokok: e.target.value,
-                      });
-                    }}
-                    id="outlined-basic"
-                    label="Acc Pokok"
-                    type="number"
-                    variant="outlined"
-                  />
-                </div>
-              ) : dataLogin?.roleUser === 'Kasir' ? (
-                <div className="flex gap-5">
-                  <TextField
-                    fullWidth
-                    value={dataEdit?.staffPokok}
-                    onChange={(e) => {
-                      setDataEdit({
-                        ...dataEdit,
-                        staffPokok: e.target.value,
-                      });
-                    }}
-                    id="outlined-basic"
-                    label="Staff Pokok"
-                    type="number"
-                    variant="outlined"
-                  />
-                  <TextField
-                    fullWidth
-                    value={dataEdit?.accBasil}
-                    // defaultValue={stateBody?.staffBasil}
-                    onChange={(e) => {
-                      setDataEdit({
-                        ...dataEdit,
-                        accBasil: e.target.value,
-                      });
-                    }}
-                    id="outlined-basic"
-                    label="Acc Basil"
-                    type="number"
-                    variant="outlined"
-                  />
-                  <TextField
-                    fullWidth
-                    value={dataEdit?.accPokok}
-                    onChange={(e) => {
-                      setDataEdit({
-                        ...dataEdit,
-                        accPokok: e.target.value,
-                      });
-                    }}
-                    id="outlined-basic"
-                    label="Acc Pokok"
-                    type="number"
-                    variant="outlined"
-                  />
-                </div>
-              ) : <div className="flex gap-5">
+            <div className="mt-10">
+              <div className="flex gap-5">
                 <TextField
                   fullWidth
-                  value={dataEdit?.nomorAkad}
+                  value={dataEdit?.penjualan}
                   onChange={(e) => {
                     setDataEdit({
                       ...dataEdit,
-                      nomorAkad: e.target.value,
+                      penjualan: e.target.value,
                     });
                   }}
                   id="outlined-basic"
@@ -510,11 +508,11 @@ export default function PengajuanTable(props) {
                 />
                 <TextField
                   fullWidth
-                  value={dataEdit?.staffBasil}
+                  value={dataEdit?.hargaPokok}
                   onChange={(e) => {
                     setDataEdit({
                       ...dataEdit,
-                      staffBasil: e.target.value,
+                      hargaPokok: e.target.value,
                     });
                   }}
                   id="outlined-basic"
@@ -524,11 +522,11 @@ export default function PengajuanTable(props) {
                 />
                 <TextField
                   fullWidth
-                  value={dataEdit?.staffPokok}
+                  value={dataEdit?.biaya}
                   onChange={(e) => {
                     setDataEdit({
                       ...dataEdit,
-                      staffPokok: e.target.value,
+                      biaya: e.target.value,
                     });
                   }}
                   id="outlined-basic"
@@ -536,7 +534,35 @@ export default function PengajuanTable(props) {
                   type="number"
                   variant="outlined"
                 />
-              </div>}
+                <TextField
+                  fullWidth
+                  value={dataEdit?.labaUsaha}
+                  onChange={(e) => {
+                    setDataEdit({
+                      ...dataEdit,
+                      labaUsaha: e.target.value,
+                    });
+                  }}
+                  id="outlined-basic"
+                  label="Acc Basil"
+                  type="number"
+                  variant="outlined"
+                />
+                <TextField
+                  fullWidth
+                  value={dataEdit?.pendapatanLain}
+                  onChange={(e) => {
+                    setDataEdit({
+                      ...dataEdit,
+                      pendapatanLain: e.target.value,
+                    });
+                  }}
+                  id="outlined-basic"
+                  label="Acc Pokok"
+                  type="number"
+                  variant="outlined"
+                />
+              </div>
             </div>
           </DialogContentText>
         </DialogContent>
@@ -570,26 +596,60 @@ export default function PengajuanTable(props) {
               return (
                 <TableRow key={row.id} hover role="checkbox" tabIndex={-1}>
                   <TableCell>{index + 1}.</TableCell>
+                  <TableCell>{row?.penjualan === null ? '-' : row?.penjualan}</TableCell>
+                  <TableCell>{row?.hargaPokok === null ? '-' : row?.hargaPokok}</TableCell>
+                  <TableCell>{row?.biaya === null ? '-' : row?.biaya}</TableCell>
+                  <TableCell>{row?.labaUsaha === null ? '-' : row?.labaUsaha}</TableCell>
+                  <TableCell>{row?.pendapatanLain === null ? '-' : row?.pendapatanLain}</TableCell>
+                  <TableCell>
+                    {row?.jumlahPendapatan === null ? '-' : row?.jumlahPendapatan}
+                  </TableCell>
+                  <TableCell>
+                    {row?.kebutuhanRumahTangga === null ? '-' : row?.kebutuhanRumahTangga}
+                  </TableCell>
+                  <TableCell>
+                    {row?.biayaPendidikan === null ? '-' : row?.biayaPendidikan}
+                  </TableCell>
+                  <TableCell>{row?.biayaLainnya === null ? '-' : row?.biayaLainnya}</TableCell>
+                  <TableCell>
+                    {row?.jumlahBiayaLuarUsaha === null ? '-' : row?.jumlahBiayaLuarUsaha}
+                  </TableCell>
+                  <TableCell>
+                    {row?.pendapatanBersih === null ? '-' : row?.pendapatanBersih}
+                  </TableCell>
+                  <TableCell>{row?.rasioAngsuran === null ? '-' : row?.rasioAngsuran}</TableCell>
+                  <TableCell>{row?.jangkaWaktu === null ? '-' : row?.jangkaWaktu}</TableCell>
+                  <TableCell>
+                    {row?.nominalPermohonan === null ? '-' : row?.nominalPermohonan}
+                  </TableCell>
+                  <TableCell>
+                    {row?.tujuanPembiayaan === null ? '-' : row?.tujuanPembiayaan}
+                  </TableCell>
+                  <TableCell>{row?.jaminan === null ? '-' : row?.jaminan}</TableCell>
+                  <TableCell>{row?.accPermohonan === null ? '-' : row?.accPermohonan}</TableCell>
                   <TableCell>{row?.nomorAkad === null ? '-' : row?.nomorAkad}</TableCell>
-                  <TableCell>{row?.staffBasil === null ? '-' : row?.staffBasil}</TableCell>
-                  <TableCell>{row?.staffPokok === null ? '-' : row?.staffPokok}</TableCell>
-                  <TableCell>{row?.accBasil === null ? '-' : row?.accBasil}</TableCell>
-                  <TableCell>{row?.accPokok === null ? '-' : row?.accPokok}</TableCell>
-                  <TableCell>{row?.staffBy === null ? '-' : row?.staffBy}</TableCell>
-                  <TableCell>{row?.staffAt === null ? '-' : moment(row?.staffAt).format('MMMM Do YYYY, h:mm:ss a')}</TableCell>
-                  <TableCell>{row?.kasirBy === null ? '-' : row?.kasirBy}</TableCell>
-                  <TableCell>{row?.kasirAtt === null ? '-' : moment(row?.kasirAtt).format('MMMM Do YYYY, h:mm:ss a')}</TableCell>
-                  <TableCell>{row?.lokasiPembayaran === null ? '-' : row?.lokasiPembayaran}</TableCell>
-                  <TableCell>{row?.accBasil === null ? <Button color='warning' variant="contained">Uncompleted</Button> : <Button color='success' variant="contained">Completed</Button>}</TableCell>
+                  <TableCell>{row?.status === null ? '-' : row?.status}</TableCell>
+                  <TableCell>{row?.statusBy === null ? '-' : row?.statusBy}</TableCell>
+                  <TableCell>{row?.foto === null ? '-' : row?.foto}</TableCell>
+                  <TableCell>
+                    {row?.labaUsaha === null ? (
+                      <Button color="warning" variant="contained">
+                        Uncompleted
+                      </Button>
+                    ) : (
+                      <Button color="success" variant="contained">
+                        Completed
+                      </Button>
+                    )}
+                  </TableCell>
                   {/* <TableCell>{row?.deskripsi}</TableCell> */}
                   <TableCell>
                     <div className="flex justify-center">
                       <div>
-                        {console.log(dataLogin?.roleUser === 'Staff' && row?.accBasil === null, 'sss')}
                         <IconButton
                           onClick={() => handleClickOpen(row.id, row)}
                           color="info"
-                          disabled={dataLogin?.roleUser === 'Staff' && row?.accBasil !== null}
+                          disabled={dataLogin?.roleUser === 'Staff' && row?.labaUsaha !== null}
                           className=""
                         >
                           <EditIcon />
@@ -599,7 +659,7 @@ export default function PengajuanTable(props) {
                         <IconButton
                           onClick={(e) => HandelDelete(row.id)}
                           color="error"
-                          disabled={dataLogin?.roleUser === 'Staff' && row?.accBasil !== null}
+                          disabled={dataLogin?.roleUser === 'Staff' && row?.labaUsaha !== null}
                           className=""
                         >
                           <DeleteIcon />

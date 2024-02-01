@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable new-cap */
 /* eslint-disable no-plusplus */
 /* eslint-disable func-names */
@@ -18,10 +19,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { useDispatch } from 'react-redux';
 import axios from 'axios';
 import { showMessage } from 'app/store/fuse/messageSlice';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { Autocomplete, TextField } from '@mui/material';
+import { TextField } from '@mui/material';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import moment from 'moment';
 import jsPDF from 'jspdf';
@@ -78,7 +76,7 @@ function PengajuanHeader(props) {
     foto: null,
   });
 
-  console.log(stateBody, 'stateBody')
+  console.log(stateBody, 'stateBody');
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -277,184 +275,206 @@ function PengajuanHeader(props) {
         <DialogTitle id="alert-dialog-title">Tambah Pengajuan</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            <div class="flex flex-wrap gap-5 p-10">
+            <div className="flex flex-wrap gap-5 p-10">
               <TextField
-                  value={stateBody?.penjualan}
-                  onChange={(e) => {
-                    setStateBody({ ...stateBody, penjualan: e.target.value })
-                    // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
-                  }}
-                  id="outlined-basic"
-                  label="Penjualan"
-                  type="number"
-                  variant="outlined"
-                  />
-                <TextField
-                  value={stateBody?.hargaPokok}
-                  onChange={(e) => {
-                    setStateBody({ ...stateBody, hargaPokok: e.target.value })
-                    // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
-                  }}
-                  id="outlined-basic"
-                  label="Harga Pokok"
-                  type="number"
-                  variant="outlined"
-                  />
-                <TextField
-                  value={stateBody?.biaya}
-                  onChange={(e) => setStateBody({ ...stateBody, biaya: e.target.value })}
-                  id="outlined-basic"
-                  label="Biaya"
-                  type="number"
-                  variant="outlined"
-                  />
-                <TextField
-                  value={stateBody?.labaUsaha}
-                  // defaultValue={stateBody?.staffBasil}
-                  onChange={(e) => setStateBody({ ...stateBody, labaUsaha: e.target.value })}
-                  id="outlined-basic"
-                  label="Laba Usaha"
-                  type="number"
-                  variant="outlined"
-                  />
-                <TextField
-                  value={stateBody?.pendapatanLain}
-                  onChange={(e) => setStateBody({ ...stateBody, pendapatanLain: e.target.value })}
-                  id="outlined-basic"
-                  label="Pendapatan Lain"
-                  type="number"
-                  variant="outlined"
-                  />
-                <TextField
-                  value={stateBody?.kebutuhanRumahTangga}
-                  onChange={(e) => setStateBody({ ...stateBody, kebutuhanRumahTangga: e.target.value })}
-                  id="outlined-basic"
-                  label="Kebutuhan Rumah Tangga"
-                  type="number"
-                  variant="outlined"
-                  />
-                <TextField
-                  value={stateBody?.biayaPendidikan}
-                  onChange={(e) => setStateBody({ ...stateBody, biayaPendidikan: e.target.value })}
-                  id="outlined-basic"
-                  label="Biaya Pendidikan"
-                  type="number"
-                  variant="outlined"
-                  />
-                <TextField
-                  value={stateBody?.jumlahBiayaLuarUsaha}
-                  onChange={(e) => setStateBody({ ...stateBody, jumlahBiayaLuarUsaha: e.target.value })}
-                  id="outlined-basic"
-                  label="Jumlah Biaya Luar Usaha"
-                  type="number"
-                  variant="outlined"
-                  />
-                <TextField
-                  value={stateBody?.pendapatanBersih}
-                  onChange={(e) => setStateBody({ ...stateBody, pendapatanBersih: e.target.value })}
-                  id="outlined-basic"
-                  label="Pendapatan Bersih"
-                  type="number"
-                  variant="outlined"
-                  />
-                <TextField
-                  value={stateBody?.jumlahPendapatan}
-                  onChange={(e) => setStateBody({ ...stateBody, jumlahPendapatan: e.target.value })}
-                  id="outlined-basic"
-                  label="Pendapatan Bersih"
-                  type="number"
-                  variant="outlined"
-                  />
-                <TextField
-                  value={stateBody?.rasioAngsuran}
-                  onChange={(e) => setStateBody({ ...stateBody, rasioAngsuran: e.target.value })}
-                  id="outlined-basic"
-                  label="Rasio Angsuran"
-                  type="number"
-                  variant="outlined"
-                  />
+                value={stateBody?.penjualan}
+                onChange={(e) => {
+                  setStateBody({ ...stateBody, penjualan: e.target.value });
+                  // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
+                }}
+                id="outlined-basic"
+                label="Penjualan"
+                type="number"
+                variant="outlined"
+              />
+              <TextField
+                value={stateBody?.hargaPokok}
+                onChange={(e) => {
+                  setStateBody({ ...stateBody, hargaPokok: e.target.value });
+                  // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
+                }}
+                id="outlined-basic"
+                label="Harga Pokok"
+                type="number"
+                variant="outlined"
+              />
+              <TextField
+                value={stateBody?.biaya}
+                onChange={(e) => setStateBody({ ...stateBody, biaya: e.target.value })}
+                id="outlined-basic"
+                label="Biaya"
+                type="number"
+                variant="outlined"
+              />
+              <TextField
+                value={stateBody?.labaUsaha}
+                // defaultValue={stateBody?.staffBasil}
+                onChange={(e) => setStateBody({ ...stateBody, labaUsaha: e.target.value })}
+                id="outlined-basic"
+                label="Laba Usaha"
+                type="number"
+                helperText="penjualan - hargaPokok - biayaUsaha"
+                variant="outlined"
+              />
+              <TextField
+                value={stateBody?.pendapatanLain}
+                onChange={(e) => setStateBody({ ...stateBody, pendapatanLain: e.target.value })}
+                id="outlined-basic"
+                label="Pendapatan Lain"
+                type="number"
+                variant="outlined"
+              />
+              <TextField
+                value={stateBody?.jumlahPendapatan}
+                onChange={(e) => setStateBody({ ...stateBody, jumlahPendapatan: e.target.value })}
+                id="outlined-basic"
+                label="Jumlah Pendapatan"
+                helperText="labaUsaha + pendapatanLain"
+                type="number"
+                variant="outlined"
+              />
+              <TextField
+                value={stateBody?.kebutuhanRumahTangga}
+                onChange={(e) =>
+                  setStateBody({ ...stateBody, kebutuhanRumahTangga: e.target.value })
+                }
+                id="outlined-basic"
+                label="Kebutuhan Rumah Tangga"
+                type="number"
+                variant="outlined"
+              />
+              <TextField
+                value={stateBody?.biayaPendidikan}
+                onChange={(e) => setStateBody({ ...stateBody, biayaPendidikan: e.target.value })}
+                id="outlined-basic"
+                label="Biaya Pendidikan"
+                type="number"
+                variant="outlined"
+              />
+              <TextField
+                value={stateBody?.biayaLainnya}
+                onChange={(e) => setStateBody({ ...stateBody, biayaPendidikan: e.target.value })}
+                id="outlined-basic"
+                label="Biaya Lainnya"
+                type="number"
+                variant="outlined"
+              />
+              <TextField
+                value={stateBody?.jumlahBiayaLuarUsaha}
+                onChange={(e) =>
+                  setStateBody({ ...stateBody, jumlahBiayaLuarUsaha: e.target.value })
+                }
+                id="outlined-basic"
+                label="Jumlah Biaya Luar Usaha"
+                type="number"
+                helperText="kebutuhanRumahTangga  + biayaPendidikan + Biaya Lainnya"
+                variant="outlined"
+              />
+              <TextField
+                value={stateBody?.pendapatanBersih}
+                onChange={(e) => setStateBody({ ...stateBody, pendapatanBersih: e.target.value })}
+                id="outlined-basic"
+                label="Pendapatan Bersih"
+                helperText="labaUsaha - JumlahPendapatan - jumlahBiayaLuarUsaha"
+                type="number"
+                variant="outlined"
+              />
+              <TextField
+                value={stateBody?.rasioAngsuran}
+                onChange={(e) => setStateBody({ ...stateBody, rasioAngsuran: e.target.value })}
+                id="outlined-basic"
+                label="Rasio Angsuran"
+                helperText="persen%"
+                type="number"
+                variant="outlined"
+              />
 
-                <TextField
-                  value={stateBody?.jangkaWaktu}
-                  onChange={(e) => setStateBody({ ...stateBody, jangkaWaktu: e.target.value })}
-                  id="outlined-basic"
-                  label="Jangka Waktu"
-                  type="number"
-                  variant="outlined"
-                  />
-                <TextField
-                  value={stateBody?.nominalPermohonan}
-                  onChange={(e) => setStateBody({ ...stateBody, nominalPermohonan: e.target.value })}
-                  id="outlined-basic"
-                  label="Nominal Pemohonan"
-                  type="number"
-                  variant="outlined"
-                  />
-                <TextField
-                  value={stateBody?.tujuanPembiayaan}
-                  onChange={(e) => setStateBody({ ...stateBody, tujuanPembiayaan: e.target.value })}
-                  id="outlined-basic"
-                  label="Tujuan Pembiyaan"
-                  type="number"
-                  variant="outlined"
-                  />
-                <TextField
-                  value={stateBody?.jaminan}
-                  onChange={(e) => setStateBody({ ...stateBody, jaminan: e.target.value })}
-                  id="outlined-basic"
-                  label="Jaminan"
-                  type="number"
-                  variant="outlined"
-                  />
-                <TextField
-                  value={stateBody?.accPermohonan}
-                  onChange={(e) => setStateBody({ ...stateBody, accPermohonan: e.target.value })}
-                  id="outlined-basic"
-                  label="Acc Permohonan"
-                  type="number"
-                  variant="outlined"
-                  />
-                <TextField
-                  value={stateBody?.nomorAkad}
-                  onChange={(e) => setStateBody({ ...stateBody, nomorAkad: e.target.value })}
-                  id="outlined-basic"
-                  label="Nomor Akad"
-                  type="number"
-                  variant="outlined"
-                  />
-                <TextField
-                  value={stateBody?.status}
-                  onChange={(e) => setStateBody({ ...stateBody, status: e.target.value })}
-                  id="outlined-basic"
-                  label="Status"
-                  type="number"
-                  variant="outlined"
-                  />
-                <TextField
-                  value={stateBody?.statusBy}
-                  onChange={(e) => setStateBody({ ...stateBody, statusBy: e.target.value })}
-                  id="outlined-basic"
-                  label="Status By"
-                  type="number"
-                  variant="outlined"
-                  />
-                <TextField
-                  value={stateBody?.statusAt}
-                  onChange={(e) => setStateBody({ ...stateBody, statusAt: e.target.value })}
-                  id="outlined-basic"
-                  label="Status At"
-                  type="number"
-                  variant="outlined"
-                  />
+              <TextField
+                value={stateBody?.jangkaWaktu}
+                onChange={(e) => setStateBody({ ...stateBody, jangkaWaktu: e.target.value })}
+                id="outlined-basic"
+                label="Jangka Waktu"
+                helperText="bulan cnth 1bulan"
+                type="number"
+                variant="outlined"
+              />
+              <TextField
+                value={stateBody?.nominalPermohonan}
+                onChange={(e) => setStateBody({ ...stateBody, nominalPermohonan: e.target.value })}
+                id="outlined-basic"
+                label="Nominal Pemohonan"
+                type="number"
+                variant="outlined"
+              />
+              <TextField
+                value={stateBody?.tujuanPembiayaan}
+                onChange={(e) => setStateBody({ ...stateBody, tujuanPembiayaan: e.target.value })}
+                id="outlined-basic"
+                label="Tujuan Pembiyaan"
+                type="text"
+                variant="outlined"
+              />
+              <TextField
+                value={stateBody?.jaminan}
+                onChange={(e) => setStateBody({ ...stateBody, jaminan: e.target.value })}
+                id="outlined-basic"
+                label="Jaminan"
+                type="text"
+                variant="outlined"
+              />
+              <TextField
+                value={stateBody?.accPermohonan}
+                onChange={(e) => setStateBody({ ...stateBody, accPermohonan: e.target.value })}
+                id="outlined-basic"
+                label="Acc Permohonan"
+                helperText="(rasio angsuran / 100) * pendapatanBersih * jangkaWaktu"
+                type="number"
+                variant="outlined"
+              />
+              <TextField
+                value={stateBody?.nomorAkad}
+                onChange={(e) => setStateBody({ ...stateBody, nomorAkad: e.target.value })}
+                id="outlined-basic"
+                label="Nomor Akad"
+                type="text"
+                variant="outlined"
+              />
+              <TextField
+                value={stateBody?.status}
+                onChange={(e) => setStateBody({ ...stateBody, status: e.target.value })}
+                id="outlined-basic"
+                label="Status"
+                type="number"
+                helperText="diterima atau di tolak"
+                variant="outlined"
+              />
+              <TextField
+                value={stateBody?.statusBy}
+                onChange={(e) => setStateBody({ ...stateBody, statusBy: e.target.value })}
+                id="outlined-basic"
+                label="Status By"
+                helperText="yang nerimanya siapa"
+                type="number"
+                variant="outlined"
+              />
+              <TextField
+                value={stateBody?.statusAt}
+                onChange={(e) => setStateBody({ ...stateBody, statusAt: e.target.value })}
+                id="outlined-basic"
+                label="Status At"
+                helperText="waktu"
+                type="number"
+                variant="outlined"
+              />
 
-                <TextField
-                  value={stateBody?.foto}
-                  onChange={(e) => setStateBody({ ...stateBody, foto: e.target.value })}
-                  id="outlined-basic"
-                  label="Foto"
-                  type="number"
-                  variant="outlined"
-                  />
+              <TextField
+                value={stateBody?.foto}
+                onChange={(e) => setStateBody({ ...stateBody, foto: e.target.value })}
+                id="outlined-basic"
+                label="Foto"
+                type="number"
+                variant="outlined"
+              />
             </div>
           </DialogContentText>
         </DialogContent>
@@ -465,11 +485,11 @@ function PengajuanHeader(props) {
           <Button
             variant="contained"
             // disabled={
-              //   kodeBarang === '' || namaBarang === '' || tglKeluar === '' || jmlKeluar === ''
-              // }
-              onClick={HandelSubmit}
-              autoFocus
-              >
+            //   kodeBarang === '' || namaBarang === '' || tglKeluar === '' || jmlKeluar === ''
+            // }
+            onClick={HandelSubmit}
+            autoFocus
+          >
             Save
           </Button>
         </DialogActions>
@@ -524,7 +544,7 @@ function PengajuanHeader(props) {
             inputProps={{
               'aria-label': 'Search',
             }}
-          // onChange={(ev) => dispatch(setProductsSearchText(ev))}
+            // onChange={(ev) => dispatch(setProductsSearchText(ev))}
           />
         </Paper>
         <motion.div
@@ -562,7 +582,6 @@ function PengajuanHeader(props) {
               Add
             </Button>
           )}
-
         </motion.div>
       </div>
     </div>

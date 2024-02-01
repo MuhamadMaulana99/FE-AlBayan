@@ -194,7 +194,7 @@ export default function PermohonanTable(props) {
       saldoTabungan: row?.saldoTabungan,
     });
     // setgetDataEdit(row);
-    console.log(row,'rrrr')
+    // console.log(row, 'rrrr');
   };
   const handleClose = () => {
     setOpen(false);
@@ -208,7 +208,7 @@ export default function PermohonanTable(props) {
       kabupaten: null,
       provinsi: null,
       saldoTabungan: null,
-    })
+    });
   };
 
   const [getDataNasabahById, setgetDataNasabahById] = useState([]);

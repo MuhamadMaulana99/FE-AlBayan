@@ -37,6 +37,13 @@ const columns = [
     // format: (value) => value.toLocaleString('en-US'),
   },
   {
+    id: 'nik',
+    label: 'NIK',
+    minWidth: 170,
+    align: 'left',
+    // format: (value) => value.toLocaleString('en-US'),
+  },
+  {
     id: 'norek',
     label: 'No Rek',
     minWidth: 170,
@@ -91,6 +98,7 @@ function createData(
   no,
   id,
   nama,
+  mstNik,
   mstRekening,
   mstjenisKelamin,
   mstAlamat,
@@ -102,6 +110,7 @@ function createData(
     no,
     id,
     nama,
+    mstNik,
     mstRekening,
     mstjenisKelamin,
     mstAlamat,
@@ -122,6 +131,7 @@ export default function MasterNasabahTable(props) {
   const [dataEdit, setDataEdit] = React.useState({
     id: null,
     nama: null,
+    mstNik: null,
     mstRekening: null,
     mstjenisKelamin: null,
     mstAlamat: null,
@@ -139,6 +149,7 @@ export default function MasterNasabahTable(props) {
       index + 1,
       item?.id,
       item?.nama,
+      item?.mstNik,
       item?.mstRekening,
       item?.mstjenisKelamin,
       item?.mstAlamat,
@@ -162,6 +173,7 @@ export default function MasterNasabahTable(props) {
     setDataEdit({
       id: row?.id,
       nama: row?.nama,
+      mstNik: row?.mstNik,
       mstRekening: row?.mstRekening,
       mstjenisKelamin: row?.mstjenisKelamin,
       mstAlamat: row?.mstAlamat,
@@ -176,6 +188,7 @@ export default function MasterNasabahTable(props) {
 
   const body = {
     nama: dataEdit?.nama,
+    mstNik: dataEdit?.mstNik,
     mstRekening: dataEdit?.mstRekening,
     mstjenisKelamin: JSON.stringify(dataEdit?.mstjenisKelamin),
     mstAlamat: dataEdit?.mstAlamat,
@@ -329,6 +342,16 @@ export default function MasterNasabahTable(props) {
                   variant="outlined"
                 />
                 <TextField
+                  value={dataEdit?.mstNik}
+                  onChange={(e) => {
+                    setDataEdit({ ...dataEdit, mstNik: e.target.value });
+                    // settriggerAccBasil({ ...dataEdit, accBasil: dataEdit?.staffBasil})
+                  }}
+                  id="outlined-basic"
+                  label="No Rek"
+                  variant="outlined"
+                />
+                <TextField
                   value={dataEdit?.mstRekening}
                   onChange={(e) => {
                     setDataEdit({ ...dataEdit, mstRekening: e.target.value });
@@ -429,6 +452,7 @@ export default function MasterNasabahTable(props) {
                 <TableRow key={row.id} hover role="checkbox" tabIndex={-1}>
                   <TableCell>{index + 1}</TableCell>
                   <TableCell>{row?.nama}</TableCell>
+                  <TableCell>{row?.mstNik}</TableCell>
                   <TableCell>{row?.mstRekening}</TableCell>
                   <TableCell>{row?.mstjenisKelamin?.kelamin}</TableCell>
                   <TableCell>{row?.mstAlamat}</TableCell>

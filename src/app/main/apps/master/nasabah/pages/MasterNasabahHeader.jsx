@@ -33,6 +33,7 @@ function MasterNasabahHeader(props) {
   const [stateBody, setStateBody] = useState({
     nama: null,
     mstRekening: null,
+    mstNik: null,
     mstjenisKelamin: null,
     mstAlamat: null,
     mstKecamatan: null,
@@ -42,6 +43,7 @@ function MasterNasabahHeader(props) {
   // console.log(stateBody, 'stateBody')
   const body = {
     nama: stateBody?.nama,
+    mstNik: stateBody?.mstNik,
     mstjenisKelamin: JSON.stringify(stateBody?.mstjenisKelamin),
     mstRekening: stateBody?.mstRekening,
     mstAlamat: stateBody?.mstAlamat,
@@ -146,6 +148,16 @@ function MasterNasabahHeader(props) {
                   }}
                   id="outlined-basic"
                   label="No Rek"
+                  variant="outlined"
+                />
+                <TextField
+                  value={stateBody?.mstNik}
+                  onChange={(e) => {
+                    setStateBody({ ...stateBody, mstNik: e.target.value });
+                    // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
+                  }}
+                  id="outlined-basic"
+                  label="Nik"
                   variant="outlined"
                 />
                 <div className="mt-10 w-full">
