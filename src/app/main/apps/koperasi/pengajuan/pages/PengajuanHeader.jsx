@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unsafe-optional-chaining */
 /* eslint-disable no-nested-ternary */
@@ -12,7 +13,7 @@ import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import { motion } from 'framer-motion';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -21,7 +22,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { useDispatch } from 'react-redux';
 import axios from 'axios';
 import { showMessage } from 'app/store/fuse/messageSlice';
-import { TextField } from '@mui/material';
+import { Autocomplete, TextField } from '@mui/material';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import moment from 'moment';
 import jsPDF from 'jspdf';
@@ -38,6 +39,7 @@ const top100Films = [
 ];
 
 function PengajuanHeader(props) {
+  const fileInputRef = useRef(null);
   const dispatch = useDispatch();
   const currentDate = moment().format();
   const userRoles = JSON.parse(localStorage.getItem('userRoles'));
@@ -53,6 +55,7 @@ function PengajuanHeader(props) {
   const { masterStaff } = props;
   const [loading, setLoading] = React.useState(true);
   const [open, setOpen] = React.useState(false);
+  const [getNameFile, setgetNameFile] = useState('');
   const [stateBody, setStateBody] = useState({
     penjualan: 0,
     hargaPokok: 0,
@@ -70,11 +73,16 @@ function PengajuanHeader(props) {
     nominalPermohonan: 0,
     tujuanPembiayaan: null,
     jaminan: null,
+    biayaLainya: null,
     accPermohonan: 0,
     nomorAkad: null,
     status: null,
-    statusBy: null,
-    statusAt: null,
+    statusBy:
+      dataLogin?.roleUser === 'admin' || dataLogin?.roleUser === 'Kasir'
+        ? null
+        : getResponseName?.name,
+    statusAt:
+      dataLogin?.roleUser === 'admin' || dataLogin?.roleUser === 'Kasir' ? null : currentDate,
     foto: null,
   });
   const [getDataBody, setgetDataBody] = useState({});
@@ -86,6 +94,32 @@ function PengajuanHeader(props) {
 
   const handleClose = () => {
     setOpen(false);
+    setgetDataBody({});
+    setStateBody({
+      penjualan: 0,
+      hargaPokok: 0,
+      biaya: 0,
+      labaUsaha: 0,
+      pendapatanLain: 0,
+      jumlahPendapatan: 0,
+      kebutuhanRumahTangga: 0,
+      biayaPendidikan: 0,
+      biayaLainnya: 0,
+      jumlahBiayaLuarUsaha: 0,
+      pendapatanBersih: null,
+      rasioAngsuran: 0,
+      jangkaWaktu: 0,
+      biayaLainya: null,
+      nominalPermohonan: 0,
+      tujuanPembiayaan: null,
+      jaminan: null,
+      accPermohonan: 0,
+      nomorAkad: null,
+      status: null,
+      statusBy: null,
+      statusAt: null,
+      foto: null,
+    });
   };
 
   const body = {
@@ -94,27 +128,28 @@ function PengajuanHeader(props) {
     biaya: getDataBody?.biaya,
     labaUsaha: getDataBody?.labaUsaha,
     pendapatanLain: getDataBody?.pendapatanLain,
-    jumlahPendapatan: getDataBody?.penjualan,
-    kebutuhanRumahTangga: getDataBody?.penjualan,
-    biayaPendidikan: getDataBody?.penjualan,
-    jumlahBiayaLuarUsaha: getDataBody?.penjualan,
-    pendapatanBersih: getDataBody?.penjualan,
-    rasioAngsuran: getDataBody?.penjualan,
-    jangkaWaktu: getDataBody?.penjualan,
-    nominalPermohonan: getDataBody?.penjualan,
-    tujuanPembiayaan: getDataBody?.penjualan,
-    jaminan: getDataBody?.penjualan,
-    accPermohonan: getDataBody?.penjualan,
-    nomorAkad: getDataBody?.penjualan,
-    status: getDataBody?.penjualan,
-    statusBy: getDataBody?.penjualan,
-    statusAt: getDataBody?.penjualan,
-    foto: getDataBody?.penjualan,
+    jumlahPendapatan: getDataBody?.jumlahPendapatan,
+    kebutuhanRumahTangga: getDataBody?.kebutuhanRumahTangga,
+    biayaPendidikan: getDataBody?.biayaPendidikan,
+    jumlahBiayaLuarUsaha: getDataBody?.jumlahBiayaLuarUsaha,
+    pendapatanBersih: getDataBody?.pendapatanBersih,
+    rasioAngsuran: getDataBody?.rasioAngsuran,
+    jangkaWaktu: getDataBody?.jangkaWaktu,
+    nominalPermohonan: getDataBody?.nominalPermohonan,
+    tujuanPembiayaan: getDataBody?.tujuanPembiayaan,
+    jaminan: getDataBody?.jaminan,
+    biayaLainya: getDataBody?.biayaLainya,
+    accPermohonan: getDataBody?.accPermohonan,
+    nomorAkad: getDataBody?.nomorAkad,
+    status: getDataBody?.status,
+    statusBy: getDataBody?.statusBy,
+    statusAt: getDataBody?.statusAt,
+    foto: getDataBody?.foto,
   };
   const HandelSubmit = () => {
     setLoading(true);
     axios
-      .post(`${process.env.REACT_APP_API_URL_API_}/Pengajuan`, stateBody)
+      .post(`${process.env.REACT_APP_API_URL_API_}/Pengajuan`, getDataBody)
       .then((res) => {
         // setData(res?.data);
         props.getData();
@@ -168,6 +203,37 @@ function PengajuanHeader(props) {
       });
   };
 
+  const handleFileChange = async (event) => {
+    const selectedFile = event.target.files[0];
+
+    if (selectedFile) {
+      const base64String = await convertToBase64(selectedFile);
+      console.log('Base64 String:', selectedFile);
+      setgetNameFile(selectedFile);
+      setStateBody({ ...stateBody, foto: base64String });
+      // Kirim atau lakukan sesuatu dengan string base64 di sini
+    }
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const convertToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        resolve(reader.result.split(',')[1]);
+      };
+
+      reader.onerror = (error) => {
+        reject(error);
+      };
+
+      reader.readAsDataURL(file);
+    });
+  };
+
   function calculatePercentage(part, whole) {
     return (part / whole) * 100;
   }
@@ -182,20 +248,21 @@ function PengajuanHeader(props) {
     parseInt(stateBody?.kebutuhanRumahTangga, 10) +
     parseInt(stateBody?.biayaPendidikan, 10) +
     parseInt(stateBody?.biayaLainnya, 10);
-  const countPendapatanBersih = countLabaUsaha - countJumlahPendapatan - countJumlahBiayaLuarUsaha;
+  const countPendapatanBersih = countLabaUsaha + countJumlahPendapatan - countJumlahBiayaLuarUsaha;
   const countAccPermohonan =
     (parseInt(stateBody?.rasioAngsuran, 10) / 100) *
     countPendapatanBersih *
     parseInt(stateBody?.jangkaWaktu, 10);
 
   const resultAcc = calculatePercentage(100, countAccPermohonan);
-  console.log(`${Math.round(resultAcc)}%`, 'resss');
+  // console.log(`${Math.round(resultAcc)}%`, 'resss');
 
   useEffect(() => {
     setgetDataBody({
       penjualan: stateBody?.penjualan,
       hargaPokok: stateBody?.hargaPokok,
       biaya: stateBody?.biaya,
+      biayaLainya: stateBody?.biayaLainya,
       labaUsaha: countLabaUsaha,
       pendapatanLain: stateBody?.pendapatanLain,
       jumlahPendapatan: countJumlahPendapatan,
@@ -208,7 +275,7 @@ function PengajuanHeader(props) {
       nominalPermohonan: stateBody?.nominalPermohonan,
       tujuanPembiayaan: stateBody?.tujuanPembiayaan,
       jaminan: stateBody?.jaminan,
-      accPermohonan: resultAcc,
+      accPermohonan: countAccPermohonan,
       nomorAkad: stateBody?.nomorAkad,
       status: stateBody?.status,
       statusBy: stateBody?.statusBy,
@@ -350,6 +417,18 @@ function PengajuanHeader(props) {
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             <div className="flex flex-wrap gap-5 p-10">
+            <Autocomplete
+                disablePortal
+                id="combo-box-demo"
+                // options={dataNasabah}
+                // value={dataEdit?.rekening}
+                // getOptionLabel={(option) => option.mstRekening}
+                // sx={{ width: 300 }}
+                // onChange={(e, newValue) => {
+                //   setDataEdit({ ...dataEdit, rekening: newValue });
+                // }}
+                renderInput={(params) => <TextField {...params} label="Data Nasabah" />}
+              />
               <TextField
                 value={stateBody?.penjualan}
                 onChange={(e) => {
@@ -409,8 +488,8 @@ function PengajuanHeader(props) {
                 variant="outlined"
               />
               <TextField
-                value={stateBody?.biayaLainnya}
-                onChange={(e) => setStateBody({ ...stateBody, biayaLainnya: e.target.value })}
+                value={stateBody?.biayaLainya}
+                onChange={(e) => setStateBody({ ...stateBody, biayaLainya: e.target.value })}
                 id="outlined-basic"
                 label="Biaya Lainnya"
                 type="number"
@@ -469,44 +548,45 @@ function PengajuanHeader(props) {
                 type="text"
                 variant="outlined"
               />
-              <TextField
-                value={stateBody?.status}
-                onChange={(e) => setStateBody({ ...stateBody, status: e.target.value })}
-                id="outlined-basic"
-                label="Status"
-                type="number"
-                helperText="diterima atau di tolak"
-                variant="outlined"
-              />
-              <TextField
-                value={stateBody?.statusBy}
-                onChange={(e) => setStateBody({ ...stateBody, statusBy: e.target.value })}
-                id="outlined-basic"
-                label="Status By"
-                helperText="yang nerimanya siapa"
-                type="number"
-                variant="outlined"
-              />
-              <TextField
-                value={stateBody?.statusAt}
-                onChange={(e) => setStateBody({ ...stateBody, statusAt: e.target.value })}
-                id="outlined-basic"
-                label="Status At"
-                helperText="waktu"
-                type="number"
-                variant="outlined"
-              />
-
-              <TextField
-                value={stateBody?.foto}
-                onChange={(e) => setStateBody({ ...stateBody, foto: e.target.value })}
-                id="outlined-basic"
-                label="Foto"
-                type="number"
-                variant="outlined"
-              />
+              <div className="mt-4">
+                <input
+                  accept="image/*" // Specify accepted file types
+                  className="hidden"
+                  id="file-input"
+                  type="file"
+                  onChange={handleFileChange}
+                  ref={fileInputRef}
+                />
+                <label
+                  htmlFor="file-input"
+                  className="cursor-pointer bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600"
+                >
+                  Upload File
+                </label>
+                <div>{getNameFile === '' ? '' : getNameFile?.name}</div>
+              </div>
             </div>
-            <div className='"flex flex-wrap gap-5 p-10'>
+            <div>
+              <ul>
+                <li>Laba Usaha = penjualan - hargaPokok - biayaUsaha : {getDataBody?.labaUsaha}</li>
+                <li>
+                  Jumlah Pendapatan = labaUsaha + pendapatanLain : {getDataBody?.jumlahPendapatan}
+                </li>
+                <li>
+                  Jumlah Biaya Luar Usaha = kebutuhanRumahTangga + biayaPendidikan + Biaya Lainnya :
+                  {getDataBody?.jumlahBiayaLuarUsaha}
+                </li>
+                <li>
+                  Pendapatan Bersih = labaUsaha + JumlahPendapatan - jumlahBiayaLuarUsaha :
+                  {getDataBody?.pendapatanBersih}
+                </li>
+                <li>
+                  Acc Permohonan = (rasio angsuran / 100) * pendapatanBersih * jangkaWaktu :
+                  {getDataBody?.accPermohonan}
+                </li>
+              </ul>
+            </div>
+            {/* <div className='"flex flex-wrap gap-5 p-10'>
               <TextField
                 value={stateBody?.labaUsaha}
                 // defaultValue={stateBody?.staffBasil}
@@ -555,7 +635,7 @@ function PengajuanHeader(props) {
                 type="number"
                 variant="outlined"
               />
-            </div>
+            </div> */}
           </DialogContentText>
         </DialogContent>
         <DialogActions>

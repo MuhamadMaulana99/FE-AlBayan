@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable react-hooks/exhaustive-deps */
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
@@ -9,15 +10,11 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import { showMessage } from 'app/store/fuse/messageSlice';
 import { useDispatch } from 'react-redux';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import axios from 'axios';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import {
   Alert,
-  Autocomplete,
   Dialog,
   DialogActions,
   DialogContent,
@@ -28,7 +25,6 @@ import {
 } from '@mui/material';
 import FuseLoading from '@fuse/core/FuseLoading';
 import Button from '@mui/material/Button';
-import dayjs from 'dayjs';
 import { useState } from 'react';
 import moment from 'moment';
 
@@ -133,8 +129,36 @@ const columns = [
   },
 ];
 
-function createData(no, id, nomorAkad, staffBasil, staffPokok, accBasil, accPokok, staffBy, staffAt, kasirBy, kasirAtt, lokasiPembayaran, status) {
-  return { no, id, nomorAkad, staffBasil, staffPokok, accBasil, accPokok, staffBy, staffAt, kasirBy, kasirAtt, lokasiPembayaran, status };
+function createData(
+  no,
+  id,
+  nomorAkad,
+  staffBasil,
+  staffPokok,
+  accBasil,
+  accPokok,
+  staffBy,
+  staffAt,
+  kasirBy,
+  kasirAtt,
+  lokasiPembayaran,
+  status
+) {
+  return {
+    no,
+    id,
+    nomorAkad,
+    staffBasil,
+    staffPokok,
+    accBasil,
+    accPokok,
+    staffBy,
+    staffAt,
+    kasirBy,
+    kasirAtt,
+    lokasiPembayaran,
+    status,
+  };
 }
 
 export default function AngsuranTable(props) {
@@ -165,16 +189,14 @@ export default function AngsuranTable(props) {
     kasirBy: null,
     kasirAtt: null,
     lokasiPembayaran: null,
-
   });
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  let rows = props?.data
+  let rows = props?.data;
   if (dataLogin?.roleUser === 'Staff') {
     rows = props?.data.filter((word) => word.staffBy === getResponseName?.name);
-
   }
 
   rows?.map((item, index) =>
@@ -190,7 +212,7 @@ export default function AngsuranTable(props) {
       item?.staffAt,
       item?.kasirBy,
       item?.kasirAtt,
-      item?.lokasiPembayaran,
+      item?.lokasiPembayaran
     )
   );
 
@@ -217,8 +239,8 @@ export default function AngsuranTable(props) {
       kasirBy: row?.kasirBy,
       kasirAtt: row?.kasirAtt,
       lokasiPembayaran: row?.lokasiPembayaran,
-    })
-    setgetDataEdit(row)
+    });
+    setgetDataEdit(row);
   };
   const handleClose = () => {
     setOpen(false);
@@ -235,7 +257,6 @@ export default function AngsuranTable(props) {
     kasirBy: dataEdit?.kasirBy,
     kasirAtt: dataEdit?.kasirAtt,
     lokasiPembayaran: dataEdit?.lokasiPembayaran,
-
   };
   console.log(body, 'body');
 
@@ -373,7 +394,7 @@ export default function AngsuranTable(props) {
         <DialogTitle id="alert-dialog-title">Edit Barang Keluar</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            <div className='mt-10'>
+            <div className="mt-10">
               {dataLogin?.roleUser === 'admin' ? (
                 <div className="flex gap-5">
                   <TextField
@@ -493,50 +514,52 @@ export default function AngsuranTable(props) {
                     variant="outlined"
                   />
                 </div>
-              ) : <div className="flex gap-5">
-                <TextField
-                  fullWidth
-                  value={dataEdit?.nomorAkad}
-                  onChange={(e) => {
-                    setDataEdit({
-                      ...dataEdit,
-                      nomorAkad: e.target.value,
-                    });
-                  }}
-                  id="outlined-basic"
-                  label="No Akad"
-                  type="number"
-                  variant="outlined"
-                />
-                <TextField
-                  fullWidth
-                  value={dataEdit?.staffBasil}
-                  onChange={(e) => {
-                    setDataEdit({
-                      ...dataEdit,
-                      staffBasil: e.target.value,
-                    });
-                  }}
-                  id="outlined-basic"
-                  label="Staff Basil"
-                  type="number"
-                  variant="outlined"
-                />
-                <TextField
-                  fullWidth
-                  value={dataEdit?.staffPokok}
-                  onChange={(e) => {
-                    setDataEdit({
-                      ...dataEdit,
-                      staffPokok: e.target.value,
-                    });
-                  }}
-                  id="outlined-basic"
-                  label="Staff Pokok"
-                  type="number"
-                  variant="outlined"
-                />
-              </div>}
+              ) : (
+                <div className="flex gap-5">
+                  <TextField
+                    fullWidth
+                    value={dataEdit?.nomorAkad}
+                    onChange={(e) => {
+                      setDataEdit({
+                        ...dataEdit,
+                        nomorAkad: e.target.value,
+                      });
+                    }}
+                    id="outlined-basic"
+                    label="No Akad"
+                    type="number"
+                    variant="outlined"
+                  />
+                  <TextField
+                    fullWidth
+                    value={dataEdit?.staffBasil}
+                    onChange={(e) => {
+                      setDataEdit({
+                        ...dataEdit,
+                        staffBasil: e.target.value,
+                      });
+                    }}
+                    id="outlined-basic"
+                    label="Staff Basil"
+                    type="number"
+                    variant="outlined"
+                  />
+                  <TextField
+                    fullWidth
+                    value={dataEdit?.staffPokok}
+                    onChange={(e) => {
+                      setDataEdit({
+                        ...dataEdit,
+                        staffPokok: e.target.value,
+                      });
+                    }}
+                    id="outlined-basic"
+                    label="Staff Pokok"
+                    type="number"
+                    variant="outlined"
+                  />
+                </div>
+              )}
             </div>
           </DialogContentText>
         </DialogContent>
@@ -576,16 +599,35 @@ export default function AngsuranTable(props) {
                   <TableCell>{row?.accBasil === null ? '-' : row?.accBasil}</TableCell>
                   <TableCell>{row?.accPokok === null ? '-' : row?.accPokok}</TableCell>
                   <TableCell>{row?.staffBy === null ? '-' : row?.staffBy}</TableCell>
-                  <TableCell>{row?.staffAt === null ? '-' : moment(row?.staffAt).format('MMMM Do YYYY, h:mm:ss a')}</TableCell>
+                  <TableCell>
+                    {row?.staffAt === null
+                      ? '-'
+                      : moment(row?.staffAt).format('MMMM Do YYYY, h:mm:ss a')}
+                  </TableCell>
                   <TableCell>{row?.kasirBy === null ? '-' : row?.kasirBy}</TableCell>
-                  <TableCell>{row?.kasirAtt === null ? '-' : moment(row?.kasirAtt).format('MMMM Do YYYY, h:mm:ss a')}</TableCell>
-                  <TableCell>{row?.lokasiPembayaran === null ? '-' : row?.lokasiPembayaran}</TableCell>
-                  <TableCell>{row?.accBasil === null ? <Button color='warning' variant="contained">Uncompleted</Button> : <Button color='success' variant="contained">Completed</Button>}</TableCell>
+                  <TableCell>
+                    {row?.kasirAtt === null
+                      ? '-'
+                      : moment(row?.kasirAtt).format('MMMM Do YYYY, h:mm:ss a')}
+                  </TableCell>
+                  <TableCell>
+                    {row?.lokasiPembayaran === null ? '-' : row?.lokasiPembayaran}
+                  </TableCell>
+                  <TableCell>
+                    {row?.accBasil === null ? (
+                      <Button color="warning" variant="contained">
+                        Uncompleted
+                      </Button>
+                    ) : (
+                      <Button color="success" variant="contained">
+                        Completed
+                      </Button>
+                    )}
+                  </TableCell>
                   {/* <TableCell>{row?.deskripsi}</TableCell> */}
                   <TableCell>
                     <div className="flex justify-center">
                       <div>
-                        {console.log(dataLogin?.roleUser === 'Staff' && row?.accBasil === null, 'sss')}
                         <IconButton
                           onClick={() => handleClickOpen(row.id, row)}
                           color="info"

@@ -85,6 +85,12 @@ const columns = [
     align: 'left',
   },
   {
+    id: 'statusAnalisa',
+    label: 'Status Permohonan',
+    minWidth: 170,
+    align: 'left',
+  },
+  {
     id: 'aksi',
     label: 'Aksi',
     minWidth: 170,
@@ -103,6 +109,7 @@ function createData(
   kecamatan,
   kabupaten,
   provinsi,
+  statusPermohonan,
   saldoTabungan
 ) {
   return {
@@ -115,6 +122,7 @@ function createData(
     kecamatan,
     kabupaten,
     provinsi,
+    statusPermohonan,
     saldoTabungan,
   };
 }
@@ -167,6 +175,7 @@ export default function PermohonanTable(props) {
       item?.kecamatan,
       item?.kabupaten,
       item?.provinsi,
+      item?.statusPermohonan,
       item?.saldoTabungan
     )
   );
@@ -217,11 +226,11 @@ export default function PermohonanTable(props) {
       (item) => item.mstRekening === dataEdit?.rekening?.mstRekening
     );
     setgetDataNasabahById(result);
-  }, [dataEdit?.rekening, dataNasabah]);
+  }, [dataEdit, dataNasabah]);
 
   const body = {
     namaNasabah: dataEdit?.namaNasabah,
-    rekening: dataEdit?.rekening,
+    rekening: dataEdit?.rekening?.mstRekening,
     jenisKelamin: dataEdit?.jenisKelamin,
     alamat: dataEdit?.alamat,
     kecamatan: dataEdit?.kecamatan,
@@ -229,10 +238,10 @@ export default function PermohonanTable(props) {
     provinsi: dataEdit?.provinsi,
     saldoTabungan: dataEdit?.saldoTabungan,
   };
-  console.log(body, 'body');
-  console.log(dataEdit, 'dataEdit');
-  console.log(getDataNasabahById, 'getDataNasabahById');
-  console.log(rows, 'rows');
+  // console.log(body, 'body');
+  console.log(dataNasabah, 'dataNasabah');
+  // console.log(getDataNasabahById, 'getDataNasabahById');
+  // console.log(rows, 'rows');
 
   const HandelEdit = (id) => {
     setLoading(true);
@@ -514,6 +523,17 @@ export default function PermohonanTable(props) {
                   <TableCell>{row?.kabupaten === null ? '-' : row?.kabupaten}</TableCell>
                   <TableCell>{row?.provinsi === null ? '-' : row?.provinsi}</TableCell>
                   <TableCell>{row?.saldoTabungan === null ? '-' : row?.saldoTabungan}</TableCell>
+                  <TableCell>
+                    {row?.statusPermohonan === 0 ? (
+                      <Button color="warning" variant="contained">
+                        Uncompleted
+                      </Button>
+                    ) : (
+                      <Button color="success" variant="contained">
+                        Completed
+                      </Button>
+                    )}
+                  </TableCell>
                   <TableCell>
                     <div className="flex justify-center">
                       <div>

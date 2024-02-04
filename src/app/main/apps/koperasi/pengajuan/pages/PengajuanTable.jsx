@@ -36,6 +36,12 @@ const top100Films = [
 const columns = [
   { id: 'no', label: 'NO', minWidth: 170, align: 'left' },
   {
+    id: 'namaNasabah',
+    label: 'Nama Nasabah',
+    minWidth: 170,
+    align: 'left',
+  },
+  {
     id: 'penjualan',
     label: 'Penjualan',
     minWidth: 170,
@@ -61,7 +67,7 @@ const columns = [
   },
   {
     id: 'pendapatanLain',
-    label: 'Pemdapatan Lain',
+    label: 'Pendapatan Lain',
     minWidth: 170,
     align: 'left',
   },
@@ -84,13 +90,13 @@ const columns = [
     align: 'left',
   },
   {
-    id: 'KasirAt',
+    id: 'biayaLainya',
     label: 'Biaya Lainnya',
     minWidth: 170,
     align: 'left',
   },
   {
-    id: 'KasirAt',
+    id: 'jumlahBiayaLuarUsaha',
     label: 'Jumlah Biaya Luar Usaha',
     minWidth: 170,
     align: 'left',
@@ -102,68 +108,74 @@ const columns = [
     align: 'left',
   },
   {
-    id: 'status',
+    id: 'rasioAngsuran',
     label: 'Rasio Angsuran',
     minWidth: 170,
     align: 'left',
   },
   {
-    id: 'stokBarang',
+    id: 'jangkaWaktu',
     label: 'Jangka Waktu',
     minWidth: 170,
     align: 'left',
   },
   {
-    id: 'satuan',
+    id: 'nominslPermohonan',
     label: 'Nominal Permohonan',
     minWidth: 170,
     align: 'left',
   },
   {
-    id: 'deskripsi',
+    id: 'tujuanPembiayaan',
     label: 'Tujuan Pembiayaan',
     minWidth: 170,
     align: 'left',
   },
   {
-    id: 'deskripsi',
+    id: 'jaminan',
     label: 'Jaminan',
     minWidth: 170,
     align: 'left',
   },
   {
-    id: 'deskripsi',
+    id: 'accPermohonan',
     label: 'Acc Permohonan',
     minWidth: 170,
     align: 'left',
   },
   {
-    id: 'deskripsi',
+    id: 'noAkad',
     label: 'No Akad',
     minWidth: 170,
     align: 'left',
   },
   {
-    id: 'deskripsi',
+    id: 'status',
     label: 'Status',
     minWidth: 170,
     align: 'left',
   },
   {
-    id: 'deskripsi',
+    id: 'statusBy',
     label: 'StatusBy',
     minWidth: 170,
     align: 'left',
   },
   {
-    id: 'deskripsi',
+    id: 'statusAt',
     label: 'StatusAt',
     minWidth: 170,
     align: 'left',
   },
   {
-    id: 'deskripsi',
+    id: 'foto',
     label: 'Foto',
+    minWidth: 170,
+    align: 'left',
+  },
+  {
+    id: 'statusPengajuan',
+    label: 'Status Pengajuan',
     minWidth: 170,
     align: 'left',
   },
@@ -187,7 +199,7 @@ function createData(
   jumlahPendapatan,
   kebutuhanRumahTangga,
   biayaPendidikan,
-  biayaLainnya,
+  biayaLainya,
   jumlahBiayaLuarUsaha,
   pendapatanBersih,
   rasioAngsuran,
@@ -213,7 +225,7 @@ function createData(
     jumlahPendapatan,
     kebutuhanRumahTangga,
     biayaPendidikan,
-    biayaLainnya,
+    biayaLainya,
     jumlahBiayaLuarUsaha,
     pendapatanBersih,
     rasioAngsuran,
@@ -256,7 +268,7 @@ export default function PengajuanTable(props) {
     jumlahPendapatan: null,
     kebutuhanRumahTangga: null,
     biayaPendidikan: null,
-    biayaLainnya: null,
+    biayaLainya: null,
     jumlahBiayaLuarUsaha: null,
     pendapatanBersih: null,
     rasioAngsuran: null,
@@ -292,7 +304,7 @@ export default function PengajuanTable(props) {
       item?.jumlahPendapatan,
       item?.kebutuhanRumahTangga,
       item?.biayaPendidikan,
-      item?.biayaLainnya,
+      item?.biayaLainya,
       item?.jumlahBiayaLuarUsaha,
       item?.pendapatanBersih,
       item?.rasioAngsuran,
@@ -330,7 +342,7 @@ export default function PengajuanTable(props) {
       jumlahPendapatan: row?.jumlahPendapatan,
       kebutuhanRumahTangga: row?.kebutuhanRumahTangga,
       biayaPendidikan: row?.biayaPendidikan,
-      biayaLainnya: row?.biayaLainnya,
+      biayaLainya: row?.biayaLainya,
       jumlahBiayaLuarUsaha: row?.jumlahBiayaLuarUsaha,
       pendapatanBersih: row?.pendapatanBersih,
       rasioAngsuran: row?.rasioAngsuran,
@@ -354,12 +366,12 @@ export default function PengajuanTable(props) {
     pendapatanBersih: dataEdit?.pendapatanBersih,
     rasioAngsuran: dataEdit?.rasioAngsuran,
   };
-  console.log(body, 'body');
+  // console.log(body, 'body');
 
   const HandelEdit = (id) => {
     setLoading(true);
     axios
-      .put(`${process.env.REACT_APP_API_URL_API_}/angsuran/${dataEdit?.id}`, body)
+      .put(`${process.env.REACT_APP_API_URL_API_}/pengajuan/${dataEdit?.id}`, body)
       .then((res) => {
         props?.getData();
         handleClose();
@@ -413,7 +425,7 @@ export default function PengajuanTable(props) {
   const HandelDelete = (id) => {
     setLoading(true);
     axios
-      .delete(`${process.env.REACT_APP_API_URL_API_}/angsuran/${id}`)
+      .delete(`${process.env.REACT_APP_API_URL_API_}/pengajuan/${id}`)
       .then((res) => {
         props?.getData();
         setLoading(false);
@@ -596,6 +608,7 @@ export default function PengajuanTable(props) {
               return (
                 <TableRow key={row.id} hover role="checkbox" tabIndex={-1}>
                   <TableCell>{index + 1}.</TableCell>
+                  <TableCell>-</TableCell>
                   <TableCell>{row?.penjualan === null ? '-' : row?.penjualan}</TableCell>
                   <TableCell>{row?.hargaPokok === null ? '-' : row?.hargaPokok}</TableCell>
                   <TableCell>{row?.biaya === null ? '-' : row?.biaya}</TableCell>
@@ -610,7 +623,7 @@ export default function PengajuanTable(props) {
                   <TableCell>
                     {row?.biayaPendidikan === null ? '-' : row?.biayaPendidikan}
                   </TableCell>
-                  <TableCell>{row?.biayaLainnya === null ? '-' : row?.biayaLainnya}</TableCell>
+                  <TableCell>{row?.biayaLainya === null ? '-' : row?.biayaLainya}</TableCell>
                   <TableCell>
                     {row?.jumlahBiayaLuarUsaha === null ? '-' : row?.jumlahBiayaLuarUsaha}
                   </TableCell>
@@ -630,6 +643,7 @@ export default function PengajuanTable(props) {
                   <TableCell>{row?.nomorAkad === null ? '-' : row?.nomorAkad}</TableCell>
                   <TableCell>{row?.status === null ? '-' : row?.status}</TableCell>
                   <TableCell>{row?.statusBy === null ? '-' : row?.statusBy}</TableCell>
+                  <TableCell>{row?.statusAt === null ? '-' : row?.statusAt}</TableCell>
                   <TableCell>{row?.foto === null ? '-' : row?.foto}</TableCell>
                   <TableCell>
                     {row?.labaUsaha === null ? (

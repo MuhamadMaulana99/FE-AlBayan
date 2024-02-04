@@ -123,12 +123,7 @@ function Pengajuan() {
         />
       }
       content={
-        <PengajuanTable
-          masterStaff={masterStaff}
-          getData={getData}
-          data={data}
-          loading={loading}
-        />
+        <PengajuanTable masterStaff={masterStaff} getData={getData} data={data} loading={loading} />
       }
       scroll={isMobile ? 'normal' : 'content'}
     />

@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 /* eslint-disable no-nested-ternary */
 /* eslint-disable new-cap */
 /* eslint-disable no-plusplus */
@@ -82,7 +83,7 @@ function PermohonanHeader(props) {
     provinsi: getDataNasabahById[0]?.mstProvinsi,
     saldoTabungan: stateBody?.saldoTabungan,
   };
-  console.log(body, 'body');
+  // console.log(body, 'body');
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -291,7 +292,6 @@ function PermohonanHeader(props) {
                 sx={{ width: 300 }}
                 onChange={(e, newValue) => {
                   setStateBody({ ...stateBody, rekening: newValue });
-                  // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
                 }}
                 renderInput={(params) => <TextField {...params} label="Data Nasabah" />}
               />
@@ -302,7 +302,6 @@ function PermohonanHeader(props) {
                 }}
                 onChange={(e) => {
                   setStateBody({ ...stateBody, namaNasabah: getDataNasabahById?.nama });
-                  // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
                 }}
                 id="outlined-basic"
                 focused
@@ -318,7 +317,6 @@ function PermohonanHeader(props) {
                 value={getDataNasabahById[0]?.mstRekening}
                 onChange={(e) => {
                   setStateBody({ ...stateBody, rekening: e.target.value });
-                  // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
                 }}
                 id="outlined-basic"
                 label="Rekening"
@@ -333,7 +331,6 @@ function PermohonanHeader(props) {
                 value={getDataNasabahById[0]?.mstjenisKelamin?.kelamin}
                 onChange={(e) => {
                   setStateBody({ ...stateBody, jenisKelamin: e.target.value });
-                  // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
                 }}
                 id="outlined-basic"
                 label="Jenis Kelamin"
@@ -348,7 +345,6 @@ function PermohonanHeader(props) {
                 value={getDataNasabahById[0]?.mstAlamat}
                 onChange={(e) => {
                   setStateBody({ ...stateBody, alamat: e.target.value });
-                  // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
                 }}
                 id="outlined-basic"
                 label="Alamat"
@@ -363,7 +359,6 @@ function PermohonanHeader(props) {
                 value={getDataNasabahById[0]?.mstKecamatan}
                 onChange={(e) => {
                   setStateBody({ ...stateBody, kecamatan: e.target.value });
-                  // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
                 }}
                 id="outlined-basic"
                 label="Kecamatan"
@@ -378,7 +373,6 @@ function PermohonanHeader(props) {
                 value={getDataNasabahById[0]?.mstKabupaten}
                 onChange={(e) => {
                   setStateBody({ ...stateBody, kabupaten: e.target.value });
-                  // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
                 }}
                 id="outlined-basic"
                 label="Kabupaten"
@@ -393,7 +387,6 @@ function PermohonanHeader(props) {
                 value={getDataNasabahById[0]?.mstProvinsi}
                 onChange={(e) => {
                   setStateBody({ ...stateBody, provinsi: e.target.value });
-                  // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
                 }}
                 id="outlined-basic"
                 label="Provinsi"
@@ -403,7 +396,6 @@ function PermohonanHeader(props) {
                 value={stateBody?.saldoTabungan}
                 onChange={(e) => {
                   setStateBody({ ...stateBody, saldoTabungan: e.target.value });
-                  // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
                 }}
                 id="outlined-basic"
                 label="Saldo "

@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable new-cap */
 /* eslint-disable no-plusplus */
 /* eslint-disable func-names */
@@ -18,10 +19,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { useDispatch } from 'react-redux';
 import axios from 'axios';
 import { showMessage } from 'app/store/fuse/messageSlice';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { Autocomplete, TextField } from '@mui/material';
+import { TextField } from '@mui/material';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import moment from 'moment';
 import jsPDF from 'jspdf';
@@ -67,15 +65,23 @@ function AngsuranHeader(props) {
     staffPokok: null,
     accBasil: null,
     accPokok: null,
-    staffBy: dataLogin?.roleUser === 'admin' || dataLogin?.roleUser === 'Kasir' ? null : getResponseName?.name,
-    staffAt: dataLogin?.roleUser === 'admin' || dataLogin?.roleUser === 'Kasir' ? null : currentDate,
-    kasirBy: dataLogin?.roleUser === 'admin' || dataLogin?.roleUser === 'Kasir' ? getResponseName?.name : null,
-    kasirAtt: dataLogin?.roleUser === 'admin' || dataLogin?.roleUser === 'Kasir' ? currentDate : null,
-    lokasiPembayaran: dataLogin?.roleUser === 'admin' || dataLogin?.roleUser === 'Kasir' ? 'Kantor' : 'Lapangan',
-
-  })
-  console.log(stateBody, 'stateBody')
-  console.log(dataLogin, 'dataLogin')
+    staffBy:
+      dataLogin?.roleUser === 'admin' || dataLogin?.roleUser === 'Kasir'
+        ? null
+        : getResponseName?.name,
+    staffAt:
+      dataLogin?.roleUser === 'admin' || dataLogin?.roleUser === 'Kasir' ? null : currentDate,
+    kasirBy:
+      dataLogin?.roleUser === 'admin' || dataLogin?.roleUser === 'Kasir'
+        ? getResponseName?.name
+        : null,
+    kasirAtt:
+      dataLogin?.roleUser === 'admin' || dataLogin?.roleUser === 'Kasir' ? currentDate : null,
+    lokasiPembayaran:
+      dataLogin?.roleUser === 'admin' || dataLogin?.roleUser === 'Kasir' ? 'Kantor' : 'Lapangan',
+  });
+  console.log(stateBody, 'stateBody');
+  console.log(dataLogin, 'dataLogin');
 
   const body = {
     kodeBarang: JSON.stringify(kodeBarang),
@@ -286,14 +292,14 @@ function AngsuranHeader(props) {
         <DialogTitle id="alert-dialog-title">Tambah Angsuran</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            <div className='mt-10'>
+            <div className="mt-10">
               {dataLogin?.roleUser === 'admin' ? (
                 <div className="flex gap-5">
                   <TextField
                     fullWidth
                     value={stateBody?.nomorAkad}
                     onChange={(e) => {
-                      setStateBody({ ...stateBody, nomorAkad: e.target.value })
+                      setStateBody({ ...stateBody, nomorAkad: e.target.value });
                       // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
                     }}
                     id="outlined-basic"
@@ -305,7 +311,7 @@ function AngsuranHeader(props) {
                     fullWidth
                     value={stateBody?.staffBasil}
                     onChange={(e) => {
-                      setStateBody({ ...stateBody, staffBasil: e.target.value })
+                      setStateBody({ ...stateBody, staffBasil: e.target.value });
                       // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
                     }}
                     id="outlined-basic"
@@ -348,7 +354,7 @@ function AngsuranHeader(props) {
                     fullWidth
                     value={stateBody?.nomorAkad}
                     onChange={(e) => {
-                      setStateBody({ ...stateBody, nomorAkad: e.target.value })
+                      setStateBody({ ...stateBody, nomorAkad: e.target.value });
                       // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
                     }}
                     id="outlined-basic"
@@ -376,41 +382,43 @@ function AngsuranHeader(props) {
                     variant="outlined"
                   />
                 </div>
-              ) : <div className="flex gap-5">
-                <TextField
-                  fullWidth
-                  value={stateBody?.nomorAkad}
-                  onChange={(e) => {
-                    setStateBody({ ...stateBody, nomorAkad: e.target.value })
-                    // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
-                  }}
-                  id="outlined-basic"
-                  label="No Akad"
-                  type="number"
-                  variant="outlined"
-                />
-                <TextField
-                  fullWidth
-                  value={stateBody?.staffBasil}
-                  onChange={(e) => {
-                    setStateBody({ ...stateBody, staffBasil: e.target.value })
-                    // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
-                  }}
-                  id="outlined-basic"
-                  label="Staff Basil"
-                  type="number"
-                  variant="outlined"
-                />
-                <TextField
-                  fullWidth
-                  value={stateBody?.staffPokok}
-                  onChange={(e) => setStateBody({ ...stateBody, staffPokok: e.target.value })}
-                  id="outlined-basic"
-                  label="Staff Pokok"
-                  type="number"
-                  variant="outlined"
-                />
-              </div>}
+              ) : (
+                <div className="flex gap-5">
+                  <TextField
+                    fullWidth
+                    value={stateBody?.nomorAkad}
+                    onChange={(e) => {
+                      setStateBody({ ...stateBody, nomorAkad: e.target.value });
+                      // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
+                    }}
+                    id="outlined-basic"
+                    label="No Akad"
+                    type="number"
+                    variant="outlined"
+                  />
+                  <TextField
+                    fullWidth
+                    value={stateBody?.staffBasil}
+                    onChange={(e) => {
+                      setStateBody({ ...stateBody, staffBasil: e.target.value });
+                      // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
+                    }}
+                    id="outlined-basic"
+                    label="Staff Basil"
+                    type="number"
+                    variant="outlined"
+                  />
+                  <TextField
+                    fullWidth
+                    value={stateBody?.staffPokok}
+                    onChange={(e) => setStateBody({ ...stateBody, staffPokok: e.target.value })}
+                    id="outlined-basic"
+                    label="Staff Pokok"
+                    type="number"
+                    variant="outlined"
+                  />
+                </div>
+              )}
             </div>
           </DialogContentText>
         </DialogContent>
@@ -481,7 +489,7 @@ function AngsuranHeader(props) {
             inputProps={{
               'aria-label': 'Search',
             }}
-          // onChange={(ev) => dispatch(setProductsSearchText(ev))}
+            // onChange={(ev) => dispatch(setProductsSearchText(ev))}
           />
         </Paper>
         <motion.div
@@ -519,7 +527,6 @@ function AngsuranHeader(props) {
               Add
             </Button>
           )}
-
         </motion.div>
       </div>
     </div>
