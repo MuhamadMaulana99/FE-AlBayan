@@ -13,7 +13,7 @@ function Pengajuan() {
   const dispatch = useDispatch();
   const [data, setData] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
-  const [masterStaff, setDataMasterStaff] = useState([]);
+  const [dataPermohonanApprove, setDatadataPermohonanApprove] = useState([]);
 
   const isMobile = useThemeMediaQuery((theme) => theme.breakpoints.down('lg'));
   const getData = async () => {
@@ -59,16 +59,16 @@ function Pengajuan() {
         console.log(err);
       });
   };
-  const getMasterStaff = () => {
+  const getDataPermohonanApprove = () => {
     setLoading(true);
     axios
-      .get(`${process.env.REACT_APP_API_URL_API_}/masterStaff`)
+      .get(`${process.env.REACT_APP_API_URL_API_}/permohonanByApprove`)
       .then((res) => {
-        setDataMasterStaff(res?.data);
+        setDatadataPermohonanApprove(res?.data);
         setLoading(false);
       })
       .catch((err) => {
-        setDataMasterStaff([]);
+        setDatadataPermohonanApprove([]);
         setLoading(false);
         const errStatus = err?.response?.status;
         const errMessage = err?.response?.data?.message;
@@ -105,7 +105,7 @@ function Pengajuan() {
     let isUnmout = false;
     if (!isUnmout) {
       getData();
-      getMasterStaff();
+      getDataPermohonanApprove();
     }
     return () => {
       isUnmout = true;
@@ -116,14 +116,19 @@ function Pengajuan() {
     <FusePageCarded
       header={
         <PengajuanHeader
-          masterStaff={masterStaff}
+          dataPermohonanApprove={dataPermohonanApprove}
           getData={getData}
           data={data}
           loading={loading}
         />
       }
       content={
-        <PengajuanTable masterStaff={masterStaff} getData={getData} data={data} loading={loading} />
+        <PengajuanTable
+          dataPermohonanApprove={dataPermohonanApprove}
+          getData={getData}
+          data={data}
+          loading={loading}
+        />
       }
       scroll={isMobile ? 'normal' : 'content'}
     />

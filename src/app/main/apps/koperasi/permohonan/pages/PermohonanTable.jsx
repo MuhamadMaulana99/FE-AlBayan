@@ -1,5 +1,6 @@
 /* eslint-disable no-nested-ternary */
 /* eslint-disable react-hooks/exhaustive-deps */
+import * as React from 'react';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -27,12 +28,16 @@ import {
 import FuseLoading from '@fuse/core/FuseLoading';
 import Button from '@mui/material/Button';
 import { useEffect, useState } from 'react';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import CloseIcon from '@mui/icons-material/Close';
+import Slide from '@mui/material/Slide';
+import Analisa from '../analisa/Analisa';
 
-const top100Films = [
-  { label: 'KG', year: 1994 },
-  { label: 'Lusin', year: 1972 },
-  { label: 'Bal', year: 1994 },
-];
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 const columns = [
   { id: 'no', label: 'NO', minWidth: 170, align: 'left' },
@@ -85,6 +90,12 @@ const columns = [
     align: 'left',
   },
   {
+    id: 'persentase',
+    label: 'Persentase',
+    minWidth: 170,
+    align: 'left',
+  },
+  {
     id: 'statusAnalisa',
     label: 'Status Permohonan',
     minWidth: 170,
@@ -110,6 +121,8 @@ function createData(
   kabupaten,
   provinsi,
   statusPermohonan,
+  hasilPermohonan,
+  persentase,
   saldoTabungan
 ) {
   return {
@@ -123,6 +136,8 @@ function createData(
     kabupaten,
     provinsi,
     statusPermohonan,
+    hasilPermohonan,
+    persentase,
     saldoTabungan,
   };
 }
@@ -141,9 +156,12 @@ export default function PermohonanTable(props) {
   const dataMasterSuplayer = props?.dataMasterSuplayer;
   const dispatch = useDispatch();
   const { dataMasterBarang } = props;
-  // console.log(dataMasterBarang, 'dataMasterBarang');
+  // console.log(dataAnalisa, 'dataAnalisa');
   const [data, setData] = useState([]);
   const [getDataEdit, setgetDataEdit] = useState({});
+  const [getDataNasabahById, setgetDataNasabahById] = useState([]);
+  const [selectedItems, setSelectedItems] = useState([]);
+  const [selectedItemsValue, setSelectedItemsValue] = useState([]);
   const [dataEdit, setDataEdit] = useState({
     id: null,
     namaNasabah: null,
@@ -163,6 +181,9 @@ export default function PermohonanTable(props) {
   if (dataLogin?.roleUser === 'Staff') {
     rows = props?.data.filter((word) => word.kabupaten === getResponseName?.name);
   }
+  const propsFromParent = (analisa) => {
+    console.log(analisa, 'analisaa');
+  };
 
   rows?.map((item, index) =>
     createData(
@@ -176,6 +197,8 @@ export default function PermohonanTable(props) {
       item?.kabupaten,
       item?.provinsi,
       item?.statusPermohonan,
+      item?.hasilPermohonan,
+      item?.persentase,
       item?.saldoTabungan
     )
   );
@@ -200,6 +223,9 @@ export default function PermohonanTable(props) {
       kecamatan: row?.kecamatan,
       kabupaten: row?.kabupaten,
       provinsi: row?.provinsi,
+      statusPermohonan: row?.statusPermohonan,
+      hasilPermohonan: row?.hasilPermohonan,
+      persentase: row?.persentase,
       saldoTabungan: row?.saldoTabungan,
     });
     // setgetDataEdit(row);
@@ -216,11 +242,67 @@ export default function PermohonanTable(props) {
       kecamatan: null,
       kabupaten: null,
       provinsi: null,
+      statusPermohonan: null,
+      hasilPermohonan: null,
+      persentase: null,
       saldoTabungan: null,
     });
   };
+  const [openAnalisa, setopenAnalisa] = useState(false);
 
-  const [getDataNasabahById, setgetDataNasabahById] = useState([]);
+  const handleClickopenAnalisa = (row) => {
+    if (row?.statusPermohonan === false) {
+      setopenAnalisa(true);
+      setDataEdit({
+        id: row?.id,
+        namaNasabah: row?.namaNasabah,
+        rekening: row?.rekening,
+        jenisKelamin: row?.jenisKelamin,
+        alamat: row?.alamat,
+        kecamatan: row?.kecamatan,
+        kabupaten: row?.kabupaten,
+        provinsi: row?.provinsi,
+        statusPermohonan: row?.statusPermohonan,
+        hasilPermohonan: row?.hasilPermohonan,
+        persentase: row?.persentase,
+        saldoTabungan: row?.saldoTabungan,
+      });
+    } else {
+      dispatch(
+        showMessage({
+          message: `Nasabah ${row?.namaNasabah} Sudah Di Analisa`,
+          autoHideDuration: 2000,
+          anchorOrigin: {
+            vertical: 'top',
+            horizontal: 'center',
+          },
+          variant: 'warning',
+        })
+      );
+    }
+  };
+
+  const handleCloseAnalisa = () => {
+    setopenAnalisa(false);
+    setSelectedItemsValue([]);
+    setSelectedItems([]);
+  };
+
+  const initialValue = 0;
+  const sumSelected = selectedItemsValue.reduce(
+    (accumulator, currentValue) => accumulator + currentValue,
+    initialValue
+  );
+
+  // console.log(sumSelected, 'sum');
+  function hitungPersentase(nilai, totalNilai) {
+    const persen = (nilai / totalNilai) * 100;
+    return Math.round(persen);
+  }
+
+  const persentase = hitungPersentase(sumSelected, 370);
+  // console.log(`Persentase: ${persentase}%`);
+
   useEffect(() => {
     const result = dataNasabah.filter(
       (item) => item.mstRekening === dataEdit?.rekening?.mstRekening
@@ -239,7 +321,7 @@ export default function PermohonanTable(props) {
     saldoTabungan: dataEdit?.saldoTabungan,
   };
   // console.log(body, 'body');
-  console.log(dataNasabah, 'dataNasabah');
+  // console.log(dataNasabah, 'dataNasabah');
   // console.log(getDataNasabahById, 'getDataNasabahById');
   // console.log(rows, 'rows');
 
@@ -265,6 +347,64 @@ export default function PermohonanTable(props) {
       })
       .catch((err) => {
         handleClose();
+        setLoading(false);
+        const errStatus = err.response.status;
+        const errMessage = err.response.data.message;
+        let messages = '';
+        if (errStatus === 401) {
+          messages = 'Unauthorized!!';
+          window.location.href = '/login';
+        } else if (errStatus === 500) {
+          messages = 'Server Error!!';
+        } else if (errStatus === 404) {
+          messages = 'Not Found Error!!!';
+        } else if (errStatus === 408) {
+          messages = 'TimeOut Error!!';
+        } else if (errStatus === 400) {
+          messages = errMessage;
+        } else {
+          messages = 'Something Wrong!!';
+        }
+        dispatch(
+          showMessage({
+            message: messages,
+            autoHideDuration: 2000,
+            anchorOrigin: {
+              vertical: 'top',
+              horizontal: 'center',
+            },
+            variant: 'error',
+          })
+        );
+        console.log(err);
+      });
+  };
+  const HandelApproval = (row, id) => {
+    setLoading(true);
+    axios
+      .put(`${process.env.REACT_APP_API_URL_API_}/approvalPermohonan/${dataEdit?.id}`, {
+        statusPermohonan: true,
+        persentase,
+        hasilPermohonan: !(persentase < 70),
+      })
+      .then((res) => {
+        props?.getData();
+        handleCloseAnalisa();
+        setLoading(false);
+        dispatch(
+          showMessage({
+            message: `Nasabah ${row?.namaNasabah} Berhasil Di approv`,
+            autoHideDuration: 2000,
+            anchorOrigin: {
+              vertical: 'top',
+              horizontal: 'center',
+            },
+            variant: 'success',
+          })
+        );
+      })
+      .catch((err) => {
+        handleCloseAnalisa();
         setLoading(false);
         const errStatus = err.response.status;
         const errMessage = err.response.data.message;
@@ -367,8 +507,46 @@ export default function PermohonanTable(props) {
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
       <Dialog
+        fullScreen
+        open={openAnalisa}
+        onClose={handleCloseAnalisa}
+        TransitionComponent={Transition}
+      >
+        <AppBar sx={{ position: 'relative' }}>
+          <Toolbar>
+            <IconButton
+              edge="start"
+              color="inherit"
+              onClick={handleCloseAnalisa}
+              aria-label="close"
+            >
+              <CloseIcon />
+            </IconButton>
+            <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
+              Analisa {persentase}%
+            </Typography>
+            <Button
+              disabled={selectedItemsValue.length === 0}
+              autoFocus
+              color="inherit"
+              onClick={HandelApproval}
+            >
+              save
+            </Button>
+          </Toolbar>
+        </AppBar>
+        <Analisa
+          propsFromParent={propsFromParent}
+          selectedItems={selectedItems}
+          selectedItemsValue={selectedItemsValue}
+          setSelectedItems={setSelectedItems}
+          setSelectedItemsValue={setSelectedItemsValue}
+        />
+      </Dialog>
+      <Dialog
         className="py-20"
         open={open}
+        id="edit"
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
@@ -523,14 +701,31 @@ export default function PermohonanTable(props) {
                   <TableCell>{row?.kabupaten === null ? '-' : row?.kabupaten}</TableCell>
                   <TableCell>{row?.provinsi === null ? '-' : row?.provinsi}</TableCell>
                   <TableCell>{row?.saldoTabungan === null ? '-' : row?.saldoTabungan}</TableCell>
+                  <TableCell>{`${row?.persentase === null ? '-' : row?.persentase}%`}</TableCell>
                   <TableCell>
-                    {row?.statusPermohonan === 0 ? (
-                      <Button color="warning" variant="contained">
-                        Uncompleted
+                    {row?.statusPermohonan === false ? (
+                      <Button
+                        onClick={() => handleClickopenAnalisa(row, row?.id)}
+                        color="info"
+                        variant="contained"
+                      >
+                        Analisa
+                      </Button>
+                    ) : row?.persentase < 70 ? (
+                      <Button
+                        onClick={() => handleClickopenAnalisa(row, row?.id)}
+                        color="warning"
+                        variant="contained"
+                      >
+                        Di Tolak
                       </Button>
                     ) : (
-                      <Button color="success" variant="contained">
-                        Completed
+                      <Button
+                        onClick={() => handleClickopenAnalisa(row, row?.id)}
+                        color="success"
+                        variant="contained"
+                      >
+                        Di Terima
                       </Button>
                     )}
                   </TableCell>

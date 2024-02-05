@@ -52,7 +52,7 @@ function PengajuanHeader(props) {
     dataLogin = JSON.parse(getAllUserResponse);
   }
   const data = props?.data;
-  const { masterStaff } = props;
+  const { dataPermohonanApprove } = props;
   const [loading, setLoading] = React.useState(true);
   const [open, setOpen] = React.useState(false);
   const [getNameFile, setgetNameFile] = useState('');
@@ -417,16 +417,16 @@ function PengajuanHeader(props) {
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             <div className="flex flex-wrap gap-5 p-10">
-            <Autocomplete
+              <Autocomplete
                 disablePortal
                 id="combo-box-demo"
-                // options={dataNasabah}
-                // value={dataEdit?.rekening}
-                // getOptionLabel={(option) => option.mstRekening}
-                // sx={{ width: 300 }}
-                // onChange={(e, newValue) => {
-                //   setDataEdit({ ...dataEdit, rekening: newValue });
-                // }}
+                options={dataPermohonanApprove}
+                value={stateBody?.rekening}
+                getOptionLabel={(option) => option.rekening}
+                sx={{ width: 300 }}
+                onChange={(e, newValue) => {
+                  setStateBody({ ...stateBody, rekening: newValue });
+                }}
                 renderInput={(params) => <TextField {...params} label="Data Nasabah" />}
               />
               <TextField
