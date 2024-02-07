@@ -11,7 +11,7 @@ export default function Analisa(props) {
     const currentIndex = selectedItems.indexOf(idChild);
     const newSelectedItems = [...selectedItems];
     const newSelectedItemsValue = [...selectedItemsValue];
-
+    
     if (currentIndex === -1) {
       newSelectedItems.push(idChild);
       newSelectedItemsValue.push(option?.scores);
@@ -19,6 +19,8 @@ export default function Analisa(props) {
       newSelectedItems.splice(currentIndex, 1);
       newSelectedItemsValue.splice(currentIndex, 1);
     }
+    console.log(newSelectedItems, 'newSelectedItems');
+    console.log(newSelectedItemsValue, 'newSelectedItemsValue');
 
     setSelectedItems(newSelectedItems);
     setSelectedItemsValue(newSelectedItemsValue);

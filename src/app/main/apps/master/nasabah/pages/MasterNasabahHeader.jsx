@@ -59,6 +59,16 @@ function MasterNasabahHeader(props) {
   const handleClose = () => {
     setOpen(false);
     setnama('');
+    setStateBody({
+      nama: null,
+      mstRekening: null,
+      mstNik: null,
+      mstjenisKelamin: null,
+      mstAlamat: null,
+      mstKecamatan: null,
+      mstKabupaten: null,
+      mstProvinsi: null,
+    });
   };
   const HandelSubmit = () => {
     setLoading(true);

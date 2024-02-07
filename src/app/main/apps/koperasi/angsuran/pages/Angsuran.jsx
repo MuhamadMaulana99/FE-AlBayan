@@ -13,7 +13,7 @@ function Angsuran() {
   const dispatch = useDispatch();
   const [data, setData] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
-  const [masterStaff, setDataMasterStaff] = useState([]);
+  const [optionNoAkad, setOptionNoAkad] = useState([]);
 
   const isMobile = useThemeMediaQuery((theme) => theme.breakpoints.down('lg'));
   const getData = async () => {
@@ -62,13 +62,13 @@ function Angsuran() {
   const getMasterStaff = () => {
     setLoading(true);
     axios
-      .get(`${process.env.REACT_APP_API_URL_API_}/masterStaff`)
+      .get(`${process.env.REACT_APP_API_URL_API_}/pengajuanByNoAkad`)
       .then((res) => {
-        setDataMasterStaff(res?.data);
+        setOptionNoAkad(res?.data);
         setLoading(false);
       })
       .catch((err) => {
-        setDataMasterStaff([]);
+        setOptionNoAkad([]);
         setLoading(false);
         const errStatus = err?.response?.status;
         const errMessage = err?.response?.data?.message;
@@ -116,7 +116,7 @@ function Angsuran() {
     <FusePageCarded
       header={
         <AngsuranHeader
-          masterStaff={masterStaff}
+          optionNoAkad={optionNoAkad}
           getData={getData}
           data={data}
           loading={loading}
@@ -124,7 +124,7 @@ function Angsuran() {
       }
       content={
         <AngsuranTable
-          masterStaff={masterStaff}
+          optionNoAkad={optionNoAkad}
           getData={getData}
           data={data}
           loading={loading}

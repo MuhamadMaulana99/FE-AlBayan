@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/img-redundant-alt */
 /* eslint-disable no-nested-ternary */
 /* eslint-disable react-hooks/exhaustive-deps */
 import Paper from '@mui/material/Paper';
@@ -38,6 +39,12 @@ const columns = [
   {
     id: 'namaNasabah',
     label: 'Nama Nasabah',
+    minWidth: 170,
+    align: 'left',
+  },
+  {
+    id: 'rekening',
+    label: 'Rekening',
     minWidth: 170,
     align: 'left',
   },
@@ -150,8 +157,8 @@ const columns = [
     align: 'left',
   },
   {
-    id: 'status',
-    label: 'Status',
+    id: 'approve',
+    label: 'Aprove',
     minWidth: 170,
     align: 'left',
   },
@@ -191,6 +198,7 @@ const columns = [
 function createData(
   no,
   id,
+  rekening,
   penjualan,
   hargaPokok,
   biaya,
@@ -217,6 +225,7 @@ function createData(
   return {
     no,
     id,
+    rekening,
     penjualan,
     hargaPokok,
     biaya,
@@ -255,7 +264,7 @@ export default function PengajuanTable(props) {
   const dataMasterSuplayer = props?.dataMasterSuplayer;
   const dispatch = useDispatch();
   const { dataMasterBarang } = props;
-  // console.log(dataMasterBarang, 'dataMasterBarang');
+  console.log(getResponseName, 'getResponseName');
   const [data, setData] = useState([]);
   const [getDataEdit, setgetDataEdit] = useState({});
   const [dataEdit, setDataEdit] = useState({
@@ -287,10 +296,10 @@ export default function PengajuanTable(props) {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  let rows = props?.data;
-  if (dataLogin?.roleUser === 'Staff') {
-    rows = props?.data.filter((word) => word.jumlahPendapatan === getResponseName?.name);
-  }
+  const rows = props?.data;
+  // if (dataLogin?.roleUser === 'Staff') {
+  //   rows = props?.data.filter((word) => word.jumlahPendapatan === getResponseName?.name);
+  // }
 
   rows?.map((item, index) =>
     createData(
@@ -421,6 +430,76 @@ export default function PengajuanTable(props) {
         );
         console.log(err);
       });
+  };
+  const HandelApprove = (id, row) => {
+    setLoading(true);
+    if (dataLogin?.roleUser === 'Kasir' || dataLogin?.roleUser === 'Admin') {
+      axios
+        .put(`${process.env.REACT_APP_API_URL_API_}/pengajuanByApprove/${id}`, {
+          status: getResponseName?.name,
+        })
+        .then((res) => {
+          props?.getData();
+          handleClose();
+          setLoading(false);
+          dispatch(
+            showMessage({
+              message: `Data Berhasil Di Approve oleh ${getResponseName?.name}`,
+              autoHideDuration: 2000,
+              anchorOrigin: {
+                vertical: 'top',
+                horizontal: 'center',
+              },
+              variant: 'success',
+            })
+          );
+        })
+        .catch((err) => {
+          handleClose();
+          setLoading(false);
+          const errStatus = err.response.status;
+          const errMessage = err.response.data.message;
+          let messages = '';
+          if (errStatus === 401) {
+            messages = 'Unauthorized!!';
+            window.location.href = '/login';
+          } else if (errStatus === 500) {
+            messages = 'Server Error!!';
+          } else if (errStatus === 404) {
+            messages = 'Not Found Error!!!';
+          } else if (errStatus === 408) {
+            messages = 'TimeOut Error!!';
+          } else if (errStatus === 400) {
+            messages = errMessage;
+          } else {
+            messages = 'Something Wrong!!';
+          }
+          dispatch(
+            showMessage({
+              message: messages,
+              autoHideDuration: 2000,
+              anchorOrigin: {
+                vertical: 'top',
+                horizontal: 'center',
+              },
+              variant: 'error',
+            })
+          );
+          console.log(err);
+        });
+    } else {
+      dispatch(
+        showMessage({
+          message: 'Silahkan Hubungi Kasir Untuk Aprove ',
+          autoHideDuration: 2000,
+          anchorOrigin: {
+            vertical: 'top',
+            horizontal: 'center',
+          },
+          variant: 'warning',
+        })
+      );
+    }
   };
   const HandelDelete = (id) => {
     setLoading(true);
@@ -608,7 +687,8 @@ export default function PengajuanTable(props) {
               return (
                 <TableRow key={row.id} hover role="checkbox" tabIndex={-1}>
                   <TableCell>{index + 1}.</TableCell>
-                  <TableCell>-</TableCell>
+                  <TableCell>{row?.namaNasabah === null ? '-' : row?.namaNasabah}</TableCell>
+                  <TableCell>{row?.rekening === null ? '-' : row?.rekening}</TableCell>
                   <TableCell>{row?.penjualan === null ? '-' : row?.penjualan}</TableCell>
                   <TableCell>{row?.hargaPokok === null ? '-' : row?.hargaPokok}</TableCell>
                   <TableCell>{row?.biaya === null ? '-' : row?.biaya}</TableCell>
@@ -639,12 +719,34 @@ export default function PengajuanTable(props) {
                     {row?.tujuanPembiayaan === null ? '-' : row?.tujuanPembiayaan}
                   </TableCell>
                   <TableCell>{row?.jaminan === null ? '-' : row?.jaminan}</TableCell>
-                  <TableCell>{row?.accPermohonan === null ? '-' : row?.accPermohonan}</TableCell>
+                  <TableCell className="font-bold">
+                    {row?.accPermohonan === null ? '-' : row?.accPermohonan}
+                  </TableCell>
                   <TableCell>{row?.nomorAkad === null ? '-' : row?.nomorAkad}</TableCell>
-                  <TableCell>{row?.status === null ? '-' : row?.status}</TableCell>
+                  <TableCell>
+                    {row?.status === null ? (
+                      <Button
+                        onClick={() => HandelApprove(row?.id, row)}
+                        color="warning"
+                        variant="contained"
+                      >
+                        Approve
+                      </Button>
+                    ) : (
+                      <Button color="success" variant="contained">
+                        {row?.status === null ? '-' : row?.status}
+                      </Button>
+                    )}
+                  </TableCell>
                   <TableCell>{row?.statusBy === null ? '-' : row?.statusBy}</TableCell>
                   <TableCell>{row?.statusAt === null ? '-' : row?.statusAt}</TableCell>
-                  <TableCell>{row?.foto === null ? '-' : row?.foto}</TableCell>
+                  <TableCell>
+                    {row?.foto === null ? (
+                      '-'
+                    ) : (
+                      <img src={`data:image/jpg;base64, ${row?.foto}`} alt="Base64 Image" />
+                    )}
+                  </TableCell>
                   <TableCell>
                     {row?.labaUsaha === null ? (
                       <Button color="warning" variant="contained">

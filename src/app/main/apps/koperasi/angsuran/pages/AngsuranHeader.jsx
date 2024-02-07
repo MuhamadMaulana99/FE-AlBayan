@@ -19,7 +19,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { useDispatch } from 'react-redux';
 import axios from 'axios';
 import { showMessage } from 'app/store/fuse/messageSlice';
-import { TextField } from '@mui/material';
+import { Autocomplete, TextField } from '@mui/material';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import moment from 'moment';
 import jsPDF from 'jspdf';
@@ -48,7 +48,8 @@ function AngsuranHeader(props) {
     dataLogin = JSON.parse(getAllUserResponse);
   }
   const data = props?.data;
-  const { masterStaff } = props;
+  const { optionNoAkad } = props;
+  // console.log(optionNoAkad, 'optionNoAkad');
   const [loading, setLoading] = React.useState(true);
   const [open, setOpen] = React.useState(false);
   const [kodeBarang, setkodeBarang] = useState(null);
@@ -57,39 +58,54 @@ function AngsuranHeader(props) {
   const [jmlKeluar, setjmlKeluar] = useState('');
   const [stokBarang, setstokBarang] = useState(0);
   const [triggerAccBasil, settriggerAccBasil] = useState(null);
-  const [satuan, setsatuan] = useState(null);
+  const [namaNasabah, setnamaNasabah] = useState(null);
 
   const [stateBody, setStateBody] = useState({
     nomorAkad: null,
+    namaNasabah: null,
     staffBasil: null,
     staffPokok: null,
     accBasil: null,
     accPokok: null,
     staffBy:
-      dataLogin?.roleUser === 'admin' || dataLogin?.roleUser === 'Kasir'
+      dataLogin?.roleUser === 'Admin' || dataLogin?.roleUser === 'Kasir'
         ? null
         : getResponseName?.name,
     staffAt:
-      dataLogin?.roleUser === 'admin' || dataLogin?.roleUser === 'Kasir' ? null : currentDate,
+      dataLogin?.roleUser === 'Admin' || dataLogin?.roleUser === 'Kasir' ? null : currentDate,
     kasirBy:
-      dataLogin?.roleUser === 'admin' || dataLogin?.roleUser === 'Kasir'
+      dataLogin?.roleUser === 'Admin' || dataLogin?.roleUser === 'Kasir'
         ? getResponseName?.name
         : null,
     kasirAtt:
-      dataLogin?.roleUser === 'admin' || dataLogin?.roleUser === 'Kasir' ? currentDate : null,
+      dataLogin?.roleUser === 'Admin' || dataLogin?.roleUser === 'Kasir' ? currentDate : null,
     lokasiPembayaran:
-      dataLogin?.roleUser === 'admin' || dataLogin?.roleUser === 'Kasir' ? 'Kantor' : 'Lapangan',
+      dataLogin?.roleUser === 'Admin' || dataLogin?.roleUser === 'Kasir' ? 'Kantor' : 'Lapangan',
   });
-  console.log(stateBody, 'stateBody');
-  console.log(dataLogin, 'dataLogin');
+  // console.log(stateBody, 'stateBody');
+  // console.log(dataLogin, 'dataLogin');
 
   const body = {
-    kodeBarang: JSON.stringify(kodeBarang),
-    namaBarang,
-    tglKeluar,
-    jmlKeluar,
-    stokBarang,
-    satuan,
+    nomorAkad: JSON.stringify(stateBody?.nomorAkad),
+    staffBasil: stateBody?.staffBasil,
+    namaNasabah: namaNasabah?.namaNasabah,
+    staffPokok: stateBody?.staffPokok,
+    accBasil: stateBody?.accBasil,
+    accPokok: stateBody?.accPokok,
+    staffBy:
+      dataLogin?.roleUser === 'Admin' || dataLogin?.roleUser === 'Kasir'
+        ? null
+        : getResponseName?.name,
+    staffAt:
+      dataLogin?.roleUser === 'Admin' || dataLogin?.roleUser === 'Kasir' ? null : currentDate,
+    kasirBy:
+      dataLogin?.roleUser === 'Admin' || dataLogin?.roleUser === 'Kasir'
+        ? getResponseName?.name
+        : null,
+    kasirAtt:
+      dataLogin?.roleUser === 'Admin' || dataLogin?.roleUser === 'Kasir' ? currentDate : null,
+    lokasiPembayaran:
+      dataLogin?.roleUser === 'Admin' || dataLogin?.roleUser === 'Kasir' ? 'Kantor' : 'Lapangan',
   };
 
   const handleClickOpen = () => {
@@ -104,10 +120,11 @@ function AngsuranHeader(props) {
     setjmlKeluar('');
     setstokBarang(0);
   };
+  // console.log(console.log(body));
   const HandelSubmit = () => {
     setLoading(true);
     axios
-      .post(`${process.env.REACT_APP_API_URL_API_}/angsuran`, stateBody)
+      .post(`${process.env.REACT_APP_API_URL_API_}/angsuran`, body)
       .then((res) => {
         // setData(res?.data);
         props.getData();
@@ -293,19 +310,21 @@ function AngsuranHeader(props) {
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             <div className="mt-10">
-              {dataLogin?.roleUser === 'admin' ? (
+              {dataLogin?.roleUser === 'Admin' ? (
                 <div className="flex gap-5">
-                  <TextField
-                    fullWidth
+                  <Autocomplete
+                    disablePortal
+                    id="combo-box-demo"
+                    options={optionNoAkad}
                     value={stateBody?.nomorAkad}
-                    onChange={(e) => {
-                      setStateBody({ ...stateBody, nomorAkad: e.target.value });
-                      // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
+                    getOptionLabel={(option) => option.nomorAkad}
+                    sx={{ width: 300 }}
+                    onChange={(e, newValue) => {
+                      // console.log(newValue, 'CLG')
+                      setStateBody({ ...stateBody, nomorAkad: newValue });
+                      setnamaNasabah(newValue);
                     }}
-                    id="outlined-basic"
-                    label="No Akad"
-                    type="number"
-                    variant="outlined"
+                    renderInput={(params) => <TextField {...params} label="No Akad" />}
                   />
                   <TextField
                     fullWidth
@@ -350,17 +369,18 @@ function AngsuranHeader(props) {
                 </div>
               ) : dataLogin?.roleUser === 'Kasir' ? (
                 <div className="flex gap-5">
-                  <TextField
-                    fullWidth
+                  <Autocomplete
+                    disablePortal
+                    id="combo-box-demo"
+                    options={optionNoAkad}
                     value={stateBody?.nomorAkad}
-                    onChange={(e) => {
-                      setStateBody({ ...stateBody, nomorAkad: e.target.value });
-                      // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
+                    getOptionLabel={(option) => option.nomorAkad}
+                    sx={{ width: 300 }}
+                    onChange={(e, newValue) => {
+                      setStateBody({ ...stateBody, nomorAkad: newValue });
+                      setnamaNasabah(newValue);
                     }}
-                    id="outlined-basic"
-                    label="No Akad"
-                    type="number"
-                    variant="outlined"
+                    renderInput={(params) => <TextField {...params} label="No Akad" />}
                   />
                   <TextField
                     fullWidth
@@ -384,17 +404,18 @@ function AngsuranHeader(props) {
                 </div>
               ) : (
                 <div className="flex gap-5">
-                  <TextField
-                    fullWidth
+                  <Autocomplete
+                    disablePortal
+                    id="combo-box-demo"
+                    options={optionNoAkad}
                     value={stateBody?.nomorAkad}
-                    onChange={(e) => {
-                      setStateBody({ ...stateBody, nomorAkad: e.target.value });
-                      // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
+                    getOptionLabel={(option) => option.nomorAkad}
+                    sx={{ width: 300 }}
+                    onChange={(e, newValue) => {
+                      setStateBody({ ...stateBody, nomorAkad: newValue });
+                      setnamaNasabah(newValue);
                     }}
-                    id="outlined-basic"
-                    label="No Akad"
-                    type="number"
-                    variant="outlined"
+                    renderInput={(params) => <TextField {...params} label="No Akad" />}
                   />
                   <TextField
                     fullWidth
@@ -496,7 +517,7 @@ function AngsuranHeader(props) {
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0, transition: { delay: 0.2 } }}
         >
-          {dataLogin?.roleUser === 'admin' ? (
+          {dataLogin?.roleUser === 'Admin' ? (
             <Button
               className=""
               onClick={handleClickOpen}

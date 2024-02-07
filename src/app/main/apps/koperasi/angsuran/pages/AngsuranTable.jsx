@@ -15,6 +15,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import {
   Alert,
+  Autocomplete,
   Dialog,
   DialogActions,
   DialogContent,
@@ -39,6 +40,12 @@ const columns = [
   {
     id: 'nomorAkad',
     label: 'Nomor Akad',
+    minWidth: 170,
+    align: 'left',
+  },
+  {
+    id: 'namaNasabah',
+    label: 'Nama Nasabah',
     minWidth: 170,
     align: 'left',
   },
@@ -133,6 +140,7 @@ function createData(
   no,
   id,
   nomorAkad,
+  namaNasabah,
   staffBasil,
   staffPokok,
   accBasil,
@@ -148,6 +156,7 @@ function createData(
     no,
     id,
     nomorAkad,
+    namaNasabah,
     staffBasil,
     staffPokok,
     accBasil,
@@ -162,6 +171,8 @@ function createData(
 }
 
 export default function AngsuranTable(props) {
+  const { optionNoAkad } = props;
+  const currentDate = moment().format();
   const userRoles = JSON.parse(localStorage.getItem('userRoles'));
   let getAllUserResponse;
   let getResponseName;
@@ -180,6 +191,7 @@ export default function AngsuranTable(props) {
   const [dataEdit, setDataEdit] = useState({
     id: null,
     nomorAkad: null,
+    namaNasabah: null,
     staffBasil: '',
     staffPokok: '',
     accBasil: null,
@@ -204,6 +216,7 @@ export default function AngsuranTable(props) {
       index + 1,
       item?.id,
       item?.nomorAkad,
+      item?.namaNasabah,
       item?.staffBasil,
       item?.staffPokok,
       item?.accBasil,
@@ -247,18 +260,23 @@ export default function AngsuranTable(props) {
   };
 
   const body = {
-    nomorAkad: dataEdit?.nomorAkad,
+    nomorAkad: JSON.stringify(dataEdit?.nomorAkad),
+    namaNasabah: dataEdit?.namaNasabah,
     staffBasil: dataEdit?.staffBasil,
     staffPokok: dataEdit?.staffPokok,
     accBasil: dataEdit?.accBasil,
     accPokok: dataEdit?.accPokok,
     staffBy: dataEdit?.staffBy,
     staffAt: dataEdit?.staffAt,
-    kasirBy: dataEdit?.kasirBy,
-    kasirAtt: dataEdit?.kasirAtt,
+    kasirBy:
+      dataLogin?.roleUser === 'Admin' || dataLogin?.roleUser === 'Kasir'
+        ? getResponseName?.name
+        : null,
+    kasirAtt:
+      dataLogin?.roleUser === 'Admin' || dataLogin?.roleUser === 'Kasir' ? currentDate : null,
     lokasiPembayaran: dataEdit?.lokasiPembayaran,
   };
-  console.log(body, 'body');
+  // console.log(body, 'body');
 
   const HandelEdit = (id) => {
     setLoading(true);
@@ -395,30 +413,26 @@ export default function AngsuranTable(props) {
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             <div className="mt-10">
-              {dataLogin?.roleUser === 'admin' ? (
+              {dataLogin?.roleUser === 'Admin' ? (
                 <div className="flex gap-5">
-                  <TextField
-                    fullWidth
+                  <Autocomplete
+                    disablePortal
+                    id="combo-box-demo"
+                    options={optionNoAkad}
                     value={dataEdit?.nomorAkad}
-                    onChange={(e) => {
-                      setDataEdit({
-                        ...dataEdit,
-                        nomorAkad: e.target.value,
-                      });
+                    getOptionLabel={(option) => option.nomorAkad}
+                    sx={{ width: 300 }}
+                    onChange={(e, newValue) => {
+                      setDataEdit({ ...dataEdit, nomorAkad: newValue });
                     }}
-                    id="outlined-basic"
-                    label="No Akad"
-                    type="number"
-                    variant="outlined"
+                    renderInput={(params) => <TextField {...params} label="No Akad" />}
                   />
                   <TextField
                     fullWidth
                     value={dataEdit?.staffBasil}
                     onChange={(e) => {
-                      setDataEdit({
-                        ...dataEdit,
-                        staffBasil: e.target.value,
-                      });
+                      setDataEdit({ ...dataEdit, staffBasil: e.target.value });
+                      // settriggerAccBasil({ ...dataEdit, accBasil: dataEdit?.staffBasil})
                     }}
                     id="outlined-basic"
                     label="Staff Basil"
@@ -428,12 +442,7 @@ export default function AngsuranTable(props) {
                   <TextField
                     fullWidth
                     value={dataEdit?.staffPokok}
-                    onChange={(e) => {
-                      setDataEdit({
-                        ...dataEdit,
-                        staffPokok: e.target.value,
-                      });
-                    }}
+                    onChange={(e) => setDataEdit({ ...dataEdit, staffPokok: e.target.value })}
                     id="outlined-basic"
                     label="Staff Pokok"
                     type="number"
@@ -442,12 +451,8 @@ export default function AngsuranTable(props) {
                   <TextField
                     fullWidth
                     value={dataEdit?.accBasil}
-                    onChange={(e) => {
-                      setDataEdit({
-                        ...dataEdit,
-                        accBasil: e.target.value,
-                      });
-                    }}
+                    // defaultValue={dataEdit?.staffBasil}
+                    onChange={(e) => setDataEdit({ ...dataEdit, accBasil: e.target.value })}
                     id="outlined-basic"
                     label="Acc Basil"
                     type="number"
@@ -456,12 +461,7 @@ export default function AngsuranTable(props) {
                   <TextField
                     fullWidth
                     value={dataEdit?.accPokok}
-                    onChange={(e) => {
-                      setDataEdit({
-                        ...dataEdit,
-                        accPokok: e.target.value,
-                      });
-                    }}
+                    onChange={(e) => setDataEdit({ ...dataEdit, accPokok: e.target.value })}
                     id="outlined-basic"
                     label="Acc Pokok"
                     type="number"
@@ -470,30 +470,23 @@ export default function AngsuranTable(props) {
                 </div>
               ) : dataLogin?.roleUser === 'Kasir' ? (
                 <div className="flex gap-5">
-                  <TextField
-                    fullWidth
-                    value={dataEdit?.staffPokok}
-                    onChange={(e) => {
-                      setDataEdit({
-                        ...dataEdit,
-                        staffPokok: e.target.value,
-                      });
+                  <Autocomplete
+                    disablePortal
+                    id="combo-box-demo"
+                    options={optionNoAkad}
+                    value={dataEdit?.nomorAkad}
+                    getOptionLabel={(option) => option.nomorAkad}
+                    sx={{ width: 300 }}
+                    onChange={(e, newValue) => {
+                      setDataEdit({ ...dataEdit, nomorAkad: newValue });
                     }}
-                    id="outlined-basic"
-                    label="Staff Pokok"
-                    type="number"
-                    variant="outlined"
+                    renderInput={(params) => <TextField {...params} label="No Akad" />}
                   />
                   <TextField
                     fullWidth
                     value={dataEdit?.accBasil}
-                    // defaultValue={stateBody?.staffBasil}
-                    onChange={(e) => {
-                      setDataEdit({
-                        ...dataEdit,
-                        accBasil: e.target.value,
-                      });
-                    }}
+                    // defaultValue={dataEdit?.staffBasil}
+                    onChange={(e) => setDataEdit({ ...dataEdit, accBasil: e.target.value })}
                     id="outlined-basic"
                     label="Acc Basil"
                     type="number"
@@ -502,12 +495,7 @@ export default function AngsuranTable(props) {
                   <TextField
                     fullWidth
                     value={dataEdit?.accPokok}
-                    onChange={(e) => {
-                      setDataEdit({
-                        ...dataEdit,
-                        accPokok: e.target.value,
-                      });
-                    }}
+                    onChange={(e) => setDataEdit({ ...dataEdit, accPokok: e.target.value })}
                     id="outlined-basic"
                     label="Acc Pokok"
                     type="number"
@@ -516,28 +504,24 @@ export default function AngsuranTable(props) {
                 </div>
               ) : (
                 <div className="flex gap-5">
-                  <TextField
-                    fullWidth
+                  <Autocomplete
+                    disablePortal
+                    id="combo-box-demo"
+                    options={optionNoAkad}
                     value={dataEdit?.nomorAkad}
-                    onChange={(e) => {
-                      setDataEdit({
-                        ...dataEdit,
-                        nomorAkad: e.target.value,
-                      });
+                    getOptionLabel={(option) => option.nomorAkad}
+                    sx={{ width: 300 }}
+                    onChange={(e, newValue) => {
+                      setDataEdit({ ...dataEdit, nomorAkad: newValue });
                     }}
-                    id="outlined-basic"
-                    label="No Akad"
-                    type="number"
-                    variant="outlined"
+                    renderInput={(params) => <TextField {...params} label="No Akad" />}
                   />
                   <TextField
                     fullWidth
                     value={dataEdit?.staffBasil}
                     onChange={(e) => {
-                      setDataEdit({
-                        ...dataEdit,
-                        staffBasil: e.target.value,
-                      });
+                      setDataEdit({ ...dataEdit, staffBasil: e.target.value });
+                      // settriggerAccBasil({ ...dataEdit, accBasil: dataEdit?.staffBasil})
                     }}
                     id="outlined-basic"
                     label="Staff Basil"
@@ -547,12 +531,7 @@ export default function AngsuranTable(props) {
                   <TextField
                     fullWidth
                     value={dataEdit?.staffPokok}
-                    onChange={(e) => {
-                      setDataEdit({
-                        ...dataEdit,
-                        staffPokok: e.target.value,
-                      });
-                    }}
+                    onChange={(e) => setDataEdit({ ...dataEdit, staffPokok: e.target.value })}
                     id="outlined-basic"
                     label="Staff Pokok"
                     type="number"
@@ -593,7 +572,8 @@ export default function AngsuranTable(props) {
               return (
                 <TableRow key={row.id} hover role="checkbox" tabIndex={-1}>
                   <TableCell>{index + 1}.</TableCell>
-                  <TableCell>{row?.nomorAkad === null ? '-' : row?.nomorAkad}</TableCell>
+                  <TableCell>{row?.nomorAkad === null ? '-' : row?.nomorAkad?.nomorAkad}</TableCell>
+                  <TableCell>{row?.namaNasabah === null ? '-' : row?.namaNasabah}</TableCell>
                   <TableCell>{row?.staffBasil === null ? '-' : row?.staffBasil}</TableCell>
                   <TableCell>{row?.staffPokok === null ? '-' : row?.staffPokok}</TableCell>
                   <TableCell>{row?.accBasil === null ? '-' : row?.accBasil}</TableCell>

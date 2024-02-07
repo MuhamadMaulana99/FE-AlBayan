@@ -31,6 +31,21 @@ import PrintIcon from '@mui/icons-material/Print';
 import autoTable from 'jspdf-autotable';
 import FuseAnimate from '@fuse/core/FuseAnimate';
 import { Workbook } from 'exceljs';
+import { styled } from '@mui/material/styles';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import CloseIcon from '@mui/icons-material/Close';
+
+const VisuallyHiddenInput = styled('input')({
+  clip: 'rect(0 0 0 0)',
+  clipPath: 'inset(50%)',
+  height: 1,
+  overflow: 'hidden',
+  position: 'absolute',
+  bottom: 0,
+  left: 0,
+  whiteSpace: 'nowrap',
+  width: 1,
+});
 
 const top100Films = [
   { label: 'KG', year: 1994 },
@@ -58,6 +73,8 @@ function PengajuanHeader(props) {
   const [getNameFile, setgetNameFile] = useState('');
   const [stateBody, setStateBody] = useState({
     penjualan: 0,
+    namaNasabah: null,
+    rekening: null,
     hargaPokok: 0,
     biaya: 0,
     labaUsaha: 0,
@@ -96,6 +113,8 @@ function PengajuanHeader(props) {
     setOpen(false);
     setgetDataBody({});
     setStateBody({
+      namaNasabah: null,
+      rekening: null,
       penjualan: 0,
       hargaPokok: 0,
       biaya: 0,
@@ -122,30 +141,6 @@ function PengajuanHeader(props) {
     });
   };
 
-  const body = {
-    penjualan: getDataBody?.penjualan,
-    hargaPokok: getDataBody?.hargaPokok,
-    biaya: getDataBody?.biaya,
-    labaUsaha: getDataBody?.labaUsaha,
-    pendapatanLain: getDataBody?.pendapatanLain,
-    jumlahPendapatan: getDataBody?.jumlahPendapatan,
-    kebutuhanRumahTangga: getDataBody?.kebutuhanRumahTangga,
-    biayaPendidikan: getDataBody?.biayaPendidikan,
-    jumlahBiayaLuarUsaha: getDataBody?.jumlahBiayaLuarUsaha,
-    pendapatanBersih: getDataBody?.pendapatanBersih,
-    rasioAngsuran: getDataBody?.rasioAngsuran,
-    jangkaWaktu: getDataBody?.jangkaWaktu,
-    nominalPermohonan: getDataBody?.nominalPermohonan,
-    tujuanPembiayaan: getDataBody?.tujuanPembiayaan,
-    jaminan: getDataBody?.jaminan,
-    biayaLainya: getDataBody?.biayaLainya,
-    accPermohonan: getDataBody?.accPermohonan,
-    nomorAkad: getDataBody?.nomorAkad,
-    status: getDataBody?.status,
-    statusBy: getDataBody?.statusBy,
-    statusAt: getDataBody?.statusAt,
-    foto: getDataBody?.foto,
-  };
   const HandelSubmit = () => {
     setLoading(true);
     axios
@@ -203,12 +198,29 @@ function PengajuanHeader(props) {
       });
   };
 
+  // const handleFileChange = async (event) => {
+  //   const selectedFile = event.target.files[0];
+  //   console.log(selectedFile, 'selectedFile')
+
+  //   if (selectedFile) {
+  //     const base64String = await convertToBase64(selectedFile);
+  //     console.log('Base64 String:', selectedFile);
+  //     setgetNameFile(selectedFile);
+  //     setStateBody({ ...stateBody, foto: base64String });
+  //     // Kirim atau lakukan sesuatu dengan string base64 di sini
+  //   }
+  //   if (fileInputRef.current) {
+  //     fileInputRef.current.value = '';
+  //   }
+  // };
+
   const handleFileChange = async (event) => {
     const selectedFile = event.target.files[0];
+    console.log(selectedFile, 'selectedFile');
 
     if (selectedFile) {
       const base64String = await convertToBase64(selectedFile);
-      console.log('Base64 String:', selectedFile);
+      console.log('Base64 String:', base64String);
       setgetNameFile(selectedFile);
       setStateBody({ ...stateBody, foto: base64String });
       // Kirim atau lakukan sesuatu dengan string base64 di sini
@@ -216,6 +228,13 @@ function PengajuanHeader(props) {
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
+    // const file = event.target.files[0];
+    // setSelectedFile(file);
+  };
+
+  const handleClearFile = () => {
+    setStateBody({ ...stateBody, foto: null });
+    setgetNameFile(null);
   };
 
   const convertToBase64 = (file) => {
@@ -260,6 +279,8 @@ function PengajuanHeader(props) {
   useEffect(() => {
     setgetDataBody({
       penjualan: stateBody?.penjualan,
+      namaNasabah: stateBody?.rekening?.namaNasabah,
+      rekening: stateBody?.rekening?.rekening,
       hargaPokok: stateBody?.hargaPokok,
       biaya: stateBody?.biaya,
       biayaLainya: stateBody?.biayaLainya,
@@ -280,7 +301,8 @@ function PengajuanHeader(props) {
       status: stateBody?.status,
       statusBy: stateBody?.statusBy,
       statusAt: stateBody?.statusAt,
-      foto: stateBody?.foto,
+      foto: null,
+      // foto: `data:${getNameFile?.type};base64,${stateBody?.foto}`,
     });
   }, [stateBody]);
 
@@ -425,6 +447,7 @@ function PengajuanHeader(props) {
                 getOptionLabel={(option) => option.rekening}
                 sx={{ width: 300 }}
                 onChange={(e, newValue) => {
+                  // console.log(newValue, '1000000');
                   setStateBody({ ...stateBody, rekening: newValue });
                 }}
                 renderInput={(params) => <TextField {...params} label="Data Nasabah" />}
@@ -548,22 +571,30 @@ function PengajuanHeader(props) {
                 type="text"
                 variant="outlined"
               />
-              <div className="mt-4">
-                <input
-                  accept="image/*" // Specify accepted file types
-                  className="hidden"
-                  id="file-input"
-                  type="file"
-                  onChange={handleFileChange}
-                  ref={fileInputRef}
-                />
-                <label
-                  htmlFor="file-input"
-                  className="cursor-pointer bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600"
-                >
-                  Upload File
-                </label>
-                <div>{getNameFile === '' ? '' : getNameFile?.name}</div>
+              <div className="mt-4 ">
+                {!getNameFile && (
+                  <div>
+                    <Button
+                      component="label"
+                      variant="contained"
+                      startIcon={<CloudUploadIcon />}
+                      onClick={() => document.getElementById('fileInput').click()}
+                    >
+                      Upload file
+                    </Button>
+                    <VisuallyHiddenInput id="fileInput" type="file" onChange={handleFileChange} />
+                  </div>
+                )}
+                <div>
+                  {getNameFile && (
+                    <div>
+                      {/* <p>Selected File: {getNameFile.name}</p> */}
+                      <Button variant="contained" endIcon={<CloseIcon onClick={handleClearFile} />}>
+                        {getNameFile === '' ? '' : getNameFile?.name}
+                      </Button>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
             <div>

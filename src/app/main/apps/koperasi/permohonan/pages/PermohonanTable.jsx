@@ -177,13 +177,14 @@ export default function PermohonanTable(props) {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  let rows = props?.data;
-  if (dataLogin?.roleUser === 'Staff') {
-    rows = props?.data.filter((word) => word.kabupaten === getResponseName?.name);
-  }
+  const rows = props?.data;
+  // if (dataLogin?.roleUser === 'Staff') {
+  //   rows = props?.data.filter((word) => word.kabupaten === getResponseName?.name);
+  // }
   const propsFromParent = (analisa) => {
     console.log(analisa, 'analisaa');
   };
+  console.log(rows, 'rows');
 
   rows?.map((item, index) =>
     createData(
@@ -717,7 +718,7 @@ export default function PermohonanTable(props) {
                         color="warning"
                         variant="contained"
                       >
-                        Di Tolak
+                        Tidak Layak
                       </Button>
                     ) : (
                       <Button
@@ -725,7 +726,7 @@ export default function PermohonanTable(props) {
                         color="success"
                         variant="contained"
                       >
-                        Di Terima
+                        Layak
                       </Button>
                     )}
                   </TableCell>
