@@ -30,14 +30,14 @@ const navigationConfig = [
         icon: 'heroicons-outline:collection',
         url: '/apps/masterNasabah/',
       },
-      {
-        id: 'masterStaff',
-        title: 'Staff',
-        // translate: 'Stok Barang',
-        type: 'item',
-        icon: 'heroicons-outline:collection',
-        url: '/apps/masterStaff/',
-      },
+      // {
+      //   id: 'masterStaff',
+      //   title: 'Staff',
+      //   // translate: 'Stok Barang',
+      //   type: 'item',
+      //   icon: 'heroicons-outline:collection',
+      //   url: '/apps/masterStaff/',
+      // },
     ],
   },
   {
