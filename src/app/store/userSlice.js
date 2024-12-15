@@ -85,7 +85,7 @@ const initialState = {
   role: [], // guest
   data: {
     displayName: 'Muhamad Maulana',
-    photoURL: 'assets/images/avatars/zoro.jpg',
+    photoURL: 'assets/images/avatars/logoBmt.jpg',
     email: 'maulanamuhamad593@gmail.com',
     shortcuts: ['apps.calendar', 'apps.mailbox', 'apps.contacts', 'apps.tasks'],
   },

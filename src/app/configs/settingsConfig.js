@@ -14,6 +14,12 @@ const settingsConfig = {
     toolbar: themesConfig.default,
     footer: themesConfig.defaultDark,
   },
+  // theme: {
+  //   main: 'light5',
+  //   navbar: 'light5',
+  //   toolbar: 'mainThemeLight',
+  //   footer: 'mainThemeDark',
+  // },
   /*
    To make whole app auth protected by default set defaultAuth:['admin','staff','user']
    To make whole app accessible without authorization by default set defaultAuth: null

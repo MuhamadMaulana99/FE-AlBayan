@@ -8,7 +8,7 @@ import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import { showMessage } from 'app/store/fuse/messageSlice';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Autocomplete,
   Dialog,
@@ -30,6 +30,18 @@ function MasterNasabahHeader(props) {
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [nama, setnama] = useState('');
+  const [provinsi, setProvinsi] = useState([]);
+  const [kabupaten, setKabupaten] = useState([]);
+  const [kecamatan, setKecamatan] = useState([]);
+  const [kelurahan, setKelurahan] = useState([]);
+  const [selectedProvinsi, setSelectedProvinsi] = useState(null);
+  const [selectedKabupaten, setSelectedKabupaten] = useState(null);
+  const [selectedKecamatan, setSelectedKecamatan] = useState(null);
+
+  const urlProvinsi = "https://ibnux.github.io/data-indonesia/provinsi.json";
+  const urlKabupaten = "https://ibnux.github.io/data-indonesia/kabupaten/";
+  const urlKecamatan = "https://ibnux.github.io/data-indonesia/kecamatan/";
+  const urlKelurahan = "https://ibnux.github.io/data-indonesia/kelurahan/";
   const [stateBody, setStateBody] = useState({
     nama: null,
     mstRekening: null,
@@ -45,11 +57,11 @@ function MasterNasabahHeader(props) {
     nama: stateBody?.nama,
     mstNik: stateBody?.mstNik,
     mstjenisKelamin: JSON.stringify(stateBody?.mstjenisKelamin),
-    mstRekening: stateBody?.mstRekening,
-    mstAlamat: stateBody?.mstAlamat,
-    mstKecamatan: stateBody?.mstKecamatan,
-    mstKabupaten: stateBody?.mstKabupaten,
-    mstProvinsi: stateBody?.mstProvinsi,
+    mstRekening: stateBody?.mstRekening?.nama,
+    mstAlamat: stateBody?.mstAlamat?.nama,
+    mstKecamatan: stateBody?.mstKecamatan?.nama,
+    mstKabupaten: stateBody?.mstKabupaten?.nama,
+    mstProvinsi: stateBody?.mstProvinsi?.nama,
   };
 
   const handleClickOpen = () => {
@@ -127,6 +139,69 @@ function MasterNasabahHeader(props) {
       });
   };
 
+  const fetchProvinsi = async () => {
+    const res = await axios.get(urlProvinsi);
+    setProvinsi(res.data);
+    // console.log(res,'ress')
+  };
+  // useEffect(() => {
+  //   fetchProvinsi();
+  // }, []);
+
+  const handleProvinsiChange = async (value) => {
+    // console.log(value, 'value')
+    setSelectedProvinsi(value);
+    setKabupaten([]);
+    setKecamatan([]);
+    setKelurahan([]);
+
+    if (value) {
+      const res = await axios.get(`${urlKabupaten}${value.id}.json`);
+      setKabupaten(res.data);
+    }
+  };
+
+  const handleKabupatenChange = async (value) => {
+    setSelectedKabupaten(value);
+    setKecamatan([]);
+    setKelurahan([]);
+
+    if (value) {
+      const res = await axios.get(`${urlKecamatan}${value.id}.json`);
+      setKecamatan(res.data);
+    }
+  };
+
+  const handleKecamatanChange = async (value) => {
+    setSelectedKecamatan(value);
+    setKelurahan([]);
+
+    if (value) {
+      const res = await axios.get(`${urlKelurahan}${value.id}.json`);
+      setKelurahan(res.data);
+    }
+  };
+  const handleFocus = (e) => {
+    const getId = e.target.id;
+    // console.log(getId, ';get')
+    switch (getId) {
+      case 'provinsi':
+        fetchProvinsi();
+        break;
+      case 'kabupaten':
+        handleKabupatenChange();
+        break;
+      case 'kecamatan':
+        handleKecamatanChange();
+        break;
+      default:
+    }
+  };
+
+  console.log(provinsi, 'provinsi')
+  // console.log(kabupaten, 'kabupaten')
+  // console.log(kecamatan, 'kecamatan')
+  // console.log(kelurahan, 'kelurahan')
   return (
     <div className="flex flex-col sm:flex-row space-y-16 sm:space-y-0 flex-1 w-full items-center justify-between py-32 px-24 md:px-32">
       <Dialog
@@ -135,96 +210,147 @@ function MasterNasabahHeader(props) {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">Tambah Master Kasir</DialogTitle>
+        <DialogTitle id="alert-dialog-title">Tambah Master Nasabah</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            <div className="grid grid-cols-2 gap-16 mt-10 mb-10">
-              <div className="flex flex-wrap gap-5 p-10">
+            <div className="container mx-auto px-4 py-10">
+              <div className="flex flex-wrap gap-6 p-5 bg-white shadow-md rounded-md">
                 <TextField
                   value={stateBody?.nama}
-                  onChange={(e) => {
-                    setStateBody({ ...stateBody, nama: e.target.value });
-                    // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
-                  }}
+                  onChange={(e) => setStateBody({ ...stateBody, nama: e.target.value })}
                   id="outlined-basic"
                   label="Nama Nasabah"
                   variant="outlined"
+                  className="flex-grow"
                 />
                 <TextField
                   value={stateBody?.mstRekening}
-                  onChange={(e) => {
-                    setStateBody({ ...stateBody, mstRekening: e.target.value });
-                    // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
-                  }}
+                  onChange={(e) => setStateBody({ ...stateBody, mstRekening: e.target.value })}
                   id="outlined-basic"
                   label="No Rek"
                   variant="outlined"
+                  className="flex-grow"
                 />
                 <TextField
                   value={stateBody?.mstNik}
-                  onChange={(e) => {
-                    setStateBody({ ...stateBody, mstNik: e.target.value });
-                    // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
-                  }}
+                  onChange={(e) => setStateBody({ ...stateBody, mstNik: e.target.value })}
                   id="outlined-basic"
                   label="Nik"
                   variant="outlined"
+                  className="flex-grow"
                 />
-                <div className="mt-10 w-full">
-                  <Autocomplete
-                    disablePortal
-                    fullWidth
-                    id="combo-box-demo"
-                    getOptionLabel={(option) => option.kelamin}
-                    value={stateBody?.mstjenisKelamin}
-                    onChange={(e, newValue) => {
-                      setStateBody({ ...stateBody, mstjenisKelamin: newValue });
-                      // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
-                    }}
-                    options={jenKel}
-                    sx={{ width: '100%' }}
-                    renderInput={(params) => <TextField {...params} label="Jenis Kelamin" />}
-                  />
-                </div>
-                <TextField
-                  value={stateBody?.mstAlamat}
-                  onChange={(e) => {
-                    setStateBody({ ...stateBody, mstAlamat: e.target.value });
-                    // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
-                  }}
-                  id="outlined-basic"
-                  label="Alamat"
-                  variant="outlined"
+                <Autocomplete
+                  disablePortal
+                  fullWidth
+                  id="combo-box-demo"
+                  getOptionLabel={(option) => option.kelamin}
+                  value={stateBody?.mstjenisKelamin}
+                  onChange={(e, newValue) => setStateBody({ ...stateBody, mstjenisKelamin: newValue })}
+                  options={jenKel}
+                  renderInput={(params) => <TextField {...params} label="Jenis Kelamin" />}
+                  className="flex-grow"
                 />
-                <TextField
-                  value={stateBody?.mstKecamatan}
-                  onChange={(e) => {
-                    setStateBody({ ...stateBody, mstKecamatan: e.target.value });
-                    // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
-                  }}
-                  id="outlined-basic"
-                  label="Kecamatan"
-                  variant="outlined"
-                />
-                <TextField
-                  value={stateBody?.mstKabupaten}
-                  onChange={(e) => {
-                    setStateBody({ ...stateBody, mstKabupaten: e.target.value });
-                    // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
-                  }}
-                  id="outlined-basic"
-                  label="Kabupaten"
-                  variant="outlined"
-                />
-                <TextField
+                <Autocomplete
+                  fullWidth
+                  className="flex-grow"
+                  id='provinsi'
+                  onFocus={handleFocus}
+                  options={provinsi}
                   value={stateBody?.mstProvinsi}
-                  onChange={(e) => {
-                    setStateBody({ ...stateBody, mstProvinsi: e.target.value });
-                    // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
+                  getOptionLabel={(option) => option.nama}
+                  onChange={(event, newVlue) => {
+                    if (newVlue) {
+                      handleProvinsiChange(newVlue)
+                      setStateBody({ ...stateBody, mstProvinsi: newVlue })
+                      // setProvinsi(newVlue)
+                    } else {
+                      handleProvinsiChange(null)
+                      setStateBody({ ...stateBody, mstProvinsi: null, mstKabupaten: null, mstKecamatan: null, mstAlamat: null })
+                      setProvinsi([])
+                      setKabupaten([])
+                      setKecamatan([])
+                      setKelurahan([])
+                    }
                   }}
-                  id="outlined-basic"
-                  label="Provinsi"
-                  variant="outlined"
+                  renderInput={(params) => (
+                    <TextField fullWidth {...params} label="Pilih Provinsi" variant="outlined" />
+                  )}
+                />
+                <Autocomplete
+                  fullWidth
+                  id='kabupaten'
+                  onFocus={handleFocus}
+                  options={kabupaten}
+                  className="flex-grow"
+                  value={stateBody?.mstKabupaten}
+                  getOptionLabel={(option) => option.nama}
+                  onChange={(event, newVlue) => {
+                    if (newVlue) {
+                      handleKabupatenChange(newVlue)
+                      setStateBody({ ...stateBody, mstKabupaten: newVlue })
+                      // setKabupaten(newVlue)
+                    } else {
+                      handleKabupatenChange(null)
+                      setStateBody({ ...stateBody, mstKabupaten: null, mstKecamatan: null, mstAlamat: null })
+                      setKabupaten([])
+                      setKecamatan([])
+                      setKelurahan([])
+                    }
+                  }}
+                  disabled={!selectedProvinsi}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Pilih Kabupaten" variant="outlined" />
+                  )}
+                />
+                <Autocomplete
+                  fullWidth
+                  id='kecamatan'
+                  onFocus={handleFocus}
+                  options={kecamatan}
+                  className="flex-grow"
+                  value={stateBody?.mstKecamatan}
+                  getOptionLabel={(option) => option.nama}
+                  onChange={(event, newVlue) => {
+                    if (newVlue) {
+                      handleKecamatanChange(newVlue)
+                      setStateBody({ ...stateBody, mstKecamatan: newVlue })
+                      // setKecamatan(newVlue)
+                    } else {
+                      handleKecamatanChange(null)
+                      setStateBody({ ...stateBody, mstKecamatan: null, mstAlamat: null })
+                      setKecamatan([])
+                      setKelurahan([])
+
+                    }
+                  }}
+                  disabled={!selectedKabupaten}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Pilih Kecamatan" variant="outlined" />
+                  )}
+                />
+
+                <Autocomplete
+                  fullWidth
+                  id='kelurahan'
+                  onFocus={handleFocus}
+                  options={kelurahan}
+                  className="flex-grow"
+                  getOptionLabel={(option) => option.nama}
+                  value={stateBody?.mstAlamat}
+                  onChange={(event, newValue) => {
+                    if (newValue) {
+                      setStateBody({ ...stateBody, mstAlamat: newValue })
+                      // setKelurahan(newValue)
+                    } else {
+                      setStateBody({ ...stateBody, mstAlamat: null })
+                      setKelurahan([])
+
+                    }
+                  }}
+                  disabled={!selectedKecamatan}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Pilih Kelurahan" variant="outlined" />
+                  )}
                 />
               </div>
             </div>
@@ -267,7 +393,7 @@ function MasterNasabahHeader(props) {
             inputProps={{
               'aria-label': 'Search',
             }}
-            // onChange={(ev) => dispatch(setProductsSearchText(ev))}
+          // onChange={(ev) => dispatch(setProductsSearchText(ev))}
           />
         </Paper>
         <motion.div

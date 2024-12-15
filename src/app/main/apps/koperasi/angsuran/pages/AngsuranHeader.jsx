@@ -301,6 +301,7 @@ function AngsuranHeader(props) {
   return (
     <div className="flex flex-col sm:flex-row space-y-16 sm:space-y-0 flex-1 w-full items-center justify-between py-32 px-24 md:px-32">
       <Dialog
+ maxWidth="lg"
         open={open}
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
@@ -309,9 +310,9 @@ function AngsuranHeader(props) {
         <DialogTitle id="alert-dialog-title">Tambah Angsuran</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            <div className="mt-10">
+            <div className="mt-10 w-full">
               {dataLogin?.roleUser === 'Admin' ? (
-                <div className="flex gap-5">
+                <div className="flex flex-wrap gap-5">
                   <Autocomplete
                     disablePortal
                     id="combo-box-demo"
@@ -333,6 +334,7 @@ function AngsuranHeader(props) {
                       setStateBody({ ...stateBody, staffBasil: e.target.value });
                       // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
                     }}
+                    sx={{ width: 300 }}
                     id="outlined-basic"
                     label="Staff Basil"
                     type="number"
@@ -342,6 +344,7 @@ function AngsuranHeader(props) {
                     fullWidth
                     value={stateBody?.staffPokok}
                     onChange={(e) => setStateBody({ ...stateBody, staffPokok: e.target.value })}
+                    sx={{ width: 300 }}
                     id="outlined-basic"
                     label="Staff Pokok"
                     type="number"
@@ -352,6 +355,7 @@ function AngsuranHeader(props) {
                     value={stateBody?.accBasil}
                     // defaultValue={stateBody?.staffBasil}
                     onChange={(e) => setStateBody({ ...stateBody, accBasil: e.target.value })}
+                    sx={{ width: 300 }}
                     id="outlined-basic"
                     label="Acc Basil"
                     type="number"
@@ -361,6 +365,7 @@ function AngsuranHeader(props) {
                     fullWidth
                     value={stateBody?.accPokok}
                     onChange={(e) => setStateBody({ ...stateBody, accPokok: e.target.value })}
+                    sx={{ width: 300 }}
                     id="outlined-basic"
                     label="Acc Pokok"
                     type="number"
@@ -387,6 +392,7 @@ function AngsuranHeader(props) {
                     value={stateBody?.accBasil}
                     // defaultValue={stateBody?.staffBasil}
                     onChange={(e) => setStateBody({ ...stateBody, accBasil: e.target.value })}
+                    sx={{ width: 300 }}
                     id="outlined-basic"
                     label="Acc Basil"
                     type="number"
@@ -396,6 +402,7 @@ function AngsuranHeader(props) {
                     fullWidth
                     value={stateBody?.accPokok}
                     onChange={(e) => setStateBody({ ...stateBody, accPokok: e.target.value })}
+                    sx={{ width: 300 }}
                     id="outlined-basic"
                     label="Acc Pokok"
                     type="number"
@@ -424,6 +431,7 @@ function AngsuranHeader(props) {
                       setStateBody({ ...stateBody, staffBasil: e.target.value });
                       // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
                     }}
+                    sx={{ width: 300 }}
                     id="outlined-basic"
                     label="Staff Basil"
                     type="number"
@@ -433,6 +441,7 @@ function AngsuranHeader(props) {
                     fullWidth
                     value={stateBody?.staffPokok}
                     onChange={(e) => setStateBody({ ...stateBody, staffPokok: e.target.value })}
+                    sx={{ width: 300 }}
                     id="outlined-basic"
                     label="Staff Pokok"
                     type="number"

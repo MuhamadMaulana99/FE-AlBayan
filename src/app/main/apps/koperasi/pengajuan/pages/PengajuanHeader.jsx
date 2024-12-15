@@ -445,7 +445,7 @@ function PengajuanHeader(props) {
                 options={dataPermohonanApprove}
                 value={stateBody?.rekening}
                 getOptionLabel={(option) => option.rekening}
-                sx={{ width: 300 }}
+                sx={{ width: 370 }}
                 onChange={(e, newValue) => {
                   // console.log(newValue, '1000000');
                   setStateBody({ ...stateBody, rekening: newValue });
@@ -458,6 +458,7 @@ function PengajuanHeader(props) {
                   setStateBody({ ...stateBody, penjualan: e.target.value });
                   // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
                 }}
+                sx={{ width: 370 }}
                 id="outlined-basic"
                 label="Penjualan"
                 type="number"
@@ -469,6 +470,7 @@ function PengajuanHeader(props) {
                   setStateBody({ ...stateBody, hargaPokok: e.target.value });
                   // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
                 }}
+                sx={{ width: 370 }}
                 id="outlined-basic"
                 label="Harga Pokok"
                 type="number"
@@ -477,6 +479,7 @@ function PengajuanHeader(props) {
               <TextField
                 value={stateBody?.biaya}
                 onChange={(e) => setStateBody({ ...stateBody, biaya: e.target.value })}
+                sx={{ width: 370 }}
                 id="outlined-basic"
                 label="Biaya"
                 type="number"
@@ -486,6 +489,7 @@ function PengajuanHeader(props) {
               <TextField
                 value={stateBody?.pendapatanLain}
                 onChange={(e) => setStateBody({ ...stateBody, pendapatanLain: e.target.value })}
+                sx={{ width: 370 }}
                 id="outlined-basic"
                 label="Pendapatan Lain"
                 type="number"
@@ -497,6 +501,7 @@ function PengajuanHeader(props) {
                 onChange={(e) =>
                   setStateBody({ ...stateBody, kebutuhanRumahTangga: e.target.value })
                 }
+                sx={{ width: 370 }}
                 id="outlined-basic"
                 label="Kebutuhan Rumah Tangga"
                 type="number"
@@ -505,6 +510,7 @@ function PengajuanHeader(props) {
               <TextField
                 value={stateBody?.biayaPendidikan}
                 onChange={(e) => setStateBody({ ...stateBody, biayaPendidikan: e.target.value })}
+                sx={{ width: 370 }}
                 id="outlined-basic"
                 label="Biaya Pendidikan"
                 type="number"
@@ -513,6 +519,7 @@ function PengajuanHeader(props) {
               <TextField
                 value={stateBody?.biayaLainya}
                 onChange={(e) => setStateBody({ ...stateBody, biayaLainya: e.target.value })}
+                sx={{ width: 370 }}
                 id="outlined-basic"
                 label="Biaya Lainnya"
                 type="number"
@@ -522,9 +529,10 @@ function PengajuanHeader(props) {
               <TextField
                 value={stateBody?.rasioAngsuran}
                 onChange={(e) => setStateBody({ ...stateBody, rasioAngsuran: e.target.value })}
+                sx={{ width: 370 }}
                 id="outlined-basic"
                 label="Rasio Angsuran"
-                helperText="persen%"
+                // helperText="persen%"
                 type="number"
                 variant="outlined"
               />
@@ -532,15 +540,17 @@ function PengajuanHeader(props) {
               <TextField
                 value={stateBody?.jangkaWaktu}
                 onChange={(e) => setStateBody({ ...stateBody, jangkaWaktu: e.target.value })}
+                sx={{ width: 370 }}
                 id="outlined-basic"
                 label="Jangka Waktu"
-                helperText="bulan cnth 1bulan"
+                // helperText="bulan cnth 1bulan"
                 type="number"
                 variant="outlined"
               />
               <TextField
                 value={stateBody?.nominalPermohonan}
                 onChange={(e) => setStateBody({ ...stateBody, nominalPermohonan: e.target.value })}
+                sx={{ width: 370 }}
                 id="outlined-basic"
                 label="Nominal Pemohonan"
                 type="number"
@@ -549,6 +559,7 @@ function PengajuanHeader(props) {
               <TextField
                 value={stateBody?.tujuanPembiayaan}
                 onChange={(e) => setStateBody({ ...stateBody, tujuanPembiayaan: e.target.value })}
+                sx={{ width: 370 }}
                 id="outlined-basic"
                 label="Tujuan Pembiyaan"
                 type="text"
@@ -557,6 +568,7 @@ function PengajuanHeader(props) {
               <TextField
                 value={stateBody?.jaminan}
                 onChange={(e) => setStateBody({ ...stateBody, jaminan: e.target.value })}
+                sx={{ width: 370 }}
                 id="outlined-basic"
                 label="Jaminan"
                 type="text"
@@ -566,6 +578,7 @@ function PengajuanHeader(props) {
               <TextField
                 value={stateBody?.nomorAkad}
                 onChange={(e) => setStateBody({ ...stateBody, nomorAkad: e.target.value })}
+                sx={{ width: 370 }}
                 id="outlined-basic"
                 label="Nomor Akad"
                 type="text"
@@ -597,7 +610,7 @@ function PengajuanHeader(props) {
                 </div>
               </div>
             </div>
-            <div>
+            {/* <div>
               <ul>
                 <li>Laba Usaha = penjualan - hargaPokok - biayaUsaha : {getDataBody?.labaUsaha}</li>
                 <li>
@@ -616,56 +629,6 @@ function PengajuanHeader(props) {
                   {getDataBody?.accPermohonan}
                 </li>
               </ul>
-            </div>
-            {/* <div className='"flex flex-wrap gap-5 p-10'>
-              <TextField
-                value={stateBody?.labaUsaha}
-                // defaultValue={stateBody?.staffBasil}
-                onChange={(e) => setStateBody({ ...stateBody, labaUsaha: e.target.value })}
-                id="outlined-basic"
-                label="Laba Usaha"
-                type="number"
-                helperText="penjualan - hargaPokok - biayaUsaha"
-                variant="outlined"
-              />
-              <TextField
-                value={stateBody?.jumlahPendapatan}
-                onChange={(e) => setStateBody({ ...stateBody, jumlahPendapatan: e.target.value })}
-                id="outlined-basic"
-                label="Jumlah Pendapatan"
-                helperText="labaUsaha + pendapatanLain"
-                type="number"
-                variant="outlined"
-              />
-              <TextField
-                value={stateBody?.jumlahBiayaLuarUsaha}
-                onChange={(e) =>
-                  setStateBody({ ...stateBody, jumlahBiayaLuarUsaha: e.target.value })
-                }
-                id="outlined-basic"
-                label="Jumlah Biaya Luar Usaha"
-                type="number"
-                helperText="kebutuhanRumahTangga  + biayaPendidikan + Biaya Lainnya"
-                variant="outlined"
-              />
-              <TextField
-                value={stateBody?.pendapatanBersih}
-                onChange={(e) => setStateBody({ ...stateBody, pendapatanBersih: e.target.value })}
-                id="outlined-basic"
-                label="Pendapatan Bersih"
-                helperText="labaUsaha - JumlahPendapatan - jumlahBiayaLuarUsaha"
-                type="number"
-                variant="outlined"
-              />
-              <TextField
-                value={stateBody?.accPermohonan}
-                onChange={(e) => setStateBody({ ...stateBody, accPermohonan: e.target.value })}
-                id="outlined-basic"
-                label="Acc Permohonan"
-                helperText="(rasio angsuran / 100) * pendapatanBersih * jangkaWaktu"
-                type="number"
-                variant="outlined"
-              />
             </div> */}
           </DialogContentText>
         </DialogContent>

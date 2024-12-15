@@ -14,14 +14,14 @@ const navigationConfig = [
     type: 'collapse',
     icon: 'check_box',
     children: [
-      {
-        id: 'masterAnalisa',
-        title: 'Analisa',
-        // translate: 'Stok Barang',
-        type: 'item',
-        icon: 'heroicons-outline:collection',
-        url: '/apps/masterAnalisa/',
-      },
+      // {
+      //   id: 'masterAnalisa',
+      //   title: 'Analisa',
+      //   // translate: 'Stok Barang',
+      //   type: 'item',
+      //   icon: 'heroicons-outline:collection',
+      //   url: '/apps/masterAnalisa/',
+      // },
       {
         id: 'masterNasabah',
         title: 'Nasabah',
