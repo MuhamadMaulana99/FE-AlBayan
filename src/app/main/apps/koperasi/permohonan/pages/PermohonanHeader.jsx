@@ -65,7 +65,7 @@ function PermohonanHeader(props) {
     provinsi: null,
     saldoTabungan: null,
   });
-
+  
   useEffect(() => {
     const result = dataNasabah.filter(
       (item) => item.mstRekening === stateBody?.rekening?.mstRekening
@@ -81,9 +81,10 @@ function PermohonanHeader(props) {
     kecamatan: getDataNasabahById[0]?.mstKecamatan,
     kabupaten: getDataNasabahById[0]?.mstKabupaten,
     provinsi: getDataNasabahById[0]?.mstProvinsi,
-    saldoTabungan: stateBody?.saldoTabungan,
+    saldoTabungan: stateBody?.saldoTabungan?.replace(/[^\d]/g, ''),
   };
-  // console.log(body, 'body');
+  console.log(body, 'body');
+  // console.log(stateBody, 'stateBody')
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -410,7 +411,13 @@ function PermohonanHeader(props) {
               <TextField
                 value={stateBody?.saldoTabungan}
                 onChange={(e) => {
-                  setStateBody({ ...stateBody, saldoTabungan: e.target.value });
+                  const rawValue = e.target.value.replace(/[^0-9]/g, ''); 
+                  const formattedValue = new Intl.NumberFormat('id-ID', {
+                    style: 'currency',
+                    currency: 'IDR',
+                    minimumFractionDigits: 0,
+                  }).format(rawValue);
+                  setStateBody({ ...stateBody, saldoTabungan: formattedValue });
                 }}
                 id="outlined-basic"
                 label="Saldo "

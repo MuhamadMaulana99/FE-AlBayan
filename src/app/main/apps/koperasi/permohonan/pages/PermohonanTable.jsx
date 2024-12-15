@@ -1,19 +1,19 @@
 /* eslint-disable no-nested-ternary */
 /* eslint-disable react-hooks/exhaustive-deps */
-import * as React from 'react';
-import Paper from '@mui/material/Paper';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
-import { showMessage } from 'app/store/fuse/messageSlice';
-import { useDispatch } from 'react-redux';
-import axios from 'axios';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
+import * as React from "react";
+import Paper from "@mui/material/Paper";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TablePagination from "@mui/material/TablePagination";
+import TableRow from "@mui/material/TableRow";
+import { showMessage } from "app/store/fuse/messageSlice";
+import { useDispatch } from "react-redux";
+import axios from "axios";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import {
   Alert,
   Autocomplete,
@@ -24,88 +24,88 @@ import {
   DialogTitle,
   IconButton,
   TextField,
-} from '@mui/material';
-import FuseLoading from '@fuse/core/FuseLoading';
-import Button from '@mui/material/Button';
-import { useEffect, useState } from 'react';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import CloseIcon from '@mui/icons-material/Close';
-import Slide from '@mui/material/Slide';
-import Analisa from '../analisa/Analisa';
+} from "@mui/material";
+import FuseLoading from "@fuse/core/FuseLoading";
+import Button from "@mui/material/Button";
+import { useEffect, useState } from "react";
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import CloseIcon from "@mui/icons-material/Close";
+import Slide from "@mui/material/Slide";
+import Analisa from "../analisa/Analisa";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
 const columns = [
-  { id: 'no', label: 'NO', minWidth: 170, align: 'left' },
+  { id: "no", label: "NO", minWidth: 170, align: "left" },
   {
-    id: 'namaNasabah',
-    label: 'Nama Nasabah',
+    id: "namaNasabah",
+    label: "Nama Nasabah",
     minWidth: 170,
-    align: 'left',
+    align: "left",
   },
   {
-    id: 'rekening',
-    label: 'Rekening',
+    id: "rekening",
+    label: "Rekening",
     minWidth: 170,
-    align: 'left',
+    align: "left",
   },
   {
-    id: 'jenisKelamin',
-    label: 'Jenis Kelamin',
+    id: "jenisKelamin",
+    label: "Jenis Kelamin",
     minWidth: 170,
-    align: 'left',
+    align: "left",
   },
   {
-    id: 'alamat',
-    label: 'Alamat',
+    id: "alamat",
+    label: "Alamat",
     minWidth: 170,
-    align: 'left',
+    align: "left",
   },
   {
-    id: 'kecamatan',
-    label: 'Kecamatan',
+    id: "kecamatan",
+    label: "Kecamatan",
     minWidth: 170,
-    align: 'left',
+    align: "left",
   },
   {
-    id: 'kabupaten',
-    label: 'Kabupaten',
+    id: "kabupaten",
+    label: "Kabupaten",
     minWidth: 170,
-    align: 'left',
+    align: "left",
   },
   {
-    id: 'provinsi',
-    label: 'Provinsi',
+    id: "provinsi",
+    label: "Provinsi",
     minWidth: 170,
-    align: 'left',
+    align: "left",
   },
   {
-    id: 'saldoTabungan',
-    label: 'Saldo Tabungan',
+    id: "saldoTabungan",
+    label: "Saldo Tabungan",
     minWidth: 170,
-    align: 'left',
+    align: "left",
   },
   {
-    id: 'persentase',
-    label: 'Persentase',
+    id: "persentase",
+    label: "Persentase",
     minWidth: 170,
-    align: 'left',
+    align: "left",
   },
   {
-    id: 'statusAnalisa',
-    label: 'Status Permohonan',
+    id: "statusAnalisa",
+    label: "Status Permohonan",
     minWidth: 170,
-    align: 'left',
+    align: "left",
   },
   {
-    id: 'aksi',
-    label: 'Aksi',
+    id: "aksi",
+    label: "Aksi",
     minWidth: 170,
-    align: 'center',
+    align: "center",
     // format: (value) => value.toFixed(2),
   },
 ];
@@ -144,7 +144,7 @@ function createData(
 
 export default function PermohonanTable(props) {
   const { dataNasabah } = props;
-  const userRoles = JSON.parse(localStorage.getItem('userRoles'));
+  const userRoles = JSON.parse(localStorage.getItem("userRoles"));
   let getAllUserResponse;
   let getResponseName;
   let dataLogin;
@@ -182,9 +182,9 @@ export default function PermohonanTable(props) {
   //   rows = props?.data.filter((word) => word.kabupaten === getResponseName?.name);
   // }
   const propsFromParent = (analisa) => {
-    console.log(analisa, 'analisaa');
+    console.log(analisa, "analisaa");
   };
-  console.log(rows, 'rows');
+  console.log(rows, "rows");
 
   rows?.map((item, index) =>
     createData(
@@ -274,10 +274,10 @@ export default function PermohonanTable(props) {
           message: `Nasabah ${row?.namaNasabah} Sudah Di Analisa`,
           autoHideDuration: 2000,
           anchorOrigin: {
-            vertical: 'top',
-            horizontal: 'center',
+            vertical: "top",
+            horizontal: "center",
           },
-          variant: 'warning',
+          variant: "warning",
         })
       );
     }
@@ -329,20 +329,23 @@ export default function PermohonanTable(props) {
   const HandelEdit = (id) => {
     setLoading(true);
     axios
-      .put(`${process.env.REACT_APP_API_URL_API_}/Permohonan/${dataEdit?.id}`, body)
+      .put(
+        `${process.env.REACT_APP_API_URL_API_}/Permohonan/${dataEdit?.id}`,
+        body
+      )
       .then((res) => {
         props?.getData();
         handleClose();
         setLoading(false);
         dispatch(
           showMessage({
-            message: 'Data Berhasil Di Edit',
+            message: "Data Berhasil Di Edit",
             autoHideDuration: 2000,
             anchorOrigin: {
-              vertical: 'top',
-              horizontal: 'center',
+              vertical: "top",
+              horizontal: "center",
             },
-            variant: 'success',
+            variant: "success",
           })
         );
       })
@@ -351,30 +354,30 @@ export default function PermohonanTable(props) {
         setLoading(false);
         const errStatus = err.response.status;
         const errMessage = err.response.data.message;
-        let messages = '';
+        let messages = "";
         if (errStatus === 401) {
-          messages = 'Unauthorized!!';
-          window.location.href = '/login';
+          messages = "Unauthorized!!";
+          window.location.href = "/login";
         } else if (errStatus === 500) {
-          messages = 'Server Error!!';
+          messages = "Server Error!!";
         } else if (errStatus === 404) {
-          messages = 'Not Found Error!!!';
+          messages = "Not Found Error!!!";
         } else if (errStatus === 408) {
-          messages = 'TimeOut Error!!';
+          messages = "TimeOut Error!!";
         } else if (errStatus === 400) {
           messages = errMessage;
         } else {
-          messages = 'Something Wrong!!';
+          messages = "Something Wrong!!";
         }
         dispatch(
           showMessage({
             message: messages,
             autoHideDuration: 2000,
             anchorOrigin: {
-              vertical: 'top',
-              horizontal: 'center',
+              vertical: "top",
+              horizontal: "center",
             },
-            variant: 'error',
+            variant: "error",
           })
         );
         console.log(err);
@@ -383,11 +386,14 @@ export default function PermohonanTable(props) {
   const HandelApproval = (row, id) => {
     setLoading(true);
     axios
-      .put(`${process.env.REACT_APP_API_URL_API_}/approvalPermohonan/${dataEdit?.id}`, {
-        statusPermohonan: true,
-        persentase,
-        hasilPermohonan: !(persentase < 70),
-      })
+      .put(
+        `${process.env.REACT_APP_API_URL_API_}/approvalPermohonan/${dataEdit?.id}`,
+        {
+          statusPermohonan: true,
+          persentase,
+          hasilPermohonan: !(persentase < 70),
+        }
+      )
       .then((res) => {
         props?.getData();
         handleCloseAnalisa();
@@ -397,10 +403,10 @@ export default function PermohonanTable(props) {
             message: `Nasabah ${row?.namaNasabah} Berhasil Di approv`,
             autoHideDuration: 2000,
             anchorOrigin: {
-              vertical: 'top',
-              horizontal: 'center',
+              vertical: "top",
+              horizontal: "center",
             },
-            variant: 'success',
+            variant: "success",
           })
         );
       })
@@ -409,30 +415,30 @@ export default function PermohonanTable(props) {
         setLoading(false);
         const errStatus = err.response.status;
         const errMessage = err.response.data.message;
-        let messages = '';
+        let messages = "";
         if (errStatus === 401) {
-          messages = 'Unauthorized!!';
-          window.location.href = '/login';
+          messages = "Unauthorized!!";
+          window.location.href = "/login";
         } else if (errStatus === 500) {
-          messages = 'Server Error!!';
+          messages = "Server Error!!";
         } else if (errStatus === 404) {
-          messages = 'Not Found Error!!!';
+          messages = "Not Found Error!!!";
         } else if (errStatus === 408) {
-          messages = 'TimeOut Error!!';
+          messages = "TimeOut Error!!";
         } else if (errStatus === 400) {
           messages = errMessage;
         } else {
-          messages = 'Something Wrong!!';
+          messages = "Something Wrong!!";
         }
         dispatch(
           showMessage({
             message: messages,
             autoHideDuration: 2000,
             anchorOrigin: {
-              vertical: 'top',
-              horizontal: 'center',
+              vertical: "top",
+              horizontal: "center",
             },
-            variant: 'error',
+            variant: "error",
           })
         );
         console.log(err);
@@ -447,13 +453,13 @@ export default function PermohonanTable(props) {
         setLoading(false);
         dispatch(
           showMessage({
-            message: 'Data Berhasil Di Hapus',
+            message: "Data Berhasil Di Hapus",
             autoHideDuration: 2000,
             anchorOrigin: {
-              vertical: 'top',
-              horizontal: 'center',
+              vertical: "top",
+              horizontal: "center",
             },
-            variant: 'success',
+            variant: "success",
           })
         );
       })
@@ -462,30 +468,30 @@ export default function PermohonanTable(props) {
         setLoading(false);
         const errStatus = err.response.status;
         const errMessage = err.response.data.message;
-        let messages = '';
+        let messages = "";
         if (errStatus === 401) {
-          messages = 'Unauthorized!!';
-          window.location.href = '/login';
+          messages = "Unauthorized!!";
+          window.location.href = "/login";
         } else if (errStatus === 500) {
-          messages = 'Server Error!!';
+          messages = "Server Error!!";
         } else if (errStatus === 404) {
-          messages = 'Not Found Error!!!';
+          messages = "Not Found Error!!!";
         } else if (errStatus === 408) {
-          messages = 'TimeOut Error!!';
+          messages = "TimeOut Error!!";
         } else if (errStatus === 400) {
           messages = errMessage;
         } else {
-          messages = 'Something Wrong!!';
+          messages = "Something Wrong!!";
         }
         dispatch(
           showMessage({
             message: messages,
             autoHideDuration: 2000,
             anchorOrigin: {
-              vertical: 'top',
-              horizontal: 'center',
+              vertical: "top",
+              horizontal: "center",
             },
-            variant: 'error',
+            variant: "error",
           })
         );
         console.log(err);
@@ -506,14 +512,14 @@ export default function PermohonanTable(props) {
   // console.log(dataEdit, 'dataEdit')
 
   return (
-    <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+    <Paper sx={{ width: "100%", overflow: "hidden" }}>
       <Dialog
         fullScreen
         open={openAnalisa}
         onClose={handleCloseAnalisa}
         TransitionComponent={Transition}
       >
-        <AppBar sx={{ position: 'relative' }}>
+        <AppBar sx={{ position: "relative" }}>
           <Toolbar>
             <IconButton
               edge="start"
@@ -566,7 +572,9 @@ export default function PermohonanTable(props) {
                 onChange={(e, newValue) => {
                   setDataEdit({ ...dataEdit, rekening: newValue });
                 }}
-                renderInput={(params) => <TextField {...params} label="Data Nasabah" />}
+                renderInput={(params) => (
+                  <TextField {...params} label="Data Nasabah" />
+                )}
               />
               <TextField
                 value={getDataNasabahById[0]?.nama}
@@ -574,7 +582,10 @@ export default function PermohonanTable(props) {
                   readOnly: true,
                 }}
                 onChange={(e) => {
-                  setDataEdit({ ...dataEdit, namaNasabah: getDataNasabahById?.nama });
+                  setDataEdit({
+                    ...dataEdit,
+                    namaNasabah: getDataNasabahById?.nama,
+                  });
                 }}
                 id="outlined-basic"
                 focused
@@ -689,74 +700,110 @@ export default function PermohonanTable(props) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
-              // console.log(row, 'oo');
-              return (
-                <TableRow key={row.id} hover role="checkbox" tabIndex={-1}>
-                  <TableCell>{index + 1}.</TableCell>
-                  <TableCell>{row?.namaNasabah === null ? '-' : row?.namaNasabah}</TableCell>
-                  <TableCell>{row?.rekening === null ? '-' : row?.rekening}</TableCell>
-                  <TableCell>{row?.jenisKelamin === null ? '-' : row?.jenisKelamin}</TableCell>
-                  <TableCell>{row?.alamat === null ? '-' : row?.alamat}</TableCell>
-                  <TableCell>{row?.kecamatan === null ? '-' : row?.kecamatan}</TableCell>
-                  <TableCell>{row?.kabupaten === null ? '-' : row?.kabupaten}</TableCell>
-                  <TableCell>{row?.provinsi === null ? '-' : row?.provinsi}</TableCell>
-                  <TableCell>{row?.saldoTabungan === null ? '-' : row?.saldoTabungan}</TableCell>
-                  <TableCell>{`${row?.persentase === null ? '-' : row?.persentase}%`}</TableCell>
-                  <TableCell>
-                    {row?.statusPermohonan === false ? (
-                      <Button
-                        onClick={() => handleClickopenAnalisa(row, row?.id)}
-                        color="info"
-                        variant="contained"
-                      >
-                        Analisa
-                      </Button>
-                    ) : row?.persentase < 70 ? (
-                      <Button
-                        onClick={() => handleClickopenAnalisa(row, row?.id)}
-                        color="warning"
-                        variant="contained"
-                      >
-                        Tidak Layak
-                      </Button>
-                    ) : (
-                      <Button
-                        onClick={() => handleClickopenAnalisa(row, row?.id)}
-                        color="success"
-                        variant="contained"
-                      >
-                        Layak
-                      </Button>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex justify-center">
-                      <div>
-                        <IconButton
-                          onClick={() => handleClickOpen(row.id, row)}
+            {rows
+              ?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .map((row, index) => {
+                console.log(row, 'sasasa');
+                // let formattedValue;
+                // if (row?.saldoTabungan) {
+                //   const rawValue = row?.saldoTabungan?.replace(/[^0-9]/g, "");
+                //   formattedValue = new Intl.NumberFormat("id-ID", {
+                //     style: "currency",
+                //     currency: "IDR",
+                //     minimumFractionDigits: 0,
+                //   }).format(rawValue);
+                // }
+                // console.log(formattedValue,)
+                return (
+                  <TableRow key={row.id} hover role="checkbox" tabIndex={-1}>
+                    <TableCell>{index + 1}.</TableCell>
+                    <TableCell>
+                      {row?.namaNasabah === null ? "-" : row?.namaNasabah}
+                    </TableCell>
+                    <TableCell>
+                      {row?.rekening === null ? "-" : row?.rekening}
+                    </TableCell>
+                    <TableCell>
+                      {row?.jenisKelamin === null ? "-" : row?.jenisKelamin}
+                    </TableCell>
+                    <TableCell>
+                      {row?.alamat === null ? "-" : row?.alamat}
+                    </TableCell>
+                    <TableCell>
+                      {row?.kecamatan === null ? "-" : row?.kecamatan}
+                    </TableCell>
+                    <TableCell>
+                      {row?.kabupaten === null ? "-" : row?.kabupaten}
+                    </TableCell>
+                    <TableCell>
+                      {row?.provinsi === null ? "-" : row?.provinsi}
+                    </TableCell>
+                    <TableCell>
+                      Rp. {row?.saldoTabungan === null ? "-" : row?.saldoTabungan}
+                    </TableCell>
+                    <TableCell>{`${
+                      row?.persentase === null ? "-" : row?.persentase
+                    }%`}</TableCell>
+                    <TableCell>
+                      {row?.statusPermohonan === false ? (
+                        <Button
+                          onClick={() => handleClickopenAnalisa(row, row?.id)}
                           color="info"
-                          disabled={dataLogin?.roleUser === 'Staff' && row?.accBasil !== null}
-                          className=""
+                          variant="contained"
                         >
-                          <EditIcon />
-                        </IconButton>
-                      </div>
-                      <div>
-                        <IconButton
-                          onClick={(e) => HandelDelete(row.id)}
-                          color="error"
-                          disabled={dataLogin?.roleUser === 'Staff' && row?.accBasil !== null}
-                          className=""
+                          Analisa
+                        </Button>
+                      ) : row?.persentase < 70 ? (
+                        <Button
+                          onClick={() => handleClickopenAnalisa(row, row?.id)}
+                          color="warning"
+                          variant="contained"
                         >
-                          <DeleteIcon />
-                        </IconButton>
+                          Tidak Layak
+                        </Button>
+                      ) : (
+                        <Button
+                          onClick={() => handleClickopenAnalisa(row, row?.id)}
+                          color="success"
+                          variant="contained"
+                        >
+                          Layak
+                        </Button>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex justify-center">
+                        <div>
+                          <IconButton
+                            onClick={() => handleClickOpen(row.id, row)}
+                            color="info"
+                            disabled={
+                              dataLogin?.roleUser === "Staff" &&
+                              row?.accBasil !== null
+                            }
+                            className=""
+                          >
+                            <EditIcon />
+                          </IconButton>
+                        </div>
+                        <div>
+                          <IconButton
+                            onClick={(e) => HandelDelete(row.id)}
+                            color="error"
+                            disabled={
+                              dataLogin?.roleUser === "Staff" &&
+                              row?.accBasil !== null
+                            }
+                            className=""
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        </div>
                       </div>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
           </TableBody>
         </Table>
       </TableContainer>

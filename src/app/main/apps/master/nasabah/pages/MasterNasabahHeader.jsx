@@ -52,18 +52,18 @@ function MasterNasabahHeader(props) {
     mstKabupaten: null,
     mstProvinsi: null,
   });
-  // console.log(stateBody, 'stateBody')
   const body = {
     nama: stateBody?.nama,
     mstNik: stateBody?.mstNik,
     mstjenisKelamin: JSON.stringify(stateBody?.mstjenisKelamin),
-    mstRekening: stateBody?.mstRekening?.nama,
+    mstRekening: stateBody?.mstRekening,
     mstAlamat: stateBody?.mstAlamat?.nama,
     mstKecamatan: stateBody?.mstKecamatan?.nama,
     mstKabupaten: stateBody?.mstKabupaten?.nama,
     mstProvinsi: stateBody?.mstProvinsi?.nama,
   };
-
+  
+  console.log(body, 'body')
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -229,6 +229,8 @@ function MasterNasabahHeader(props) {
                   id="outlined-basic"
                   label="No Rek"
                   variant="outlined"
+                  type='number'
+                  inputProps={{ maxLength: 10 }}
                   className="flex-grow"
                 />
                 <TextField
@@ -236,6 +238,8 @@ function MasterNasabahHeader(props) {
                   onChange={(e) => setStateBody({ ...stateBody, mstNik: e.target.value })}
                   id="outlined-basic"
                   label="Nik"
+                  type='number'
+                  inputProps={{ maxLength: 16 }}
                   variant="outlined"
                   className="flex-grow"
                 />
