@@ -5,42 +5,42 @@
 /* eslint-disable func-names */
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable no-shadow */
-import Button from '@mui/material/Button';
-import Input from '@mui/material/Input';
-import Paper from '@mui/material/Paper';
-import Typography from '@mui/material/Typography';
-import { motion } from 'framer-motion';
-import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
-import React, { useState, useEffect } from 'react';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import { useDispatch } from 'react-redux';
-import axios from 'axios';
-import { showMessage } from 'app/store/fuse/messageSlice';
-import { Autocomplete, TextField } from '@mui/material';
-import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
-import moment from 'moment';
-import jsPDF from 'jspdf';
-import { saveAs } from 'file-saver';
-import PrintIcon from '@mui/icons-material/Print';
-import autoTable from 'jspdf-autotable';
-import FuseAnimate from '@fuse/core/FuseAnimate';
-import { Workbook } from 'exceljs';
+import Button from "@mui/material/Button";
+import Input from "@mui/material/Input";
+import Paper from "@mui/material/Paper";
+import Typography from "@mui/material/Typography";
+import { motion } from "framer-motion";
+import FuseSvgIcon from "@fuse/core/FuseSvgIcon";
+import React, { useState, useEffect } from "react";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import { useDispatch } from "react-redux";
+import axios from "axios";
+import { showMessage } from "app/store/fuse/messageSlice";
+import { Autocomplete, TextField } from "@mui/material";
+import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
+import moment from "moment";
+import jsPDF from "jspdf";
+import { saveAs } from "file-saver";
+import PrintIcon from "@mui/icons-material/Print";
+import autoTable from "jspdf-autotable";
+import FuseAnimate from "@fuse/core/FuseAnimate";
+import { Workbook } from "exceljs";
 
 const top100Films = [
-  { label: 'KG', year: 1994 },
-  { label: 'Lusin', year: 1972 },
-  { label: 'Bal', year: 1994 },
+  { label: "KG", year: 1994 },
+  { label: "Lusin", year: 1972 },
+  { label: "Bal", year: 1994 },
 ];
 
 function PermohonanHeader(props) {
   const dispatch = useDispatch();
   const currentDate = moment().format();
   const { dataNasabah } = props;
-  const userRoles = JSON.parse(localStorage.getItem('userRoles'));
+  const userRoles = JSON.parse(localStorage.getItem("userRoles"));
   let getAllUserResponse;
   let getResponseName;
   let dataLogin;
@@ -59,7 +59,7 @@ function PermohonanHeader(props) {
     namaNasabah: getDataNasabahById?.nama,
     rekening: null,
     jenisKelamin: null,
-    alamat: null, 
+    alamat: null,
     kecamatan: null,
     kabupaten: null,
     provinsi: null,
@@ -104,13 +104,13 @@ function PermohonanHeader(props) {
         setLoading(false);
         dispatch(
           showMessage({
-            message: 'Data Berhasil Tambahkan',
+            message: "Data Berhasil Tambahkan",
             autoHideDuration: 2000,
             anchorOrigin: {
-              vertical: 'top',
-              horizontal: 'center',
+              vertical: "top",
+              horizontal: "center",
             },
-            variant: 'success',
+            variant: "success",
           })
         );
       })
@@ -121,30 +121,30 @@ function PermohonanHeader(props) {
         setLoading(false);
         const errStatus = err.response.status;
         const errMessage = err.response.data.message;
-        let messages = '';
+        let messages = "";
         if (errStatus === 401) {
-          messages = 'Unauthorized!!';
-          window.location.href = '/login';
+          messages = "Unauthorized!!";
+          window.location.href = "/login";
         } else if (errStatus === 500) {
-          messages = 'Server Error!!';
+          messages = "Server Error!!";
         } else if (errStatus === 404) {
-          messages = 'Not Found Error!!!';
+          messages = "Not Found Error!!!";
         } else if (errStatus === 408) {
-          messages = 'TimeOut Error!!';
+          messages = "TimeOut Error!!";
         } else if (errStatus === 400) {
           messages = errMessage;
         } else {
-          messages = 'Something Wrong!!';
+          messages = "Something Wrong!!";
         }
         dispatch(
           showMessage({
             message: `${err?.response?.data?.data?.namaBarang}${messages}`,
             autoHideDuration: 2000,
             anchorOrigin: {
-              vertical: 'top',
-              horizontal: 'center',
+              vertical: "top",
+              horizontal: "center",
             },
-            variant: 'error',
+            variant: "error",
           })
         );
       });
@@ -166,7 +166,7 @@ function PermohonanHeader(props) {
       kodeBarang: data[index].kodeBarang?.kodeBarang,
       namaBarang: data[index].kodeBarang?.namaBarang,
       stock: data[index].jmlKeluar,
-      tanggalKeluar: moment(data[index].tglKeluar).format('YYYY-DD-MM'),
+      tanggalKeluar: moment(data[index].tglKeluar).format("YYYY-DD-MM"),
     });
   }
 
@@ -176,75 +176,81 @@ function PermohonanHeader(props) {
     }
   }
   const downloadPDF = () => {
-    const doc = new jsPDF('l', 'pt', 'legal');
-    doc.text(`Laporan Data Barang Keluar KARYA PUTRA 2 Tanggal ${moment().format('LL')}`, 20, 20);
+    const doc = new jsPDF("l", "pt", "legal");
+    doc.text(
+      `Laporan Data Barang Keluar KARYA PUTRA 2 Tanggal ${moment().format(
+        "LL"
+      )}`,
+      20,
+      20
+    );
     doc.text(`jl.Kademangan RT. 05/02`, 400, 50);
     doc.text(`Kel - Kademangan Setu, Tangsel`, 374, 70);
     const index = 0;
     doc.setFontSize(10);
     autoTable(doc, {
-      theme: 'striped',
+      theme: "striped",
       margin: { top: 95 },
-      head: [['No', 'Kode Barang', 'Nama Barang', 'Stok Barang', 'Tanggal']],
-      headStyles: { fontSize: 7, halign: 'center' },
+      head: [["No", "Kode Barang", "Nama Barang", "Stok Barang", "Tanggal"]],
+      headStyles: { fontSize: 7, halign: "center" },
       columnStyles: {
-        0: { fontSize: 7, halign: 'center' },
-        1: { fontSize: 7, halign: 'center' },
-        2: { fontSize: 7, halign: 'center' },
-        3: { fontSize: 7, halign: 'center' },
-        4: { fontSize: 7, halign: 'center' },
-        5: { fontSize: 7, halign: 'center' },
-        6: { fontSize: 7, halign: 'center' },
-        7: { fontSize: 7, halign: 'center' },
+        0: { fontSize: 7, halign: "center" },
+        1: { fontSize: 7, halign: "center" },
+        2: { fontSize: 7, halign: "center" },
+        3: { fontSize: 7, halign: "center" },
+        4: { fontSize: 7, halign: "center" },
+        5: { fontSize: 7, halign: "center" },
+        6: { fontSize: 7, halign: "center" },
+        7: { fontSize: 7, halign: "center" },
         // 7: { fontSize: 7, halign: 'center' },
       },
 
       body: DataForBody,
       // body: [DataPDF, DataPDF],
     });
-    doc.save(`Data Barang Keluar ${moment().format('LL')}.pdf`);
+    doc.save(`Data Barang Keluar ${moment().format("LL")}.pdf`);
   };
   // console.log(data, 'data');
   function exportExcel() {
     // create workbook by api.
     const workbook = new Workbook();
     // must create one more sheet.
-    const sheet = workbook.addWorksheet('Data Barang Keluar');
-    const worksheet = workbook.getWorksheet('Data Barang Keluar');
+    const sheet = workbook.addWorksheet("Data Barang Keluar");
+    const worksheet = workbook.getWorksheet("Data Barang Keluar");
 
     /* TITLE */
-    worksheet.mergeCells('A1', 'G1');
-    worksheet.getCell('A1').value = 'Barang Keluar';
-    worksheet.getCell('A1').alignment = { horizontal: 'left' };
+    worksheet.mergeCells("A1", "G1");
+    worksheet.getCell("A1").value = "Barang Keluar";
+    worksheet.getCell("A1").alignment = { horizontal: "left" };
 
-    worksheet.mergeCells('A3', 'B3');
+    worksheet.mergeCells("A3", "B3");
 
-    worksheet.getCell('C5').alignment = { horizontal: 'left' };
+    worksheet.getCell("C5").alignment = { horizontal: "left" };
 
     /* Header Table */
-    worksheet.getCell('A7').value = 'NO';
-    worksheet.getCell('A7').alignment = { horizontal: 'center' };
+    worksheet.getCell("A7").value = "NO";
+    worksheet.getCell("A7").alignment = { horizontal: "center" };
 
-    worksheet.getCell('B7').value = 'Kode Barang';
-    worksheet.getCell('B7').alignment = { horizontal: 'center' };
+    worksheet.getCell("B7").value = "Kode Barang";
+    worksheet.getCell("B7").alignment = { horizontal: "center" };
 
-    worksheet.getCell('C7').value = 'Nama Barang';
-    worksheet.getCell('C7').alignment = { horizontal: 'center' };
+    worksheet.getCell("C7").value = "Nama Barang";
+    worksheet.getCell("C7").alignment = { horizontal: "center" };
 
-    worksheet.getCell('D7').value = 'Stok';
-    worksheet.getCell('D7').alignment = { horizontal: 'center' };
+    worksheet.getCell("D7").value = "Stok";
+    worksheet.getCell("D7").alignment = { horizontal: "center" };
 
-    worksheet.getCell('E7').value = 'Tanggal Keluar';
-    worksheet.getCell('E7').alignment = { horizontal: 'center' };
+    worksheet.getCell("E7").value = "Tanggal Keluar";
+    worksheet.getCell("E7").alignment = { horizontal: "center" };
 
     /* Column headers */
-    worksheet.getRow(6).values = [''];
+    worksheet.getRow(6).values = [""];
     worksheet.columns = [
-      { key: 'data_a', width: 10 },
-      { key: 'data_b', width: 20 },
-      { key: 'data_c', width: 20 },
-      { key: 'data_d', width: 20 },
-      { key: 'data_e', width: 20 },
+      { key: "data_a", width: 10 },
+      { key: "data_b", width: 20 },
+      { key: "data_c", width: 20 },
+      { key: "data_d", width: 20 },
+      { key: "data_e", width: 20 },
     ];
     /* Now we use the keys we defined earlier to insert your data by iterating through arrData
     and calling worksheet.addRow()
@@ -255,18 +261,22 @@ function PermohonanHeader(props) {
         data_b: data?.kodeBarang?.kodeBarang,
         data_c: data?.kodeBarang?.namaBarang,
         data_d: data.jmlKeluar,
-        data_e: moment(data.tglKeluar).format('YYYY-DD-MM'),
+        data_e: moment(data.tglKeluar).format("YYYY-DD-MM"),
       });
     });
 
     (async () => {
       const buffer = await workbook.xlsx.writeBuffer();
-      const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
-      const fileExtension = '.xlsx';
+      const fileType =
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+      const fileExtension = ".xlsx";
 
       const blob = new Blob([buffer], { type: fileType });
 
-      saveAs(blob, `Data barang Keluar Tanggal ${moment().format('LL')}${fileExtension}`);
+      saveAs(
+        blob,
+        `Data barang Keluar Tanggal ${moment().format("LL")}${fileExtension}`
+      );
     })();
   }
 
@@ -293,7 +303,9 @@ function PermohonanHeader(props) {
                 onChange={(e, newValue) => {
                   setStateBody({ ...stateBody, rekening: newValue });
                 }}
-                renderInput={(params) => <TextField {...params} label="Data Nasabah" />}
+                renderInput={(params) => (
+                  <TextField {...params} label="Data Nasabah" />
+                )}
               />
               <TextField
                 value={getDataNasabahById[0]?.nama}
@@ -301,7 +313,10 @@ function PermohonanHeader(props) {
                   readOnly: true,
                 }}
                 onChange={(e) => {
-                  setStateBody({ ...stateBody, namaNasabah: getDataNasabahById?.nama });
+                  setStateBody({
+                    ...stateBody,
+                    namaNasabah: getDataNasabahById?.nama,
+                  });
                 }}
                 id="outlined-basic"
                 focused
@@ -435,7 +450,12 @@ function PermohonanHeader(props) {
             <div className="w-full flex">
               <div>
                 <FuseAnimate animation="transition.slideLeftIn" delay={100}>
-                  <Button color="primary" variant="contained" onClick={downloadPDF}>
+                  <Button
+                    color="primary"
+                    variant="contained"
+                    disabled
+                    onClick={downloadPDF}
+                  >
                     <PictureAsPdfIcon className="mr-2" />
                     <div className="hidden md:contents">Export To PDF</div>
                   </Button>
@@ -443,7 +463,12 @@ function PermohonanHeader(props) {
               </div>
               <div className="ml-10">
                 <FuseAnimate animation="transition.slideLeftIn" delay={100}>
-                  <Button variant="contained" color="success" onClick={exportExcel}>
+                  <Button
+                    variant="contained"
+                    color="success"
+                    disabled
+                    onClick={exportExcel}
+                  >
                     <PrintIcon className="mr-2" />
                     <div className="hidden md:contents">Export To Excel</div>
                   </Button>
@@ -468,7 +493,7 @@ function PermohonanHeader(props) {
             disableUnderl
             // value={searchText}
             inputProps={{
-              'aria-label': 'Search',
+              "aria-label": "Search",
             }}
             // onChange={(ev) => dispatch(setProductsSearchText(ev))}
           />
@@ -477,7 +502,7 @@ function PermohonanHeader(props) {
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0, transition: { delay: 0.2 } }}
         >
-          {dataLogin?.roleUser === 'admin' ? (
+          {dataLogin?.roleUser === "admin" ? (
             <Button
               className=""
               onClick={handleClickOpen}
@@ -487,7 +512,7 @@ function PermohonanHeader(props) {
             >
               Add
             </Button>
-          ) : dataLogin?.roleUser === 'Kasir' ? (
+          ) : dataLogin?.roleUser === "Kasir" ? (
             <Button
               className=""
               onClick={handleClickOpen}
