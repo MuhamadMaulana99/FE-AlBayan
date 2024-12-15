@@ -290,12 +290,11 @@ function PermohonanHeader(props) {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">Tambah Pengajuan</DialogTitle>
+        <DialogTitle id="alert-dialog-title">Tambah Permohonan</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             <div className="flex flex-wrap gap-5 p-10">
               <Autocomplete
-                disablePortal
                 id="combo-box-demo"
                 options={dataNasabah}
                 value={stateBody?.rekening}

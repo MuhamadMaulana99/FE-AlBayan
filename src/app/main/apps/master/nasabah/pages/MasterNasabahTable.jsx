@@ -168,6 +168,16 @@ export default function MasterNasabahTable(props) {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
+
+  const formatRekening = (value) => {
+    const cleaned = value.replace(/\D/g, ''); // Hapus non-digit
+    const match = cleaned.match(/^(\d{2})(\d{2})(\d{5})?$/);
+    if (match) {
+      return [match[1], match[2], match[3]].filter(Boolean).join('.');
+    }
+    return value;
+  };
+
   const handleClickOpen = (id, row) => {
     setOpen(true);
     setDataEdit({
@@ -453,7 +463,7 @@ export default function MasterNasabahTable(props) {
                   <TableCell>{index + 1}</TableCell>
                   <TableCell>{row?.nama}</TableCell>
                   <TableCell>{row?.mstNik}</TableCell>
-                  <TableCell>{row?.mstRekening}</TableCell>
+                  <TableCell>{formatRekening(row?.mstRekening)}</TableCell>
                   <TableCell>{row?.mstjenisKelamin?.kelamin}</TableCell>
                   <TableCell>{row?.mstAlamat}</TableCell>
                   <TableCell>{row?.mstKecamatan}</TableCell>
