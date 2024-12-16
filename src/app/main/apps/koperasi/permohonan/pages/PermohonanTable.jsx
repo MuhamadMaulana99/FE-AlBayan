@@ -14,6 +14,11 @@ import { useDispatch } from "react-redux";
 import axios from "axios";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import ExcelJS from "exceljs";
+import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
+import PrintIcon from "@mui/icons-material/Print";
+import jsPDF from "jspdf";
+import FuseAnimate from "@fuse/core/FuseAnimate";
 import {
   Alert,
   Autocomplete,
@@ -142,6 +147,14 @@ function createData(
   };
 }
 
+const formatRekening = (value) => {
+  const cleaned = value?.replace(/\D/g, ""); // Hapus non-digit
+  const match = cleaned.match(/^(\d{2})(\d{2})(\d{4})?$/);
+  if (match) {
+    return [match[1], match[2], match[3]].filter(Boolean).join(".");
+  }
+  return value;
+};
 export default function PermohonanTable(props) {
   const { dataNasabah } = props;
   const userRoles = JSON.parse(localStorage.getItem("userRoles"));
@@ -509,10 +522,111 @@ export default function PermohonanTable(props) {
       </div>
     );
   }
+
+  const downloadPDF = () => {
+    const doc = new jsPDF("landscape");
+    const filteredColumns = columns.filter((column) => column.id !== "aksi");
+    const tableColumn = filteredColumns.map((column) => column.label); // Mendapatkan header kolom
+    const tableRows = rows.map((row, index) => [
+      index + 1,
+      row?.namaNasabah,
+      formatRekening(row?.rekening),
+      row?.jenisKelamin,
+      row?.alamat,
+      row?.kecamatan,
+      row?.kabupaten,
+      row?.provinsi,
+      row?.saldoTabungan,
+      row?.persentase,
+      row?.statusPermohonan === false
+        ? "Analisa"
+        : row?.persentase < 70
+        ? "Tidak Layak"
+        : "Layak",
+    ]);
+
+    doc.autoTable(tableColumn, tableRows);
+    doc.save("data.pdf");
+  };
+
+  // Fungsi untuk ekspor ke Excel
+  const exportExcel = async () => {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Data");
+
+    // Menambahkan header
+    const filteredColumns = columns.filter((column) => column.id !== "aksi");
+    worksheet.columns = filteredColumns.map((column) => ({
+      header: column.label,
+      key: column.id,
+      width: column?.id === "no" ? 5 : 20,
+    }));
+
+    // Menambahkan data ke worksheet
+    rows.map((row, index) => {
+      worksheet.addRow({
+        no: index + 1,
+        namaNasabah: row?.namaNasabah,
+        rekening: formatRekening(row?.rekening),
+        jenisKelamin: row?.jenisKelamin,
+        alamat: row?.alamat,
+        kecamatan: row?.kecamatan,
+        kabupaten: row?.kabupaten,
+        provinsi: row?.provinsi,
+        saldoTabungan: row?.saldoTabungan,
+        persentase: row?.persentase,
+        statusAnalisa:
+          row?.statusPermohonan === false
+            ? "Analisa"
+            : row?.persentase < 70
+            ? "Tidak Layak"
+            : "Layak",
+      });
+    });
+    // Menyimpan file Excel
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "data.xlsx";
+    link.click();
+  };
   // console.log(dataEdit, 'dataEdit')
 
   return (
     <Paper sx={{ width: "100%", overflow: "hidden" }}>
+      <div className="flex flex-auto items-center gap-4 grid-rows-1 ">
+        <div className="flex items-left mt-10 ml-20 w-1/2 flex-col md:flex-row md:items-center md:mt-0">
+          <div className="w-full flex">
+            <div>
+              <FuseAnimate animation="transition.slideLeftIn" delay={100}>
+                <Button
+                  color="primary"
+                  variant="contained"
+                  onClick={downloadPDF}
+                >
+                  <PictureAsPdfIcon className="mr-2" />
+                  <div className="hidden md:contents">Export To PDF</div>
+                </Button>
+              </FuseAnimate>
+            </div>
+            <div className="ml-10">
+              <FuseAnimate animation="transition.slideLeftIn" delay={100}>
+                <Button
+                  variant="contained"
+                  color="success"
+                  onClick={exportExcel}
+                >
+                  <PrintIcon className="mr-2" />
+                  <div className="hidden md:contents">Export To Excel</div>
+                </Button>
+              </FuseAnimate>
+            </div>
+          </div>
+        </div>
+      </div>
       <Dialog
         fullScreen
         open={openAnalisa}
@@ -703,7 +817,7 @@ export default function PermohonanTable(props) {
             {rows
               ?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row, index) => {
-                console.log(row, 'sasasa');
+                console.log(row, "sasasa");
                 // let formattedValue;
                 // if (row?.saldoTabungan) {
                 //   const rawValue = row?.saldoTabungan?.replace(/[^0-9]/g, "");
@@ -739,7 +853,8 @@ export default function PermohonanTable(props) {
                       {row?.provinsi === null ? "-" : row?.provinsi}
                     </TableCell>
                     <TableCell>
-                      Rp. {row?.saldoTabungan === null ? "-" : row?.saldoTabungan}
+                      Rp.{" "}
+                      {row?.saldoTabungan === null ? "-" : row?.saldoTabungan}
                     </TableCell>
                     <TableCell>{`${
                       row?.persentase === null ? "-" : row?.persentase

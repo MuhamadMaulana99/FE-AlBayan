@@ -1,19 +1,19 @@
 /* eslint-disable jsx-a11y/img-redundant-alt */
 /* eslint-disable no-nested-ternary */
 /* eslint-disable react-hooks/exhaustive-deps */
-import Paper from '@mui/material/Paper';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
-import { showMessage } from 'app/store/fuse/messageSlice';
-import { useDispatch } from 'react-redux';
-import axios from 'axios';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
+import Paper from "@mui/material/Paper";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TablePagination from "@mui/material/TablePagination";
+import TableRow from "@mui/material/TableRow";
+import { showMessage } from "app/store/fuse/messageSlice";
+import { useDispatch } from "react-redux";
+import axios from "axios";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import {
   Alert,
   Dialog,
@@ -23,174 +23,179 @@ import {
   DialogTitle,
   IconButton,
   TextField,
-} from '@mui/material';
-import FuseLoading from '@fuse/core/FuseLoading';
-import Button from '@mui/material/Button';
-import { useState } from 'react';
+} from "@mui/material";
+import FuseLoading from "@fuse/core/FuseLoading";
+import Button from "@mui/material/Button";
+import { useState } from "react";
+import ExcelJS from "exceljs";
+import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
+import PrintIcon from "@mui/icons-material/Print";
+import jsPDF from "jspdf";
+import FuseAnimate from "@fuse/core/FuseAnimate";
 
 const top100Films = [
-  { label: 'KG', year: 1994 },
-  { label: 'Lusin', year: 1972 },
-  { label: 'Bal', year: 1994 },
+  { label: "KG", year: 1994 },
+  { label: "Lusin", year: 1972 },
+  { label: "Bal", year: 1994 },
 ];
 
 const columns = [
-  { id: 'no', label: 'NO', minWidth: 170, align: 'left' },
+  { id: "no", label: "NO", minWidth: 170, align: "left" },
   {
-    id: 'namaNasabah',
-    label: 'Nama Nasabah',
+    id: "namaNasabah",
+    label: "Nama Nasabah",
     minWidth: 170,
-    align: 'left',
+    align: "left",
   },
   {
-    id: 'rekening',
-    label: 'Rekening',
+    id: "rekening",
+    label: "Rekening",
     minWidth: 170,
-    align: 'left',
+    align: "left",
   },
   {
-    id: 'penjualan',
-    label: 'Penjualan',
+    id: "penjualan",
+    label: "Penjualan",
     minWidth: 170,
-    align: 'left',
+    align: "left",
   },
   {
-    id: 'hargaPokok',
-    label: 'Harga Pokok',
+    id: "hargaPokok",
+    label: "Harga Pokok",
     minWidth: 170,
-    align: 'left',
+    align: "left",
   },
   {
-    id: 'biaya',
-    label: 'Biaya',
+    id: "biaya",
+    label: "Biaya",
     minWidth: 170,
-    align: 'left',
+    align: "left",
   },
   {
-    id: 'labaUsaha',
-    label: 'Laba Usaha',
+    id: "labaUsaha",
+    label: "Laba Usaha",
     minWidth: 170,
-    align: 'left',
+    align: "left",
   },
   {
-    id: 'pendapatanLain',
-    label: 'Pendapatan Lain',
+    id: "pendapatanLain",
+    label: "Pendapatan Lain",
     minWidth: 170,
-    align: 'left',
+    align: "left",
   },
   {
-    id: 'jumlahPendapatan',
-    label: 'Jumlah Pendapatan',
+    id: "jumlahPendapatan",
+    label: "Jumlah Pendapatan",
     minWidth: 170,
-    align: 'left',
+    align: "left",
   },
   {
-    id: 'kebutuhanRumahTangga',
-    label: 'Kebutuhan Rumah Tangga',
+    id: "kebutuhanRumahTangga",
+    label: "Kebutuhan Rumah Tangga",
     minWidth: 170,
-    align: 'left',
+    align: "left",
   },
   {
-    id: 'biayaPendidikan',
-    label: 'Biaya Pendidikan',
+    id: "biayaPendidikan",
+    label: "Biaya Pendidikan",
     minWidth: 170,
-    align: 'left',
+    align: "left",
   },
   {
-    id: 'biayaLainya',
-    label: 'Biaya Lainnya',
+    id: "biayaLainya",
+    label: "Biaya Lainnya",
     minWidth: 170,
-    align: 'left',
+    align: "left",
   },
   {
-    id: 'jumlahBiayaLuarUsaha',
-    label: 'Jumlah Biaya Luar Usaha',
+    id: "jumlahBiayaLuarUsaha",
+    label: "Jumlah Biaya Luar Usaha",
     minWidth: 170,
-    align: 'left',
+    align: "left",
   },
   {
-    id: 'pendapatanBersih',
-    label: 'Pendapatan Bersih',
+    id: "pendapatanBersih",
+    label: "Pendapatan Bersih",
     minWidth: 170,
-    align: 'left',
+    align: "left",
   },
   {
-    id: 'rasioAngsuran',
-    label: 'Rasio Angsuran',
+    id: "rasioAngsuran",
+    label: "Rasio Angsuran",
     minWidth: 170,
-    align: 'left',
+    align: "left",
   },
   {
-    id: 'jangkaWaktu',
-    label: 'Jangka Waktu',
+    id: "jangkaWaktu",
+    label: "Jangka Waktu",
     minWidth: 170,
-    align: 'left',
+    align: "left",
   },
   {
-    id: 'nominslPermohonan',
-    label: 'Nominal Permohonan',
+    id: "nominslPermohonan",
+    label: "Nominal Permohonan",
     minWidth: 170,
-    align: 'left',
+    align: "left",
   },
   {
-    id: 'tujuanPembiayaan',
-    label: 'Tujuan Pembiayaan',
+    id: "tujuanPembiayaan",
+    label: "Tujuan Pembiayaan",
     minWidth: 170,
-    align: 'left',
+    align: "left",
   },
   {
-    id: 'jaminan',
-    label: 'Jaminan',
+    id: "jaminan",
+    label: "Jaminan",
     minWidth: 170,
-    align: 'left',
+    align: "left",
   },
   {
-    id: 'accPermohonan',
-    label: 'Acc Permohonan',
+    id: "accPermohonan",
+    label: "Acc Permohonan",
     minWidth: 170,
-    align: 'left',
+    align: "left",
   },
   {
-    id: 'noAkad',
-    label: 'No Akad',
+    id: "noAkad",
+    label: "No Akad",
     minWidth: 170,
-    align: 'left',
+    align: "left",
   },
   {
-    id: 'approve',
-    label: 'Aprove',
+    id: "approve",
+    label: "Aprove",
     minWidth: 170,
-    align: 'left',
+    align: "left",
   },
   {
-    id: 'statusBy',
-    label: 'StatusBy',
+    id: "statusBy",
+    label: "StatusBy",
     minWidth: 170,
-    align: 'left',
+    align: "left",
   },
   {
-    id: 'statusAt',
-    label: 'StatusAt',
+    id: "statusAt",
+    label: "StatusAt",
     minWidth: 170,
-    align: 'left',
+    align: "left",
   },
   {
-    id: 'foto',
-    label: 'Foto',
+    id: "foto",
+    label: "Foto",
     minWidth: 170,
-    align: 'left',
+    align: "left",
   },
   {
-    id: 'statusPengajuan',
-    label: 'Status Pengajuan',
+    id: "statusPengajuan",
+    label: "Status Pengajuan",
     minWidth: 170,
-    align: 'left',
+    align: "left",
   },
   {
-    id: 'aksi',
-    label: 'Aksi',
+    id: "aksi",
+    label: "Aksi",
     minWidth: 170,
-    align: 'center',
+    align: "center",
     // format: (value) => value.toFixed(2),
   },
 ];
@@ -252,7 +257,7 @@ function createData(
 }
 
 export default function PengajuanTable(props) {
-  const userRoles = JSON.parse(localStorage.getItem('userRoles'));
+  const userRoles = JSON.parse(localStorage.getItem("userRoles"));
   let getAllUserResponse;
   let getResponseName;
   let dataLogin;
@@ -264,14 +269,14 @@ export default function PengajuanTable(props) {
   const dataMasterSuplayer = props?.dataMasterSuplayer;
   const dispatch = useDispatch();
   const { dataMasterBarang } = props;
-  console.log(getResponseName, 'getResponseName');
+  console.log(getResponseName, "getResponseName");
   const [data, setData] = useState([]);
   const [getDataEdit, setgetDataEdit] = useState({});
   const [dataEdit, setDataEdit] = useState({
     id: null,
     penjualan: null,
-    hargaPokok: '',
-    biaya: '',
+    hargaPokok: "",
+    biaya: "",
     labaUsaha: null,
     pendapatanLain: null,
     jumlahPendapatan: null,
@@ -380,20 +385,23 @@ export default function PengajuanTable(props) {
   const HandelEdit = (id) => {
     setLoading(true);
     axios
-      .put(`${process.env.REACT_APP_API_URL_API_}/pengajuan/${dataEdit?.id}`, body)
+      .put(
+        `${process.env.REACT_APP_API_URL_API_}/pengajuan/${dataEdit?.id}`,
+        body
+      )
       .then((res) => {
         props?.getData();
         handleClose();
         setLoading(false);
         dispatch(
           showMessage({
-            message: 'Data Berhasil Di Edit',
+            message: "Data Berhasil Di Edit",
             autoHideDuration: 2000,
             anchorOrigin: {
-              vertical: 'top',
-              horizontal: 'center',
+              vertical: "top",
+              horizontal: "center",
             },
-            variant: 'success',
+            variant: "success",
           })
         );
       })
@@ -402,30 +410,30 @@ export default function PengajuanTable(props) {
         setLoading(false);
         const errStatus = err.response.status;
         const errMessage = err.response.data.message;
-        let messages = '';
+        let messages = "";
         if (errStatus === 401) {
-          messages = 'Unauthorized!!';
-          window.location.href = '/login';
+          messages = "Unauthorized!!";
+          window.location.href = "/login";
         } else if (errStatus === 500) {
-          messages = 'Server Error!!';
+          messages = "Server Error!!";
         } else if (errStatus === 404) {
-          messages = 'Not Found Error!!!';
+          messages = "Not Found Error!!!";
         } else if (errStatus === 408) {
-          messages = 'TimeOut Error!!';
+          messages = "TimeOut Error!!";
         } else if (errStatus === 400) {
           messages = errMessage;
         } else {
-          messages = 'Something Wrong!!';
+          messages = "Something Wrong!!";
         }
         dispatch(
           showMessage({
             message: messages,
             autoHideDuration: 2000,
             anchorOrigin: {
-              vertical: 'top',
-              horizontal: 'center',
+              vertical: "top",
+              horizontal: "center",
             },
-            variant: 'error',
+            variant: "error",
           })
         );
         console.log(err);
@@ -433,7 +441,7 @@ export default function PengajuanTable(props) {
   };
   const HandelApprove = (id, row) => {
     setLoading(true);
-    if (dataLogin?.roleUser === 'Kasir' || dataLogin?.roleUser === 'Admin') {
+    if (dataLogin?.roleUser === "Kasir" || dataLogin?.roleUser === "Admin") {
       axios
         .put(`${process.env.REACT_APP_API_URL_API_}/pengajuanByApprove/${id}`, {
           status: getResponseName?.name,
@@ -447,10 +455,10 @@ export default function PengajuanTable(props) {
               message: `Data Berhasil Di Approve oleh ${getResponseName?.name}`,
               autoHideDuration: 2000,
               anchorOrigin: {
-                vertical: 'top',
-                horizontal: 'center',
+                vertical: "top",
+                horizontal: "center",
               },
-              variant: 'success',
+              variant: "success",
             })
           );
         })
@@ -459,30 +467,30 @@ export default function PengajuanTable(props) {
           setLoading(false);
           const errStatus = err.response.status;
           const errMessage = err.response.data.message;
-          let messages = '';
+          let messages = "";
           if (errStatus === 401) {
-            messages = 'Unauthorized!!';
-            window.location.href = '/login';
+            messages = "Unauthorized!!";
+            window.location.href = "/login";
           } else if (errStatus === 500) {
-            messages = 'Server Error!!';
+            messages = "Server Error!!";
           } else if (errStatus === 404) {
-            messages = 'Not Found Error!!!';
+            messages = "Not Found Error!!!";
           } else if (errStatus === 408) {
-            messages = 'TimeOut Error!!';
+            messages = "TimeOut Error!!";
           } else if (errStatus === 400) {
             messages = errMessage;
           } else {
-            messages = 'Something Wrong!!';
+            messages = "Something Wrong!!";
           }
           dispatch(
             showMessage({
               message: messages,
               autoHideDuration: 2000,
               anchorOrigin: {
-                vertical: 'top',
-                horizontal: 'center',
+                vertical: "top",
+                horizontal: "center",
               },
-              variant: 'error',
+              variant: "error",
             })
           );
           console.log(err);
@@ -490,13 +498,13 @@ export default function PengajuanTable(props) {
     } else {
       dispatch(
         showMessage({
-          message: 'Silahkan Hubungi Kasir Untuk Aprove ',
+          message: "Silahkan Hubungi Kasir Untuk Aprove ",
           autoHideDuration: 2000,
           anchorOrigin: {
-            vertical: 'top',
-            horizontal: 'center',
+            vertical: "top",
+            horizontal: "center",
           },
-          variant: 'warning',
+          variant: "warning",
         })
       );
     }
@@ -510,13 +518,13 @@ export default function PengajuanTable(props) {
         setLoading(false);
         dispatch(
           showMessage({
-            message: 'Data Berhasil Di Hapus',
+            message: "Data Berhasil Di Hapus",
             autoHideDuration: 2000,
             anchorOrigin: {
-              vertical: 'top',
-              horizontal: 'center',
+              vertical: "top",
+              horizontal: "center",
             },
-            variant: 'success',
+            variant: "success",
           })
         );
       })
@@ -525,30 +533,30 @@ export default function PengajuanTable(props) {
         setLoading(false);
         const errStatus = err.response.status;
         const errMessage = err.response.data.message;
-        let messages = '';
+        let messages = "";
         if (errStatus === 401) {
-          messages = 'Unauthorized!!';
-          window.location.href = '/login';
+          messages = "Unauthorized!!";
+          window.location.href = "/login";
         } else if (errStatus === 500) {
-          messages = 'Server Error!!';
+          messages = "Server Error!!";
         } else if (errStatus === 404) {
-          messages = 'Not Found Error!!!';
+          messages = "Not Found Error!!!";
         } else if (errStatus === 408) {
-          messages = 'TimeOut Error!!';
+          messages = "TimeOut Error!!";
         } else if (errStatus === 400) {
           messages = errMessage;
         } else {
-          messages = 'Something Wrong!!';
+          messages = "Something Wrong!!";
         }
         dispatch(
           showMessage({
             message: messages,
             autoHideDuration: 2000,
             anchorOrigin: {
-              vertical: 'top',
-              horizontal: 'center',
+              vertical: "top",
+              horizontal: "center",
             },
-            variant: 'error',
+            variant: "error",
           })
         );
         console.log(err);
@@ -567,10 +575,175 @@ export default function PengajuanTable(props) {
     );
   }
 
+  const downloadPDF = () => {
+    const doc = new jsPDF("landscape");
+  
+    // Filter out the 'aksi' column
+    const filteredColumns = columns.filter((column) => column.id !== "aksi");
+    
+    // Table headers from the filtered columns
+    const tableColumn = filteredColumns.map((column) => column.label);
+    
+    // Generate table rows using the mapped rows data
+    const tableRows = rows?.map((item, index) => [
+      index + 1,
+      item?.id,
+      item?.penjualan,
+      item?.hargaPokok,
+      item?.biaya,
+      item?.labaUsaha,
+      item?.pendapatanLain,
+      item?.jumlahPendapatan,
+      item?.kebutuhanRumahTangga,
+      item?.biayaPendidikan,
+      item?.biayaLainya,
+      item?.jumlahBiayaLuarUsaha,
+      item?.pendapatanBersih,
+      item?.rasioAngsuran,
+      item?.jangkaWaktu,
+      item?.nominalPermohonan,
+      item?.tujuanPembiayaan,
+      item?.jaminan,
+      item?.accPermohonan,
+      item?.nomorAkad,
+      item?.status,
+      item?.statusBy,
+      item?.statusAt,
+      item?.foto
+    ]);
+  
+    // Table styling adjustments
+    const tableStyle = {
+      headStyles: {
+        fillColor: [0, 0, 255], // blue color for header
+        textColor: [255, 255, 255], // white text color
+        fontSize: 10,
+        fontStyle: 'bold',
+        halign: 'center',
+        valign: 'middle',
+      },
+      bodyStyles: {
+        fontSize: 8,
+        halign: 'center',
+        valign: 'middle',
+      },
+      columnStyles: {
+        // Adjust the width of the columns based on content
+        0: { cellWidth: 15 },
+        1: { cellWidth: 25 },
+        2: { cellWidth: 30 },
+        3: { cellWidth: 30 },
+        4: { cellWidth: 30 },
+        // 5: { cellWidth: 30 },
+        // 6: { cellWidth: 30 },
+        // 7: { cellWidth: 30 },
+        // 8: { cellWidth: 30 },
+        // 9: { cellWidth: 30 },
+        // 10: { cellWidth: 30 },
+        // You can continue setting widths for other columns as needed
+      }
+    };
+  
+    // Add title or other content on the first page
+    doc.text('Data Table Report', 10, 10);
+  
+    // Add the table to the PDF
+    doc.autoTable(tableColumn, tableRows, tableStyle);
+  
+    // Save the PDF file
+    doc.save("data.pdf");
+  };
+  
+  
+
+  // Fungsi untuk ekspor ke Excel
+  const exportExcel = async () => {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Data");
+  
+    // Filter out the 'aksi' column and create the worksheet columns
+    const filteredColumns = columns.filter((column) => column.id !== "aksi");
+    worksheet.columns = filteredColumns.map((column) => ({
+      header: column.label,
+      key: column.id,
+      width: column?.id === "no" ? 5 : 20,
+    }));
+  
+    // Generate data rows using the mapped rows data
+    rows?.map((item, index) => {
+      worksheet.addRow({
+        no: index + 1,
+        id: item?.id,
+        penjualan: item?.penjualan,
+        hargaPokok: item?.hargaPokok,
+        biaya: item?.biaya,
+        labaUsaha: item?.labaUsaha,
+        pendapatanLain: item?.pendapatanLain,
+        jumlahPendapatan: item?.jumlahPendapatan,
+        kebutuhanRumahTangga: item?.kebutuhanRumahTangga,
+        biayaPendidikan: item?.biayaPendidikan,
+        biayaLainya: item?.biayaLainya,
+        jumlahBiayaLuarUsaha: item?.jumlahBiayaLuarUsaha,
+        pendapatanBersih: item?.pendapatanBersih,
+        rasioAngsuran: item?.rasioAngsuran,
+        jangkaWaktu: item?.jangkaWaktu,
+        nominalPermohonan: item?.nominalPermohonan,
+        tujuanPembiayaan: item?.tujuanPembiayaan,
+        jaminan: item?.jaminan,
+        accPermohonan: item?.accPermohonan,
+        nomorAkad: item?.nomorAkad,
+        status: item?.status,
+        statusBy: item?.statusBy,
+        statusAt: item?.statusAt,
+        foto: item?.foto,
+      });
+    });
+  
+    // Save the Excel file
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "data.xlsx";
+    link.click();
+  };
+  
   // console.log(dataEdit, 'dataEdit')
 
   return (
-    <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+    <Paper sx={{ width: "100%", overflow: "hidden" }}>
+      <div className="flex flex-auto items-center gap-4 grid-rows-1 ">
+        <div className="flex items-left mt-10 ml-20 w-1/2 flex-col md:flex-row md:items-center md:mt-0">
+          <div className="w-full flex">
+            <div>
+              <FuseAnimate animation="transition.slideLeftIn" delay={100}>
+                <Button
+                  color="primary"
+                  variant="contained"
+                  onClick={downloadPDF}
+                >
+                  <PictureAsPdfIcon className="mr-2" />
+                  <div className="hidden md:contents">Export To PDF</div>
+                </Button>
+              </FuseAnimate>
+            </div>
+            <div className="ml-10">
+              <FuseAnimate animation="transition.slideLeftIn" delay={100}>
+                <Button
+                  variant="contained"
+                  color="success"
+                  onClick={exportExcel}
+                >
+                  <PrintIcon className="mr-2" />
+                  <div className="hidden md:contents">Export To Excel</div>
+                </Button>
+              </FuseAnimate>
+            </div>
+          </div>
+        </div>
+      </div>
       <Dialog
         className="py-20"
         open={open}
@@ -682,110 +855,163 @@ export default function PengajuanTable(props) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
-              // console.log(row, 'oo');
-              return (
-                <TableRow key={row.id} hover role="checkbox" tabIndex={-1}>
-                  <TableCell>{index + 1}.</TableCell>
-                  <TableCell>{row?.namaNasabah === null ? '-' : row?.namaNasabah}</TableCell>
-                  <TableCell>{row?.rekening === null ? '-' : row?.rekening}</TableCell>
-                  <TableCell>{row?.penjualan === null ? '-' : row?.penjualan}</TableCell>
-                  <TableCell>{row?.hargaPokok === null ? '-' : row?.hargaPokok}</TableCell>
-                  <TableCell>{row?.biaya === null ? '-' : row?.biaya}</TableCell>
-                  <TableCell>{row?.labaUsaha === null ? '-' : row?.labaUsaha}</TableCell>
-                  <TableCell>{row?.pendapatanLain === null ? '-' : row?.pendapatanLain}</TableCell>
-                  <TableCell>
-                    {row?.jumlahPendapatan === null ? '-' : row?.jumlahPendapatan}
-                  </TableCell>
-                  <TableCell>
-                    {row?.kebutuhanRumahTangga === null ? '-' : row?.kebutuhanRumahTangga}
-                  </TableCell>
-                  <TableCell>
-                    {row?.biayaPendidikan === null ? '-' : row?.biayaPendidikan}
-                  </TableCell>
-                  <TableCell>{row?.biayaLainya === null ? '-' : row?.biayaLainya}</TableCell>
-                  <TableCell>
-                    {row?.jumlahBiayaLuarUsaha === null ? '-' : row?.jumlahBiayaLuarUsaha}
-                  </TableCell>
-                  <TableCell>
-                    {row?.pendapatanBersih === null ? '-' : row?.pendapatanBersih}
-                  </TableCell>
-                  <TableCell>{row?.rasioAngsuran === null ? '-' : row?.rasioAngsuran}</TableCell>
-                  <TableCell>{row?.jangkaWaktu === null ? '-' : row?.jangkaWaktu}</TableCell>
-                  <TableCell>
-                    {row?.nominalPermohonan === null ? '-' : row?.nominalPermohonan}
-                  </TableCell>
-                  <TableCell>
-                    {row?.tujuanPembiayaan === null ? '-' : row?.tujuanPembiayaan}
-                  </TableCell>
-                  <TableCell>{row?.jaminan === null ? '-' : row?.jaminan}</TableCell>
-                  <TableCell className="font-bold">
-                    {row?.accPermohonan === null ? '-' : row?.accPermohonan}
-                  </TableCell>
-                  <TableCell>{row?.nomorAkad === null ? '-' : row?.nomorAkad}</TableCell>
-                  <TableCell>
-                    {row?.status === null ? (
-                      <Button
-                        onClick={() => HandelApprove(row?.id, row)}
-                        color="warning"
-                        variant="contained"
-                      >
-                        Approve
-                      </Button>
-                    ) : (
-                      <Button color="success" variant="contained">
-                        {row?.status === null ? '-' : row?.status}
-                      </Button>
-                    )}
-                  </TableCell>
-                  <TableCell>{row?.statusBy === null ? '-' : row?.statusBy}</TableCell>
-                  <TableCell>{row?.statusAt === null ? '-' : row?.statusAt}</TableCell>
-                  <TableCell>
-                    {row?.foto === null ? (
-                      '-'
-                    ) : (
-                      <img src={`data:image/jpg;base64, ${row?.foto}`} alt="Base64 Image" />
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    {row?.labaUsaha === null ? (
-                      <Button color="warning" variant="contained">
-                        Uncompleted
-                      </Button>
-                    ) : (
-                      <Button color="success" variant="contained">
-                        Completed
-                      </Button>
-                    )}
-                  </TableCell>
-                  {/* <TableCell>{row?.deskripsi}</TableCell> */}
-                  <TableCell>
-                    <div className="flex justify-center">
-                      <div>
-                        <IconButton
-                          onClick={() => handleClickOpen(row.id, row)}
-                          color="info"
-                          disabled={dataLogin?.roleUser === 'Staff' && row?.labaUsaha !== null}
-                          className=""
+            {rows
+              ?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .map((row, index) => {
+                // console.log(row, 'oo');
+                return (
+                  <TableRow key={row.id} hover role="checkbox" tabIndex={-1}>
+                    <TableCell>{index + 1}.</TableCell>
+                    <TableCell>
+                      {row?.namaNasabah === null ? "-" : row?.namaNasabah}
+                    </TableCell>
+                    <TableCell>
+                      {row?.rekening === null ? "-" : row?.rekening}
+                    </TableCell>
+                    <TableCell>
+                      {row?.penjualan === null ? "-" : row?.penjualan}
+                    </TableCell>
+                    <TableCell>
+                      {row?.hargaPokok === null ? "-" : row?.hargaPokok}
+                    </TableCell>
+                    <TableCell>
+                      {row?.biaya === null ? "-" : row?.biaya}
+                    </TableCell>
+                    <TableCell>
+                      {row?.labaUsaha === null ? "-" : row?.labaUsaha}
+                    </TableCell>
+                    <TableCell>
+                      {row?.pendapatanLain === null ? "-" : row?.pendapatanLain}
+                    </TableCell>
+                    <TableCell>
+                      {row?.jumlahPendapatan === null
+                        ? "-"
+                        : row?.jumlahPendapatan}
+                    </TableCell>
+                    <TableCell>
+                      {row?.kebutuhanRumahTangga === null
+                        ? "-"
+                        : row?.kebutuhanRumahTangga}
+                    </TableCell>
+                    <TableCell>
+                      {row?.biayaPendidikan === null
+                        ? "-"
+                        : row?.biayaPendidikan}
+                    </TableCell>
+                    <TableCell>
+                      {row?.biayaLainya === null ? "-" : row?.biayaLainya}
+                    </TableCell>
+                    <TableCell>
+                      {row?.jumlahBiayaLuarUsaha === null
+                        ? "-"
+                        : row?.jumlahBiayaLuarUsaha}
+                    </TableCell>
+                    <TableCell>
+                      {row?.pendapatanBersih === null
+                        ? "-"
+                        : row?.pendapatanBersih}
+                    </TableCell>
+                    <TableCell>
+                      {row?.rasioAngsuran === null ? "-" : row?.rasioAngsuran}
+                    </TableCell>
+                    <TableCell>
+                      {row?.jangkaWaktu === null ? "-" : row?.jangkaWaktu}
+                    </TableCell>
+                    <TableCell>
+                      {row?.nominalPermohonan === null
+                        ? "-"
+                        : row?.nominalPermohonan}
+                    </TableCell>
+                    <TableCell>
+                      {row?.tujuanPembiayaan === null
+                        ? "-"
+                        : row?.tujuanPembiayaan}
+                    </TableCell>
+                    <TableCell>
+                      {row?.jaminan === null ? "-" : row?.jaminan}
+                    </TableCell>
+                    <TableCell className="font-bold">
+                      {row?.accPermohonan === null ? "-" : row?.accPermohonan}
+                    </TableCell>
+                    <TableCell>
+                      {row?.nomorAkad === null ? "-" : row?.nomorAkad}
+                    </TableCell>
+                    <TableCell>
+                      {row?.status === null ? (
+                        <Button
+                          onClick={() => HandelApprove(row?.id, row)}
+                          color="warning"
+                          variant="contained"
                         >
-                          <EditIcon />
-                        </IconButton>
+                          Approve
+                        </Button>
+                      ) : (
+                        <Button color="success" variant="contained">
+                          {row?.status === null ? "-" : row?.status}
+                        </Button>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {row?.statusBy === null ? "-" : row?.statusBy}
+                    </TableCell>
+                    <TableCell>
+                      {row?.statusAt === null ? "-" : row?.statusAt}
+                    </TableCell>
+                    <TableCell>
+                      {row?.foto === null ? (
+                        "-"
+                      ) : (
+                        <img
+                          src={`data:image/jpg;base64, ${row?.foto}`}
+                          alt="Base64 Image"
+                        />
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {row?.labaUsaha === null ? (
+                        <Button color="warning" variant="contained">
+                          Uncompleted
+                        </Button>
+                      ) : (
+                        <Button color="success" variant="contained">
+                          Completed
+                        </Button>
+                      )}
+                    </TableCell>
+                    {/* <TableCell>{row?.deskripsi}</TableCell> */}
+                    <TableCell>
+                      <div className="flex justify-center">
+                        <div>
+                          <IconButton
+                            onClick={() => handleClickOpen(row.id, row)}
+                            color="info"
+                            disabled={
+                              dataLogin?.roleUser === "Staff" &&
+                              row?.labaUsaha !== null
+                            }
+                            className=""
+                          >
+                            <EditIcon />
+                          </IconButton>
+                        </div>
+                        <div>
+                          <IconButton
+                            onClick={(e) => HandelDelete(row.id)}
+                            color="error"
+                            disabled={
+                              dataLogin?.roleUser === "Staff" &&
+                              row?.labaUsaha !== null
+                            }
+                            className=""
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        </div>
                       </div>
-                      <div>
-                        <IconButton
-                          onClick={(e) => HandelDelete(row.id)}
-                          color="error"
-                          disabled={dataLogin?.roleUser === 'Staff' && row?.labaUsaha !== null}
-                          className=""
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      </div>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
           </TableBody>
         </Table>
       </TableContainer>
