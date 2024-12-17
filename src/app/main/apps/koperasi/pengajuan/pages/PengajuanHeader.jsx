@@ -47,11 +47,28 @@ const VisuallyHiddenInput = styled("input")({
   width: 1,
 });
 
-const top100Films = [
-  { label: "KG", year: 1994 },
-  { label: "Lusin", year: 1972 },
-  { label: "Bal", year: 1994 },
-];
+function convertToInteger(currency) {
+  try {
+    // Validasi input harus berupa string
+    if (typeof currency !== "string") {
+      throw new Error("Input harus berupa string.");
+    }
+
+    // Hapus semua karakter yang bukan angka
+    let angka = currency.replace(/[^0-9]/g, "");
+
+    // Pastikan hasilnya tidak kosong
+    if (angka === "") {
+      throw new Error("Nilai angka tidak valid.");
+    }
+
+    // Ubah menjadi integer
+    return parseInt(angka, 10);
+  } catch (error) {
+    console.error(error.message);
+    return 0; // Nilai default jika terjadi kesalahan
+  }
+}
 
 function PengajuanHeader(props) {
   const fileInputRef = useRef(null);
@@ -105,7 +122,31 @@ function PengajuanHeader(props) {
     foto: null,
   });
   const [getDataBody, setgetDataBody] = useState({});
-  console.log(getDataBody, "stateBody");
+
+  function calculatePercentage(part, whole) {
+    return (part / whole) * 100;
+  }
+
+  const countLabaUsaha =
+    parseInt(convertToInteger(stateBody?.penjualan), 10) -
+    parseInt(convertToInteger(stateBody?.hargaPokok), 10) -
+    parseInt(convertToInteger(stateBody?.biaya), 10);
+  const countJumlahPendapatan =
+    parseInt(countLabaUsaha, 10) +
+    parseInt(convertToInteger(stateBody?.pendapatanLain), 10);
+  const countJumlahBiayaLuarUsaha =
+    parseInt(convertToInteger(stateBody?.kebutuhanRumahTangga), 10) +
+    parseInt(convertToInteger(stateBody?.biayaPendidikan), 10) +
+    parseInt(convertToInteger(stateBody?.biayaLainnya), 10);
+  const countPendapatanBersih =
+    countLabaUsaha + countJumlahPendapatan - countJumlahBiayaLuarUsaha;
+  const countAccPermohonan =
+    (parseInt(stateBody?.rasioAngsuran, 10) / 100) *
+    countPendapatanBersih *
+    parseInt(stateBody?.jangkaWaktu, 10);
+  // console.log(convertToInteger(stateBody?.penjualan), 'stateBody')
+
+  const resultAcc = calculatePercentage(100, countAccPermohonan);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -143,10 +184,39 @@ function PengajuanHeader(props) {
     });
   };
 
+  const bodys = {
+    penjualan: convertToInteger(getDataBody?.penjualan),
+    namaNasabah: getDataBody?.namaNasabah,
+    rekening: getDataBody?.rekening,
+    hargaPokok: convertToInteger(getDataBody?.hargaPokok),
+    biaya: convertToInteger(getDataBody?.biaya),
+    biayaLainya: convertToInteger(getDataBody?.biayaLainya),
+    labaUsaha: countLabaUsaha,
+    pendapatanLain: convertToInteger(getDataBody?.pendapatanLain),
+    jumlahPendapatan: countJumlahPendapatan,
+    kebutuhanRumahTangga: convertToInteger(getDataBody?.kebutuhanRumahTangga),
+    biayaPendidikan: convertToInteger(getDataBody?.biayaPendidikan),
+    jumlahBiayaLuarUsaha: countJumlahBiayaLuarUsaha,
+    pendapatanBersih: countPendapatanBersih,
+    rasioAngsuran: getDataBody?.rasioAngsuran,
+    jangkaWaktu: getDataBody?.jangkaWaktu,
+    nominalPermohonan: convertToInteger(getDataBody?.nominalPermohonan),
+    tujuanPembiayaan: getDataBody?.tujuanPembiayaan,
+    jaminan: getDataBody?.jaminan,
+    accPermohonan: countAccPermohonan,
+    nomorAkad: getDataBody?.nomorAkad,
+    status: getDataBody?.status,
+    statusBy: getDataBody?.statusBy,
+    statusAt: getDataBody?.statusAt,
+    foto: null,
+  };
+
+  // console.log(bodys, "bodys");
+
   const HandelSubmit = () => {
     setLoading(true);
     axios
-      .post(`${process.env.REACT_APP_API_URL_API_}/Pengajuan`, getDataBody)
+      .post(`${process.env.REACT_APP_API_URL_API_}/Pengajuan`, bodys)
       .then((res) => {
         // setData(res?.data);
         props.getData();
@@ -255,28 +325,6 @@ function PengajuanHeader(props) {
     });
   };
 
-  function calculatePercentage(part, whole) {
-    return (part / whole) * 100;
-  }
-
-  const countLabaUsaha =
-    parseInt(stateBody?.penjualan, 10) -
-    parseInt(stateBody?.hargaPokok, 10) -
-    parseInt(stateBody?.biaya, 10);
-  const countJumlahPendapatan =
-    parseInt(countLabaUsaha, 10) + parseInt(stateBody?.pendapatanLain, 10);
-  const countJumlahBiayaLuarUsaha =
-    parseInt(stateBody?.kebutuhanRumahTangga, 10) +
-    parseInt(stateBody?.biayaPendidikan, 10) +
-    parseInt(stateBody?.biayaLainnya, 10);
-  const countPendapatanBersih =
-    countLabaUsaha + countJumlahPendapatan - countJumlahBiayaLuarUsaha;
-  const countAccPermohonan =
-    (parseInt(stateBody?.rasioAngsuran, 10) / 100) *
-    countPendapatanBersih *
-    parseInt(stateBody?.jangkaWaktu, 10);
-
-  const resultAcc = calculatePercentage(100, countAccPermohonan);
   // console.log(`${Math.round(resultAcc)}%`, 'resss');
 
   useEffect(() => {
@@ -470,88 +518,128 @@ function PengajuanHeader(props) {
               <TextField
                 value={stateBody?.penjualan}
                 onChange={(e) => {
-                  setStateBody({ ...stateBody, penjualan: e.target.value });
+                  const rawValue = e.target.value.replace(/[^0-9]/g, "");
+                  const formattedValue = new Intl.NumberFormat("id-ID", {
+                    style: "currency",
+                    currency: "IDR",
+                    minimumFractionDigits: 0,
+                  }).format(rawValue);
+                  setStateBody({ ...stateBody, penjualan: formattedValue });
                   // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
                 }}
                 sx={{ width: 370 }}
                 id="outlined-basic"
                 label="Penjualan"
-                type="number"
                 variant="outlined"
               />
               <TextField
                 value={stateBody?.hargaPokok}
                 onChange={(e) => {
-                  setStateBody({ ...stateBody, hargaPokok: e.target.value });
+                  const rawValue = e.target.value.replace(/[^0-9]/g, "");
+                  const formattedValue = new Intl.NumberFormat("id-ID", {
+                    style: "currency",
+                    currency: "IDR",
+                    minimumFractionDigits: 0,
+                  }).format(rawValue);
+                  setStateBody({ ...stateBody, hargaPokok: formattedValue });
                   // settriggerAccBasil({ ...stateBody, accBasil: stateBody?.staffBasil})
                 }}
                 sx={{ width: 370 }}
                 id="outlined-basic"
                 label="Harga Pokok"
-                type="number"
                 variant="outlined"
               />
               <TextField
                 value={stateBody?.biaya}
-                onChange={(e) =>
-                  setStateBody({ ...stateBody, biaya: e.target.value })
-                }
+                onChange={(e) => {
+                  const rawValue = e.target.value.replace(/[^0-9]/g, "");
+                  const formattedValue = new Intl.NumberFormat("id-ID", {
+                    style: "currency",
+                    currency: "IDR",
+                    minimumFractionDigits: 0,
+                  }).format(rawValue);
+                  setStateBody({ ...stateBody, biaya: formattedValue });
+                }}
                 sx={{ width: 370 }}
                 id="outlined-basic"
                 label="Biaya"
-                type="number"
                 variant="outlined"
               />
 
               <TextField
                 value={stateBody?.pendapatanLain}
-                onChange={(e) =>
-                  setStateBody({ ...stateBody, pendapatanLain: e.target.value })
-                }
+                onChange={(e) => {
+                  const rawValue = e.target.value.replace(/[^0-9]/g, "");
+                  const formattedValue = new Intl.NumberFormat("id-ID", {
+                    style: "currency",
+                    currency: "IDR",
+                    minimumFractionDigits: 0,
+                  }).format(rawValue);
+
+                  setStateBody({
+                    ...stateBody,
+                    pendapatanLain: formattedValue,
+                  });
+                }}
                 sx={{ width: 370 }}
                 id="outlined-basic"
                 label="Pendapatan Lain"
-                type="number"
                 variant="outlined"
               />
 
               <TextField
                 value={stateBody?.kebutuhanRumahTangga}
-                onChange={(e) =>
+                onChange={(e) => {
+                  const rawValue = e.target.value.replace(/[^0-9]/g, "");
+                  const formattedValue = new Intl.NumberFormat("id-ID", {
+                    style: "currency",
+                    currency: "IDR",
+                    minimumFractionDigits: 0,
+                  }).format(rawValue);
                   setStateBody({
                     ...stateBody,
-                    kebutuhanRumahTangga: e.target.value,
-                  })
-                }
+                    kebutuhanRumahTangga: formattedValue,
+                  });
+                }}
                 sx={{ width: 370 }}
                 id="outlined-basic"
                 label="Kebutuhan Rumah Tangga"
-                type="number"
                 variant="outlined"
               />
               <TextField
                 value={stateBody?.biayaPendidikan}
-                onChange={(e) =>
+                onChange={(e) => {
+                  const rawValue = e.target.value.replace(/[^0-9]/g, "");
+                  const formattedValue = new Intl.NumberFormat("id-ID", {
+                    style: "currency",
+                    currency: "IDR",
+                    minimumFractionDigits: 0,
+                  }).format(rawValue);
                   setStateBody({
                     ...stateBody,
-                    biayaPendidikan: e.target.value,
-                  })
-                }
+                    biayaPendidikan: formattedValue,
+                  });
+                }}
                 sx={{ width: 370 }}
                 id="outlined-basic"
                 label="Biaya Pendidikan"
-                type="number"
                 variant="outlined"
               />
               <TextField
                 value={stateBody?.biayaLainya}
-                onChange={(e) =>
-                  setStateBody({ ...stateBody, biayaLainya: e.target.value })
-                }
+                onChange={(e) => {
+                  const rawValue = e.target.value.replace(/[^0-9]/g, "");
+                  const formattedValue = new Intl.NumberFormat("id-ID", {
+                    style: "currency",
+                    currency: "IDR",
+                    minimumFractionDigits: 0,
+                  }).format(rawValue);
+
+                  setStateBody({ ...stateBody, biayaLainya: formattedValue });
+                }}
                 sx={{ width: 370 }}
                 id="outlined-basic"
                 label="Biaya Lainnya"
-                type="number"
                 variant="outlined"
               />
 
@@ -582,16 +670,21 @@ function PengajuanHeader(props) {
               />
               <TextField
                 value={stateBody?.nominalPermohonan}
-                onChange={(e) =>
+                onChange={(e) => {
+                  const rawValue = e.target.value.replace(/[^0-9]/g, "");
+                  const formattedValue = new Intl.NumberFormat("id-ID", {
+                    style: "currency",
+                    currency: "IDR",
+                    minimumFractionDigits: 0,
+                  }).format(rawValue);
                   setStateBody({
                     ...stateBody,
-                    nominalPermohonan: e.target.value,
-                  })
-                }
+                    nominalPermohonan: formattedValue,
+                  });
+                }}
                 sx={{ width: 370 }}
                 id="outlined-basic"
                 label="Nominal Pemohonan"
-                type="number"
                 variant="outlined"
               />
               <TextField
@@ -714,38 +807,6 @@ function PengajuanHeader(props) {
         >
           Pengajuan
         </Typography>
-        <div className="flex flex-auto items-center gap-4 grid-rows-1 ">
-          <div className="flex items-left mt-10 ml-20 w-1/2 flex-col md:flex-row md:items-center md:mt-0">
-            <div className="w-full flex">
-              <div>
-                <FuseAnimate animation="transition.slideLeftIn" delay={100}>
-                  <Button
-                    color="primary"
-                    variant="contained"
-                    disabled
-                    onClick={downloadPDF}
-                  >
-                    <PictureAsPdfIcon className="mr-2" />
-                    <div className="hidden md:contents">Export To PDF</div>
-                  </Button>
-                </FuseAnimate>
-              </div>
-              <div className="ml-10">
-                <FuseAnimate animation="transition.slideLeftIn" delay={100}>
-                  <Button
-                    variant="contained"
-                    color="success"
-                    disabled
-                    onClick={exportExcel}
-                  >
-                    <PrintIcon className="mr-2" />
-                    <div className="hidden md:contents">Export To Excel</div>
-                  </Button>
-                </FuseAnimate>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
       <div className="flex flex-col w-full sm:w-auto sm:flex-row space-y-16 sm:space-y-0 flex-1 items-center justify-end space-x-8">
         <Paper

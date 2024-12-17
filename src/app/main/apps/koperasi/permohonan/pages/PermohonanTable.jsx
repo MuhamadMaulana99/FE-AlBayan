@@ -175,6 +175,11 @@ export default function PermohonanTable(props) {
   const [getDataNasabahById, setgetDataNasabahById] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
   const [selectedItemsValue, setSelectedItemsValue] = useState([]);
+  const [openNotifikasi, setOpenNotifikasi] = React.useState(false);
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [dataEdit, setDataEdit] = useState({
     id: null,
     namaNasabah: null,
@@ -186,11 +191,16 @@ export default function PermohonanTable(props) {
     provinsi: null,
     saldoTabungan: null,
   });
-  const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+
   const rows = props?.data;
+
+  const handleClickOpenNotifikasi = () => {
+    setOpenNotifikasi(true);
+  };
+  const handleCloseNotifikasi = () => {
+    setOpenNotifikasi(false);
+  };
+
   // if (dataLogin?.roleUser === 'Staff') {
   //   rows = props?.data.filter((word) => word.kabupaten === getResponseName?.name);
   // }
@@ -396,7 +406,7 @@ export default function PermohonanTable(props) {
         console.log(err);
       });
   };
-  const HandelApproval = (row, id) => {
+  const handleSaveAnalisa = (row, id) => {
     setLoading(true);
     axios
       .put(
@@ -410,6 +420,7 @@ export default function PermohonanTable(props) {
       .then((res) => {
         props?.getData();
         handleCloseAnalisa();
+        handleCloseNotifikasi();
         setLoading(false);
         dispatch(
           showMessage({
@@ -425,6 +436,7 @@ export default function PermohonanTable(props) {
       })
       .catch((err) => {
         handleCloseAnalisa();
+        handleCloseNotifikasi();
         setLoading(false);
         const errStatus = err.response.status;
         const errMessage = err.response.data.message;
@@ -457,6 +469,7 @@ export default function PermohonanTable(props) {
         console.log(err);
       });
   };
+
   const HandelDelete = (id) => {
     setLoading(true);
     axios
@@ -628,6 +641,25 @@ export default function PermohonanTable(props) {
         </div>
       </div>
       <Dialog
+        open={openNotifikasi}
+        onClose={handleCloseNotifikasi}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">Analisa</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Apakah anda yakin dengan analisa ini?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseNotifikasi}>Tutup</Button>
+          <Button onClick={handleSaveAnalisa} autoFocus>
+            Simpan
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
         fullScreen
         open={openAnalisa}
         onClose={handleCloseAnalisa}
@@ -650,7 +682,7 @@ export default function PermohonanTable(props) {
               disabled={selectedItemsValue.length === 0}
               autoFocus
               color="inherit"
-              onClick={HandelApproval}
+              onClick={handleClickOpenNotifikasi}
             >
               save
             </Button>
@@ -817,17 +849,12 @@ export default function PermohonanTable(props) {
             {rows
               ?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row, index) => {
-                console.log(row, "sasasa");
-                // let formattedValue;
-                // if (row?.saldoTabungan) {
-                //   const rawValue = row?.saldoTabungan?.replace(/[^0-9]/g, "");
-                //   formattedValue = new Intl.NumberFormat("id-ID", {
-                //     style: "currency",
-                //     currency: "IDR",
-                //     minimumFractionDigits: 0,
-                //   }).format(rawValue);
-                // }
-                // console.log(formattedValue,)
+                function formatRupiah(amount) {
+                  return (
+                    "Rp. " +
+                    amount.toLocaleString("id-ID", { minimumFractionDigits: 0 })
+                  );
+                }
                 return (
                   <TableRow key={row.id} hover role="checkbox" tabIndex={-1}>
                     <TableCell>{index + 1}.</TableCell>
@@ -853,8 +880,9 @@ export default function PermohonanTable(props) {
                       {row?.provinsi === null ? "-" : row?.provinsi}
                     </TableCell>
                     <TableCell>
-                      Rp.{" "}
-                      {row?.saldoTabungan === null ? "-" : row?.saldoTabungan}
+                      {row?.saldoTabungan === null
+                        ? "-"
+                        : formatRupiah(row?.saldoTabungan)}
                     </TableCell>
                     <TableCell>{`${
                       row?.persentase === null ? "-" : row?.persentase

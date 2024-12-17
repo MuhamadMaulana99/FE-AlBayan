@@ -859,6 +859,12 @@ export default function PengajuanTable(props) {
               ?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row, index) => {
                 // console.log(row, 'oo');
+                function formatRupiah(amount) {
+                  return (
+                    "Rp. " +
+                    amount.toLocaleString("id-ID", { minimumFractionDigits: 0 })
+                  );
+                }
                 return (
                   <TableRow key={row.id} hover role="checkbox" tabIndex={-1}>
                     <TableCell>{index + 1}.</TableCell>
@@ -869,47 +875,47 @@ export default function PengajuanTable(props) {
                       {row?.rekening === null ? "-" : row?.rekening}
                     </TableCell>
                     <TableCell>
-                      {row?.penjualan === null ? "-" : row?.penjualan}
+                      {row?.penjualan === null ? "-" : formatRupiah(row?.penjualan)}
                     </TableCell>
                     <TableCell>
-                      {row?.hargaPokok === null ? "-" : row?.hargaPokok}
+                      {row?.hargaPokok === null ? "-" : formatRupiah(row?.hargaPokok)}
                     </TableCell>
                     <TableCell>
-                      {row?.biaya === null ? "-" : row?.biaya}
+                      {row?.biaya === null ? "-" : formatRupiah(row?.biaya)}
                     </TableCell>
                     <TableCell>
-                      {row?.labaUsaha === null ? "-" : row?.labaUsaha}
+                      {row?.labaUsaha === null ? "-" : formatRupiah(row?.labaUsaha)}
                     </TableCell>
                     <TableCell>
-                      {row?.pendapatanLain === null ? "-" : row?.pendapatanLain}
+                      {row?.pendapatanLain === null ? "-" : formatRupiah(row?.pendapatanLain)}
                     </TableCell>
                     <TableCell>
                       {row?.jumlahPendapatan === null
                         ? "-"
-                        : row?.jumlahPendapatan}
+                        : formatRupiah(row?.jumlahPendapatan)}
                     </TableCell>
                     <TableCell>
                       {row?.kebutuhanRumahTangga === null
                         ? "-"
-                        : row?.kebutuhanRumahTangga}
+                        : formatRupiah(row?.kebutuhanRumahTangga)}
                     </TableCell>
                     <TableCell>
                       {row?.biayaPendidikan === null
                         ? "-"
-                        : row?.biayaPendidikan}
+                        : formatRupiah(row?.biayaPendidikan)}
                     </TableCell>
                     <TableCell>
-                      {row?.biayaLainya === null ? "-" : row?.biayaLainya}
+                      {row?.biayaLainya === null ? "-" : formatRupiah(row?.biayaLainya)}
                     </TableCell>
                     <TableCell>
                       {row?.jumlahBiayaLuarUsaha === null
                         ? "-"
-                        : row?.jumlahBiayaLuarUsaha}
+                        : formatRupiah(row?.jumlahBiayaLuarUsaha)}
                     </TableCell>
                     <TableCell>
                       {row?.pendapatanBersih === null
                         ? "-"
-                        : row?.pendapatanBersih}
+                        : formatRupiah(row?.pendapatanBersih)}
                     </TableCell>
                     <TableCell>
                       {row?.rasioAngsuran === null ? "-" : row?.rasioAngsuran}
@@ -920,7 +926,7 @@ export default function PengajuanTable(props) {
                     <TableCell>
                       {row?.nominalPermohonan === null
                         ? "-"
-                        : row?.nominalPermohonan}
+                        : formatRupiah(row?.nominalPermohonan)}
                     </TableCell>
                     <TableCell>
                       {row?.tujuanPembiayaan === null
@@ -931,7 +937,7 @@ export default function PengajuanTable(props) {
                       {row?.jaminan === null ? "-" : row?.jaminan}
                     </TableCell>
                     <TableCell className="font-bold">
-                      {row?.accPermohonan === null ? "-" : row?.accPermohonan}
+                      {row?.accPermohonan === null ? "-" : formatRupiah(row?.accPermohonan)}
                     </TableCell>
                     <TableCell>
                       {row?.nomorAkad === null ? "-" : row?.nomorAkad}

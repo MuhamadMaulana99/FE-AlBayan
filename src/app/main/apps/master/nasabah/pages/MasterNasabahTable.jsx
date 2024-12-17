@@ -12,7 +12,7 @@ import { showMessage } from "app/store/fuse/messageSlice";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import PrintIcon from "@mui/icons-material/Print";
 import { useDispatch } from "react-redux";
-import ExcelJS from 'exceljs';
+import ExcelJS from "exceljs";
 import axios from "axios";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -31,6 +31,7 @@ import {
 import FuseLoading from "@fuse/core/FuseLoading";
 import FuseAnimate from "@fuse/core/FuseAnimate";
 import jsPDF from "jspdf";
+import { useState } from "react";
 
 const columns = [
   { id: "no", label: "NO", minWidth: 170, align: "left" },
@@ -148,6 +149,18 @@ export default function MasterNasabahTable(props) {
   const [loading, setLoading] = React.useState(true);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [provinsi, setProvinsi] = useState([]);
+  const [kabupaten, setKabupaten] = useState([]);
+  const [kecamatan, setKecamatan] = useState([]);
+  const [kelurahan, setKelurahan] = useState([]);
+  const [selectedProvinsi, setSelectedProvinsi] = useState(null);
+  const [selectedKabupaten, setSelectedKabupaten] = useState(null);
+  const [selectedKecamatan, setSelectedKecamatan] = useState(null);
+
+  const urlProvinsi = "https://ibnux.github.io/data-indonesia/provinsi.json";
+  const urlKabupaten = "https://ibnux.github.io/data-indonesia/kabupaten/";
+  const urlKecamatan = "https://ibnux.github.io/data-indonesia/kecamatan/";
+  const urlKelurahan = "https://ibnux.github.io/data-indonesia/kelurahan/";
 
   const rows = props?.data?.map((item, index) =>
     createData(
@@ -191,9 +204,18 @@ export default function MasterNasabahTable(props) {
       mstRekening: row?.mstRekening,
       mstjenisKelamin: row?.mstjenisKelamin,
       mstAlamat: row?.mstAlamat,
-      mstKecamatan: row?.mstKecamatan,
-      mstKabupaten: row?.mstKabupaten,
-      mstProvinsi: row?.mstProvinsi,
+      mstKecamatan: {
+        id: 1,
+        nama: row?.mstKecamatan,
+      },
+      mstKabupaten: {
+        id: 1,
+        nama: row?.mstKabupaten,
+      },
+      mstProvinsi: {
+        id: 1,
+        nama: row?.mstProvinsi,
+      },
     });
   };
   const handleClose = () => {
@@ -206,10 +228,12 @@ export default function MasterNasabahTable(props) {
     mstRekening: dataEdit?.mstRekening,
     mstjenisKelamin: JSON.stringify(dataEdit?.mstjenisKelamin),
     mstAlamat: dataEdit?.mstAlamat,
-    mstKecamatan: dataEdit?.mstKecamatan,
-    mstKabupaten: dataEdit?.mstKabupaten,
-    mstProvinsi: dataEdit?.mstProvinsi,
+    mstKecamatan: dataEdit?.mstKecamatan?.nama,
+    mstKabupaten: dataEdit?.mstKabupaten?.nama,
+    mstProvinsi: dataEdit?.mstProvinsi?.nama,
   };
+
+  // console.log(body, 'bodybody')
 
   const HandelEdit = (id) => {
     setLoading(true);
@@ -321,6 +345,67 @@ export default function MasterNasabahTable(props) {
         console.log(err);
       });
   };
+
+  const fetchProvinsi = async () => {
+    const res = await axios.get(urlProvinsi);
+    setProvinsi(res.data);
+    // console.log(res,'ress')
+  };
+  // useEffect(() => {
+  //   fetchProvinsi();
+  // }, []);
+
+  const handleProvinsiChange = async (value) => {
+    // console.log(value, 'value')
+    setSelectedProvinsi(value);
+    setKabupaten([]);
+    setKecamatan([]);
+    setKelurahan([]);
+
+    if (value) {
+      const res = await axios.get(`${urlKabupaten}${value.id}.json`);
+      setKabupaten(res.data);
+    }
+  };
+
+  const handleKabupatenChange = async (value) => {
+    setSelectedKabupaten(value);
+    setKecamatan([]);
+    setKelurahan([]);
+
+    if (value) {
+      const res = await axios.get(`${urlKecamatan}${value.id}.json`);
+      setKecamatan(res.data);
+    }
+  };
+
+  const handleKecamatanChange = async (value) => {
+    setSelectedKecamatan(value);
+    setKelurahan([]);
+
+    if (value) {
+      const res = await axios.get(`${urlKelurahan}${value.id}.json`);
+      setKelurahan(res.data);
+    }
+  };
+
+  const handleFocus = (e) => {
+    const getId = e.target.id;
+    // console.log(getId, ';get')
+    switch (getId) {
+      case "provinsi":
+        fetchProvinsi();
+        break;
+      case "kabupaten":
+        handleKabupatenChange();
+        break;
+      case "kecamatan":
+        handleKecamatanChange();
+        break;
+      default:
+    }
+  };
+
   if (props?.loading) {
     return <FuseLoading />;
   }
@@ -336,7 +421,7 @@ export default function MasterNasabahTable(props) {
   // console.log(rows, 'rows')
   const downloadPDF = () => {
     const doc = new jsPDF("landscape");
-    const filteredColumns = columns.filter(column => column.id !== "aksi");
+    const filteredColumns = columns.filter((column) => column.id !== "aksi");
     const tableColumn = filteredColumns.map((column) => column.label); // Mendapatkan header kolom
     const tableRows = rows.map((row, index) => [
       index + 1,
@@ -360,11 +445,11 @@ export default function MasterNasabahTable(props) {
     const worksheet = workbook.addWorksheet("Data");
 
     // Menambahkan header
-    const filteredColumns = columns.filter(column => column.id !== "aksi");
+    const filteredColumns = columns.filter((column) => column.id !== "aksi");
     worksheet.columns = filteredColumns.map((column) => ({
       header: column.label,
       key: column.id,
-      width: column?.id === 'no' ? 5 : 20,
+      width: column?.id === "no" ? 5 : 20,
     }));
 
     // Menambahkan data ke worksheet
@@ -381,9 +466,6 @@ export default function MasterNasabahTable(props) {
         provinsi: row?.mstProvinsi,
       });
     });
-
-    console.log(rows, 'rows')
-
     // Menyimpan file Excel
     const buffer = await workbook.xlsx.writeBuffer();
     const blob = new Blob([buffer], {
@@ -436,9 +518,8 @@ export default function MasterNasabahTable(props) {
         <DialogTitle id="alert-dialog-title">Edit Master Barang</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            <div className="grid grid-cols-2 gap-16 mt-10 mb-10">
-              {/* First row */}
-              <div className="flex flex-wrap gap-5 p-10">
+            <div className="container mx-auto px-4 py-10">
+              <div className="flex flex-wrap gap-6 p-5 bg-white shadow-md rounded-md">
                 <TextField
                   value={dataEdit?.nama}
                   onChange={(e) =>
@@ -447,48 +528,155 @@ export default function MasterNasabahTable(props) {
                   id="outlined-basic"
                   label="Nama Nasabah"
                   variant="outlined"
-                  fullWidth
-                />
-                <TextField
-                  value={dataEdit?.mstNik}
-                  onChange={(e) =>
-                    setDataEdit({ ...dataEdit, mstNik: e.target.value })
-                  }
-                  id="outlined-basic"
-                  label="No Rek"
-                  variant="outlined"
-                  fullWidth
+                  className="flex-grow"
                 />
                 <TextField
                   value={dataEdit?.mstRekening}
-                  onChange={(e) =>
-                    setDataEdit({ ...dataEdit, mstRekening: e.target.value })
-                  }
+                  onChange={(e) => {
+                    const formatNoRek = formatRekening(e.target.value);
+                    setDataEdit({ ...dataEdit, mstRekening: formatNoRek });
+                  }}
                   id="outlined-basic"
                   label="No Rek"
                   variant="outlined"
-                  fullWidth
+                  // type='number'
+                  inputProps={{ maxLength: 10 }}
+                  className="flex-grow"
                 />
-                <div className="mt-10 w-full">
-                  <Autocomplete
-                    disablePortal
-                    fullWidth
-                    id="combo-box-demo"
-                    getOptionLabel={(option) => option.kelamin}
-                    value={dataEdit?.mstjenisKelamin}
-                    onChange={(e, newValue) =>
-                      setDataEdit({ ...dataEdit, mstjenisKelamin: newValue })
+                <TextField
+                  value={dataEdit?.mstNik}
+                  onChange={(e) => {
+                    setDataEdit({ ...dataEdit, mstNik: e.target.value });
+                  }}
+                  id="outlined-basic"
+                  label="Nik"
+                  type="number"
+                  inputProps={{
+                    maxLength: 10, // Batas maksimum karakter
+                  }}
+                  variant="outlined"
+                  className="flex-grow"
+                />
+                <Autocomplete
+                  disablePortal
+                  fullWidth
+                  id="combo-box-demo"
+                  getOptionLabel={(option) => option.kelamin}
+                  value={dataEdit?.mstjenisKelamin}
+                  onChange={(e, newValue) =>
+                    setDataEdit({ ...dataEdit, mstjenisKelamin: newValue })
+                  }
+                  options={jenKel}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Jenis Kelamin" />
+                  )}
+                  className="flex-grow"
+                />
+                <Autocomplete
+                  fullWidth
+                  className="flex-grow"
+                  id="provinsi"
+                  onFocus={handleFocus}
+                  options={provinsi}
+                  value={dataEdit?.mstProvinsi}
+                  getOptionLabel={(option) => option.nama}
+                  onChange={(event, newVlue) => {
+                    if (newVlue) {
+                      handleProvinsiChange(newVlue);
+                      setDataEdit({ ...dataEdit, mstProvinsi: newVlue });
+                      // setProvinsi(newVlue)
+                    } else {
+                      handleProvinsiChange(null);
+                      setDataEdit({
+                        ...dataEdit,
+                        mstProvinsi: null,
+                        mstKabupaten: null,
+                        mstKecamatan: null,
+                        mstAlamat: null,
+                      });
+                      setProvinsi([]);
+                      setKabupaten([]);
+                      setKecamatan([]);
+                      setKelurahan([]);
                     }
-                    options={jenKel}
-                    renderInput={(params) => (
-                      <TextField {...params} label="Jenis Kelamin" />
-                    )}
-                  />
-                </div>
-              </div>
-
-              {/* Second row */}
-              <div className="flex flex-wrap gap-5 p-10">
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      fullWidth
+                      {...params}
+                      label="Pilih Provinsi"
+                      variant="outlined"
+                    />
+                  )}
+                />
+                <Autocomplete
+                  fullWidth
+                  id="kabupaten"
+                  onFocus={handleFocus}
+                  options={kabupaten}
+                  className="flex-grow"
+                  value={dataEdit?.mstKabupaten}
+                  getOptionLabel={(option) => option.nama}
+                  onChange={(event, newVlue) => {
+                    if (newVlue) {
+                      handleKabupatenChange(newVlue);
+                      setDataEdit({ ...dataEdit, mstKabupaten: newVlue });
+                      // setKabupaten(newVlue)
+                    } else {
+                      handleKabupatenChange(null);
+                      setDataEdit({
+                        ...dataEdit,
+                        mstKabupaten: null,
+                        mstKecamatan: null,
+                        mstAlamat: null,
+                      });
+                      setKabupaten([]);
+                      setKecamatan([]);
+                      setKelurahan([]);
+                    }
+                  }}
+                  disabled={!selectedProvinsi}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Pilih Kabupaten"
+                      variant="outlined"
+                    />
+                  )}
+                />
+                <Autocomplete
+                  fullWidth
+                  id="kecamatan"
+                  onFocus={handleFocus}
+                  options={kecamatan}
+                  className="flex-grow"
+                  value={dataEdit?.mstKecamatan}
+                  getOptionLabel={(option) => option.nama}
+                  onChange={(event, newVlue) => {
+                    if (newVlue) {
+                      handleKecamatanChange(newVlue);
+                      setDataEdit({ ...dataEdit, mstKecamatan: newVlue });
+                      // setKecamatan(newVlue)
+                    } else {
+                      handleKecamatanChange(null);
+                      setDataEdit({
+                        ...dataEdit,
+                        mstKecamatan: null,
+                        mstAlamat: null,
+                      });
+                      setKecamatan([]);
+                      setKelurahan([]);
+                    }
+                  }}
+                  disabled={!selectedKabupaten}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Pilih Kecamatan"
+                      variant="outlined"
+                    />
+                  )}
+                />
                 <TextField
                   value={dataEdit?.mstAlamat}
                   onChange={(e) =>
@@ -497,37 +685,7 @@ export default function MasterNasabahTable(props) {
                   id="outlined-basic"
                   label="Alamat"
                   variant="outlined"
-                  fullWidth
-                />
-                <TextField
-                  value={dataEdit?.mstKecamatan}
-                  onChange={(e) =>
-                    setDataEdit({ ...dataEdit, mstKecamatan: e.target.value })
-                  }
-                  id="outlined-basic"
-                  label="Kecamatan"
-                  variant="outlined"
-                  fullWidth
-                />
-                <TextField
-                  value={dataEdit?.mstKabupaten}
-                  onChange={(e) =>
-                    setDataEdit({ ...dataEdit, mstKabupaten: e.target.value })
-                  }
-                  id="outlined-basic"
-                  label="Kabupaten"
-                  variant="outlined"
-                  fullWidth
-                />
-                <TextField
-                  value={dataEdit?.mstProvinsi}
-                  onChange={(e) =>
-                    setDataEdit({ ...dataEdit, mstProvinsi: e.target.value })
-                  }
-                  id="outlined-basic"
-                  label="Provinsi"
-                  variant="outlined"
-                  fullWidth
+                  className="flex-grow"
                 />
               </div>
             </div>

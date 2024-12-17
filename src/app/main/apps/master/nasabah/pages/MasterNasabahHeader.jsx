@@ -212,7 +212,6 @@ function MasterNasabahHeader(props) {
     }
   };
 
-  console.log(provinsi, "provinsi");
   // console.log(kabupaten, 'kabupaten')
   // console.log(kecamatan, 'kecamatan')
   // console.log(kelurahan, 'kelurahan')
