@@ -111,14 +111,8 @@ function PengajuanHeader(props) {
     accPermohonan: 0,
     nomorAkad: null,
     status: null,
-    statusBy:
-      dataLogin?.roleUser === "admin" || dataLogin?.roleUser === "Kasir"
-        ? null
-        : getResponseName?.name,
-    statusAt:
-      dataLogin?.roleUser === "admin" || dataLogin?.roleUser === "Kasir"
-        ? null
-        : currentDate,
+    statusBy: dataLogin?.roleUser === "admin" ? null : getResponseName?.name,
+    statusAt: dataLogin?.roleUser === "admin" ? null : currentDate,
     foto: null,
   });
   const [getDataBody, setgetDataBody] = useState({});
