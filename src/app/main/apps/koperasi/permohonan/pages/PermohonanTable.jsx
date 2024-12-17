@@ -704,7 +704,7 @@ export default function PermohonanTable(props) {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">Edit Barang Keluar</DialogTitle>
+        <DialogTitle id="alert-dialog-title">Edit</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             <div className="flex flex-wrap gap-5 p-10">

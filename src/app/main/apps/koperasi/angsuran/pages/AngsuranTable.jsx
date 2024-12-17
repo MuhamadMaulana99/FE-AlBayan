@@ -571,7 +571,7 @@ export default function AngsuranTable(props) {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">Edit Barang Keluar</DialogTitle>
+        <DialogTitle id="alert-dialog-title">Edit</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             <div className="mt-10">

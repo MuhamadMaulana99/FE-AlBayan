@@ -773,7 +773,7 @@ function PengajuanHeader(props) {
                   {getDataBody?.pendapatanBersih}
                 </li>
                 <li>
-                  Acc Permohonan = (rasio angsuran / 100) * pendapatanBersih *
+                  Max Pembiayaan = (rasio angsuran / 100) * pendapatanBersih *
                   jangkaWaktu :{getDataBody?.accPermohonan}
                 </li>
               </ul>

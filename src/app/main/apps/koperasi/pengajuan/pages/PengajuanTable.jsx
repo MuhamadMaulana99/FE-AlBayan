@@ -40,162 +40,194 @@ const top100Films = [
 ];
 
 const columns = [
-  { id: "no", label: "NO", minWidth: 170, align: "left" },
+  {
+    id: "no",
+    label: "NO",
+    minWidth: 170,
+    align: "left",
+    textSytle: "",
+  },
   {
     id: "namaNasabah",
     label: "Nama Nasabah",
     minWidth: 170,
     align: "left",
+    textSytle: "",
   },
   {
     id: "rekening",
     label: "Rekening",
     minWidth: 170,
     align: "left",
+    textSytle: "",
   },
   {
     id: "penjualan",
     label: "Penjualan",
     minWidth: 170,
     align: "left",
+    textSytle: "",
   },
   {
     id: "hargaPokok",
     label: "Harga Pokok",
     minWidth: 170,
     align: "left",
+    textSytle: "",
   },
   {
     id: "biaya",
     label: "Biaya",
     minWidth: 170,
     align: "left",
+    textSytle: "",
   },
   {
     id: "labaUsaha",
     label: "Laba Usaha",
     minWidth: 170,
     align: "left",
+    textSytle: "",
   },
   {
     id: "pendapatanLain",
     label: "Pendapatan Lain",
     minWidth: 170,
     align: "left",
+    textSytle: "",
   },
   {
     id: "jumlahPendapatan",
     label: "Jumlah Pendapatan",
     minWidth: 170,
     align: "left",
+    textSytle: "",
   },
   {
     id: "kebutuhanRumahTangga",
     label: "Kebutuhan Rumah Tangga",
     minWidth: 170,
     align: "left",
+    textSytle: "",
   },
   {
     id: "biayaPendidikan",
     label: "Biaya Pendidikan",
     minWidth: 170,
     align: "left",
+    textSytle: "",
   },
   {
     id: "biayaLainya",
     label: "Biaya Lainnya",
     minWidth: 170,
     align: "left",
+    textSytle: "",
   },
   {
     id: "jumlahBiayaLuarUsaha",
     label: "Jumlah Biaya Luar Usaha",
     minWidth: 170,
     align: "left",
+    textSytle: "",
   },
   {
     id: "pendapatanBersih",
     label: "Pendapatan Bersih",
     minWidth: 170,
     align: "left",
+    textSytle: "font-bold",
   },
   {
     id: "rasioAngsuran",
     label: "Rasio Angsuran",
     minWidth: 170,
     align: "left",
+    textSytle: "",
   },
   {
     id: "jangkaWaktu",
     label: "Jangka Waktu",
     minWidth: 170,
     align: "left",
+    textSytle: "font-bold",
   },
   {
     id: "nominslPermohonan",
     label: "Nominal Permohonan",
     minWidth: 170,
     align: "left",
+    textSytle: "font-bold",
   },
   {
     id: "tujuanPembiayaan",
     label: "Tujuan Pembiayaan",
     minWidth: 170,
     align: "left",
+    textSytle: "",
   },
   {
     id: "jaminan",
     label: "Jaminan",
     minWidth: 170,
     align: "left",
+    textSytle: "font-bold",
   },
   {
     id: "accPermohonan",
-    label: "Acc Permohonan",
+    label: "Max Pembiayaan",
     minWidth: 170,
     align: "left",
+    textSytle: "font-bold",
   },
   {
     id: "noAkad",
     label: "No Akad",
     minWidth: 170,
     align: "left",
+    textSytle: "",
   },
   {
     id: "approve",
     label: "Aprove",
     minWidth: 170,
     align: "left",
+    textSytle: "",
   },
   {
     id: "statusBy",
     label: "StatusBy",
     minWidth: 170,
     align: "left",
+    textSytle: "",
   },
   {
     id: "statusAt",
     label: "StatusAt",
     minWidth: 170,
     align: "left",
+    textSytle: "",
   },
   {
     id: "foto",
     label: "Foto",
     minWidth: 170,
     align: "left",
+    textSytle: "",
   },
   {
     id: "statusPengajuan",
     label: "Status Pengajuan",
     minWidth: 170,
     align: "left",
+    textSytle: "",
   },
   {
     id: "aksi",
     label: "Aksi",
     minWidth: 170,
     align: "center",
+    textSytle: "",
     // format: (value) => value.toFixed(2),
   },
 ];
@@ -577,13 +609,13 @@ export default function PengajuanTable(props) {
 
   const downloadPDF = () => {
     const doc = new jsPDF("landscape");
-  
+
     // Filter out the 'aksi' column
     const filteredColumns = columns.filter((column) => column.id !== "aksi");
-    
+
     // Table headers from the filtered columns
     const tableColumn = filteredColumns.map((column) => column.label);
-    
+
     // Generate table rows using the mapped rows data
     const tableRows = rows?.map((item, index) => [
       index + 1,
@@ -609,23 +641,23 @@ export default function PengajuanTable(props) {
       item?.status,
       item?.statusBy,
       item?.statusAt,
-      item?.foto
+      item?.foto,
     ]);
-  
+
     // Table styling adjustments
     const tableStyle = {
       headStyles: {
         fillColor: [0, 0, 255], // blue color for header
         textColor: [255, 255, 255], // white text color
         fontSize: 10,
-        fontStyle: 'bold',
-        halign: 'center',
-        valign: 'middle',
+        fontStyle: "bold",
+        halign: "center",
+        valign: "middle",
       },
       bodyStyles: {
         fontSize: 8,
-        halign: 'center',
-        valign: 'middle',
+        halign: "center",
+        valign: "middle",
       },
       columnStyles: {
         // Adjust the width of the columns based on content
@@ -641,26 +673,24 @@ export default function PengajuanTable(props) {
         // 9: { cellWidth: 30 },
         // 10: { cellWidth: 30 },
         // You can continue setting widths for other columns as needed
-      }
+      },
     };
-  
+
     // Add title or other content on the first page
-    doc.text('Data Table Report', 10, 10);
-  
+    doc.text("Data Table Report", 10, 10);
+
     // Add the table to the PDF
     doc.autoTable(tableColumn, tableRows, tableStyle);
-  
+
     // Save the PDF file
     doc.save("data.pdf");
   };
-  
-  
 
   // Fungsi untuk ekspor ke Excel
   const exportExcel = async () => {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Data");
-  
+
     // Filter out the 'aksi' column and create the worksheet columns
     const filteredColumns = columns.filter((column) => column.id !== "aksi");
     worksheet.columns = filteredColumns.map((column) => ({
@@ -668,7 +698,7 @@ export default function PengajuanTable(props) {
       key: column.id,
       width: column?.id === "no" ? 5 : 20,
     }));
-  
+
     // Generate data rows using the mapped rows data
     rows?.map((item, index) => {
       worksheet.addRow({
@@ -698,7 +728,7 @@ export default function PengajuanTable(props) {
         foto: item?.foto,
       });
     });
-  
+
     // Save the Excel file
     const buffer = await workbook.xlsx.writeBuffer();
     const blob = new Blob([buffer], {
@@ -709,7 +739,7 @@ export default function PengajuanTable(props) {
     link.download = "data.xlsx";
     link.click();
   };
-  
+
   // console.log(dataEdit, 'dataEdit')
 
   return (
@@ -751,7 +781,7 @@ export default function PengajuanTable(props) {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">Edit Barang Keluar</DialogTitle>
+        <DialogTitle id="alert-dialog-title">Edit</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             <div className="mt-10">
@@ -848,6 +878,7 @@ export default function PengajuanTable(props) {
                   key={column.id}
                   align={column.align}
                   style={{ minWidth: column.minWidth }}
+                  className={column?.textSytle}
                 >
                   {column.label}
                 </TableCell>
@@ -875,19 +906,27 @@ export default function PengajuanTable(props) {
                       {row?.rekening === null ? "-" : row?.rekening}
                     </TableCell>
                     <TableCell>
-                      {row?.penjualan === null ? "-" : formatRupiah(row?.penjualan)}
+                      {row?.penjualan === null
+                        ? "-"
+                        : formatRupiah(row?.penjualan)}
                     </TableCell>
                     <TableCell>
-                      {row?.hargaPokok === null ? "-" : formatRupiah(row?.hargaPokok)}
+                      {row?.hargaPokok === null
+                        ? "-"
+                        : formatRupiah(row?.hargaPokok)}
                     </TableCell>
                     <TableCell>
                       {row?.biaya === null ? "-" : formatRupiah(row?.biaya)}
                     </TableCell>
                     <TableCell>
-                      {row?.labaUsaha === null ? "-" : formatRupiah(row?.labaUsaha)}
+                      {row?.labaUsaha === null
+                        ? "-"
+                        : formatRupiah(row?.labaUsaha)}
                     </TableCell>
                     <TableCell>
-                      {row?.pendapatanLain === null ? "-" : formatRupiah(row?.pendapatanLain)}
+                      {row?.pendapatanLain === null
+                        ? "-"
+                        : formatRupiah(row?.pendapatanLain)}
                     </TableCell>
                     <TableCell>
                       {row?.jumlahPendapatan === null
@@ -905,14 +944,16 @@ export default function PengajuanTable(props) {
                         : formatRupiah(row?.biayaPendidikan)}
                     </TableCell>
                     <TableCell>
-                      {row?.biayaLainya === null ? "-" : formatRupiah(row?.biayaLainya)}
+                      {row?.biayaLainya === null
+                        ? "-"
+                        : formatRupiah(row?.biayaLainya)}
                     </TableCell>
                     <TableCell>
                       {row?.jumlahBiayaLuarUsaha === null
                         ? "-"
                         : formatRupiah(row?.jumlahBiayaLuarUsaha)}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="font-bold">
                       {row?.pendapatanBersih === null
                         ? "-"
                         : formatRupiah(row?.pendapatanBersih)}
@@ -920,10 +961,10 @@ export default function PengajuanTable(props) {
                     <TableCell>
                       {row?.rasioAngsuran === null ? "-" : row?.rasioAngsuran}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="font-bold">
                       {row?.jangkaWaktu === null ? "-" : row?.jangkaWaktu}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="font-bold">
                       {row?.nominalPermohonan === null
                         ? "-"
                         : formatRupiah(row?.nominalPermohonan)}
@@ -933,11 +974,13 @@ export default function PengajuanTable(props) {
                         ? "-"
                         : row?.tujuanPembiayaan}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="font-bold">
                       {row?.jaminan === null ? "-" : row?.jaminan}
                     </TableCell>
                     <TableCell className="font-bold">
-                      {row?.accPermohonan === null ? "-" : formatRupiah(row?.accPermohonan)}
+                      {row?.accPermohonan === null
+                        ? "-"
+                        : formatRupiah(parseInt(row?.accPermohonan))}
                     </TableCell>
                     <TableCell>
                       {row?.nomorAkad === null ? "-" : row?.nomorAkad}
