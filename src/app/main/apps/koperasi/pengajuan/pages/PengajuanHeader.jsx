@@ -139,7 +139,7 @@ function PengajuanHeader(props) {
     parseInt(convertToInteger(stateBody?.biayaPendidikan), 10) +
     parseInt(convertToInteger(stateBody?.biayaLainnya), 10);
   const countPendapatanBersih =
-    countLabaUsaha + countJumlahPendapatan - countJumlahBiayaLuarUsaha;
+    countJumlahPendapatan - countJumlahBiayaLuarUsaha;
   const countAccPermohonan =
     (parseInt(stateBody?.rasioAngsuran, 10) / 100) *
     countPendapatanBersih *
@@ -759,26 +759,31 @@ function PengajuanHeader(props) {
                 </div>
               </div>
             </div>
-            {/* <div>
+            <div>
               <ul>
-                <li>Laba Usaha = penjualan - hargaPokok - biayaUsaha : {getDataBody?.labaUsaha}</li>
                 <li>
-                  Jumlah Pendapatan = labaUsaha + pendapatanLain : {getDataBody?.jumlahPendapatan}
+                  Laba Usaha = penjualan - hargaPokok - biayaUsaha :{" "}
+                  {getDataBody?.labaUsaha}
                 </li>
                 <li>
-                  Jumlah Biaya Luar Usaha = kebutuhanRumahTangga + biayaPendidikan + Biaya Lainnya :
+                  Jumlah Pendapatan = labaUsaha + pendapatanLain :{" "}
+                  {getDataBody?.jumlahPendapatan}
+                </li>
+                <li>
+                  Jumlah Biaya Luar Usaha = kebutuhanRumahTangga +
+                  biayaPendidikan + Biaya Lainnya :
                   {getDataBody?.jumlahBiayaLuarUsaha}
                 </li>
                 <li>
-                  Pendapatan Bersih = labaUsaha + JumlahPendapatan - jumlahBiayaLuarUsaha :
+                  Pendapatan Bersih = JumlahPendapatan - jumlahBiayaLuarUsaha :
                   {getDataBody?.pendapatanBersih}
                 </li>
                 <li>
-                  Acc Permohonan = (rasio angsuran / 100) * pendapatanBersih * jangkaWaktu :
-                  {getDataBody?.accPermohonan}
+                  Acc Permohonan = (rasio angsuran / 100) * pendapatanBersih *
+                  jangkaWaktu :{getDataBody?.accPermohonan}
                 </li>
               </ul>
-            </div> */}
+            </div>
           </DialogContentText>
         </DialogContent>
         <DialogActions>
