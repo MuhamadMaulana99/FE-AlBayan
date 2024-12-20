@@ -55,171 +55,17 @@ const columns = [
     textSytle: "",
   },
   {
-    id: "rekening",
-    label: "Rekening",
+    id: "nilaizAAkhir",
+    label: "Nilai Z Akhir",
     minWidth: 170,
     align: "left",
     textSytle: "",
   },
   {
-    id: "penjualan",
-    label: "Penjualan",
+    id: "aproval",
+    label: "Approval",
     minWidth: 170,
     align: "left",
-    textSytle: "",
-  },
-  {
-    id: "hargaPokok",
-    label: "Harga Pokok",
-    minWidth: 170,
-    align: "left",
-    textSytle: "",
-  },
-  {
-    id: "biaya",
-    label: "Biaya",
-    minWidth: 170,
-    align: "left",
-    textSytle: "",
-  },
-  {
-    id: "labaUsaha",
-    label: "Laba Usaha",
-    minWidth: 170,
-    align: "left",
-    textSytle: "",
-  },
-  {
-    id: "pendapatanLain",
-    label: "Pendapatan Lain",
-    minWidth: 170,
-    align: "left",
-    textSytle: "",
-  },
-  {
-    id: "jumlahPendapatan",
-    label: "Jumlah Pendapatan",
-    minWidth: 170,
-    align: "left",
-    textSytle: "",
-  },
-  {
-    id: "kebutuhanRumahTangga",
-    label: "Kebutuhan Rumah Tangga",
-    minWidth: 170,
-    align: "left",
-    textSytle: "",
-  },
-  {
-    id: "biayaPendidikan",
-    label: "Biaya Pendidikan",
-    minWidth: 170,
-    align: "left",
-    textSytle: "",
-  },
-  {
-    id: "biayaLainya",
-    label: "Biaya Lainnya",
-    minWidth: 170,
-    align: "left",
-    textSytle: "",
-  },
-  {
-    id: "jumlahBiayaLuarUsaha",
-    label: "Jumlah Biaya Luar Usaha",
-    minWidth: 170,
-    align: "left",
-    textSytle: "",
-  },
-  {
-    id: "pendapatanBersih",
-    label: "Pendapatan Bersih",
-    minWidth: 170,
-    align: "left",
-    textSytle: "font-bold",
-  },
-  {
-    id: "rasioAngsuran",
-    label: "Rasio Angsuran",
-    minWidth: 170,
-    align: "left",
-    textSytle: "",
-  },
-  {
-    id: "jangkaWaktu",
-    label: "Jangka Waktu",
-    minWidth: 170,
-    align: "left",
-    textSytle: "font-bold",
-  },
-  {
-    id: "nominslPermohonan",
-    label: "Nominal Permohonan",
-    minWidth: 170,
-    align: "left",
-    textSytle: "font-bold",
-  },
-  {
-    id: "tujuanPembiayaan",
-    label: "Tujuan Pembiayaan",
-    minWidth: 170,
-    align: "left",
-    textSytle: "",
-  },
-  {
-    id: "jaminan",
-    label: "Jaminan",
-    minWidth: 170,
-    align: "left",
-    textSytle: "font-bold",
-  },
-  {
-    id: "accPermohonan",
-    label: "Max Pembiayaan",
-    minWidth: 170,
-    align: "left",
-    textSytle: "font-bold",
-  },
-  {
-    id: "noAkad",
-    label: "No Akad",
-    minWidth: 170,
-    align: "left",
-    textSytle: "",
-  },
-  {
-    id: "approve",
-    label: "Aprove",
-    minWidth: 170,
-    align: "left",
-    textSytle: "",
-  },
-  {
-    id: "statusBy",
-    label: "StatusBy",
-    minWidth: 170,
-    align: "left",
-    textSytle: "",
-  },
-  {
-    id: "statusAt",
-    label: "StatusAt",
-    minWidth: 170,
-    align: "left",
-    textSytle: "",
-  },
-  {
-    id: "statusPengajuan",
-    label: "Status Pengajuan",
-    minWidth: 170,
-    align: "left",
-    textSytle: "",
-  },
-  {
-    id: "aksi",
-    label: "Aksi",
-    minWidth: 170,
-    align: "center",
     textSytle: "",
     // format: (value) => value.toFixed(2),
   },
@@ -281,7 +127,7 @@ function createData(
   };
 }
 
-export default function PengajuanTable(props) {
+export default function ApprovalTable(props) {
   const userRoles = JSON.parse(localStorage.getItem("userRoles"));
   let getAllUserResponse;
   let getResponseName;
@@ -294,7 +140,7 @@ export default function PengajuanTable(props) {
   const dataMasterSuplayer = props?.dataMasterSuplayer;
   const dispatch = useDispatch();
   const { dataMasterBarang } = props;
-  console.log(getResponseName, "getResponseName");
+  // console.log(getResponseName, "getResponseName");
   const [data, setData] = useState([]);
   const [getDataEdit, setgetDataEdit] = useState({});
   const [dataEdit, setDataEdit] = useState({
@@ -733,7 +579,8 @@ export default function PengajuanTable(props) {
     link.click();
   };
 
-  // console.log(dataEdit, 'dataEdit')
+  console.log(rows, 'rows')
+  
 
   return (
     <Paper sx={{ width: "100%", overflow: "hidden" }}>
@@ -896,86 +743,6 @@ export default function PengajuanTable(props) {
                       {row?.namaNasabah === null ? "-" : row?.namaNasabah}
                     </TableCell>
                     <TableCell>
-                      {row?.rekening === null ? "-" : row?.rekening}
-                    </TableCell>
-                    <TableCell>
-                      {row?.penjualan === null
-                        ? "-"
-                        : formatRupiah(row?.penjualan)}
-                    </TableCell>
-                    <TableCell>
-                      {row?.hargaPokok === null
-                        ? "-"
-                        : formatRupiah(row?.hargaPokok)}
-                    </TableCell>
-                    <TableCell>
-                      {row?.biaya === null ? "-" : formatRupiah(row?.biaya)}
-                    </TableCell>
-                    <TableCell>
-                      {row?.labaUsaha === null
-                        ? "-"
-                        : formatRupiah(row?.labaUsaha)}
-                    </TableCell>
-                    <TableCell>
-                      {row?.pendapatanLain === null
-                        ? "-"
-                        : formatRupiah(row?.pendapatanLain)}
-                    </TableCell>
-                    <TableCell>
-                      {row?.jumlahPendapatan === null
-                        ? "-"
-                        : formatRupiah(row?.jumlahPendapatan)}
-                    </TableCell>
-                    <TableCell>
-                      {row?.kebutuhanRumahTangga === null
-                        ? "-"
-                        : formatRupiah(row?.kebutuhanRumahTangga)}
-                    </TableCell>
-                    <TableCell>
-                      {row?.biayaPendidikan === null
-                        ? "-"
-                        : formatRupiah(row?.biayaPendidikan)}
-                    </TableCell>
-                    <TableCell>
-                      {row?.biayaLainya === null
-                        ? "-"
-                        : formatRupiah(row?.biayaLainya)}
-                    </TableCell>
-                    <TableCell>
-                      {row?.jumlahBiayaLuarUsaha === null
-                        ? "-"
-                        : formatRupiah(row?.jumlahBiayaLuarUsaha)}
-                    </TableCell>
-                    <TableCell className="font-bold">
-                      {row?.pendapatanBersih === null
-                        ? "-"
-                        : formatRupiah(row?.pendapatanBersih)}
-                    </TableCell>
-                    <TableCell>
-                      {row?.rasioAngsuran === null ? "-" : row?.rasioAngsuran}
-                    </TableCell>
-                    <TableCell className="font-bold">
-                      {row?.jangkaWaktu === null ? "-" : row?.jangkaWaktu}
-                    </TableCell>
-                    <TableCell className="font-bold">
-                      {row?.nominalPermohonan === null
-                        ? "-"
-                        : formatRupiah(row?.nominalPermohonan)}
-                    </TableCell>
-                    <TableCell>
-                      {row?.tujuanPembiayaan === null
-                        ? "-"
-                        : row?.tujuanPembiayaan}
-                    </TableCell>
-                    <TableCell className="font-bold">
-                      {row?.jaminan === null ? "-" : row?.jaminan}
-                    </TableCell>
-                    <TableCell className="font-bold">
-                      {row?.accPermohonan === null
-                        ? "-"
-                        : formatRupiah(parseInt(row?.accPermohonan))}
-                    </TableCell>
-                    <TableCell>
                       {row?.nomorAkad === null ? "-" : row?.nomorAkad}
                     </TableCell>
                     <TableCell>
@@ -993,54 +760,7 @@ export default function PengajuanTable(props) {
                         </Button>
                       )}
                     </TableCell>
-                    <TableCell>
-                      {row?.statusBy === null ? "-" : row?.statusBy}
-                    </TableCell>
-                    <TableCell>
-                      {row?.statusAt === null ? "-" : row?.statusAt}
-                    </TableCell>
-                    <TableCell>
-                      {row?.labaUsaha === null ? (
-                        <Button color="warning" variant="contained">
-                          Uncompleted
-                        </Button>
-                      ) : (
-                        <Button color="success" variant="contained">
-                          Completed
-                        </Button>
-                      )}
-                    </TableCell>
-                    {/* <TableCell>{row?.deskripsi}</TableCell> */}
-                    <TableCell>
-                      <div className="flex justify-center">
-                        <div>
-                          <IconButton
-                            onClick={() => handleClickOpen(row.id, row)}
-                            color="info"
-                            disabled={
-                              dataLogin?.roleUser === "Staff" &&
-                              row?.labaUsaha !== null
-                            }
-                            className=""
-                          >
-                            <EditIcon />
-                          </IconButton>
-                        </div>
-                        <div>
-                          <IconButton
-                            onClick={(e) => HandelDelete(row.id)}
-                            color="error"
-                            disabled={
-                              dataLogin?.roleUser === "Staff" &&
-                              row?.labaUsaha !== null
-                            }
-                            className=""
-                          >
-                            <DeleteIcon />
-                          </IconButton>
-                        </div>
-                      </div>
-                    </TableCell>
+
                   </TableRow>
                 );
               })}

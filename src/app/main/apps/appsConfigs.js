@@ -1,4 +1,5 @@
 import AngsuranConfig from './koperasi/angsuran/AngsuranConfig';
+import ApprovalConfig from './koperasi/approval/ApprovalConfig';
 import PengajuanConfig from './koperasi/pengajuan/PengajuanConfig';
 import PermohonanConfig from './koperasi/permohonan/PermohonanConfig';
 import AnalisaConfig from './master/analisa/AnalisaConfig';
@@ -15,7 +16,8 @@ const appsConfigs = [
   StaffConfig,
   AngsuranConfig,
   PengajuanConfig,
-  PermohonanConfig
+  PermohonanConfig,
+  ApprovalConfig,
 ];
 
 export default appsConfigs;
