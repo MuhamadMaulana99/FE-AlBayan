@@ -579,8 +579,500 @@ export default function ApprovalTable(props) {
     link.click();
   };
 
-  console.log(rows, 'rows')
+  // console.log(rows, "rows");
+
+  // Fungsi Keanggotaan Trapezoidal
+  // const fuzzyMembership = (x, a, b, c, d) => {
+  //   if (x <= a || x >= d) return 0;
+  //   if (x >= b && x <= c) return 1;
+  //   if (x > a && x < b) return (x - a) / (b - a);
+  //   if (x > c && x < d) return (d - x) / (d - c);
+  // };
+
+  // const fuzzyTsukamoto = (pendapatan, pengajuan, jangkaWaktu, nominalJaminan) => {
+  //   // Keanggotaan Pendapatan
+  //   const pendapatanSedikit = fuzzyMembership(pendapatan, 0, 0, 2000000, 4000000);
+  //   const pendapatanSedang = fuzzyMembership(pendapatan, 2000000, 4000000, 6000000, 8000000);
+  //   const pendapatanBanyak = fuzzyMembership(pendapatan, 6000000, 8000000, 10000000, 12000000);
+
+  //   // Keanggotaan Pengajuan
+  //   const pengajuanSedikit = fuzzyMembership(pengajuan, 0, 0, 3000000, 5000000);
+  //   const pengajuanSedang = fuzzyMembership(pengajuan, 3000000, 5000000, 7000000, 10000000);
+  //   const pengajuanBanyak = fuzzyMembership(pengajuan, 7000000, 10000000, 12000000, 15000000);
+
+  //   // Keanggotaan Jangka Waktu
+  //   const waktuPendek = fuzzyMembership(jangkaWaktu, 0, 0, 3, 6);
+  //   const waktuSedang = fuzzyMembership(jangkaWaktu, 3, 6, 9, 12);
+  //   const waktuPanjang = fuzzyMembership(jangkaWaktu, 9, 12, 15, 18);
+
+  //   // Keanggotaan Nominal Jaminan
+  //   const jaminanKecil = fuzzyMembership(nominalJaminan, 0, 0, 5000000, 7000000);
+  //   const jaminanSedang = fuzzyMembership(nominalJaminan, 5000000, 7000000, 8500000, 10000000);
+  //   const jaminanBesar = fuzzyMembership(nominalJaminan, 8500000, 10000000, 12000000, 15000000);
+
+  //   // Aturan Fuzzy Tsukamoto
+  //   const aturan = [
+  //     { nilai: 2000000, min: Math.min(pendapatanSedikit, pengajuanSedikit, waktuPendek, jaminanKecil) },
+  //     { nilai: 8000000, min: Math.min(pendapatanBanyak, pengajuanBanyak, waktuPanjang, jaminanBesar) },
+  //     { nilai: 5000000, min: Math.min(pendapatanSedang, pengajuanSedang, waktuSedang, jaminanSedang) }
+  //   ];
+
+  //   // Hitung Z dan total keanggotaan
+  //   const totalZ = aturan.reduce((sum, { nilai, min }) => sum + nilai * min, 0);
+  //   const totalKeanggotaan = aturan.reduce((sum, { min }) => sum + min, 0);
+
+  //   // Defuzzifikasi
+  //   const hasil = totalKeanggotaan === 0 ? 0 : totalZ / totalKeanggotaan;
+
+  //   return hasil.toFixed(2);
+  // };
+
+  // const hasil = fuzzyTsukamoto(4000000, 5000000, 3, 1000000);
+  // console.log("Hasil Fuzzy Tsukamoto:", hasil);
+
+  const nomPendapatan = 6200000;
+  const nomPengajuan = 9000000;
+  const nomJangkaWaktu = 5;
+  const nomJaminan = 5000000;
+
+  const valPendapatanSedikit = 2000000;
+  const valPendapatanSedang = 4000000;
+  const valPendapatanBanyak = 8000000;
+
+  const valPengajuanSedikit = 3000000;
+  const valPengajuanSedang = 5000000;
+  const valPengajuanBanyak = 10000000;
+
+  const valJangkaWaktuPendek = 3;
+  const valJangkaWaktuSedang = 6;
+  const valJangkaWaktuPanjang = 12;
+
+  const valJaminanKecil = 5000000;
+  const valJaminanSedang = 7000000;
+  const valJaminanBesar = 10000000;
+
+  const valLayak = 95;
+  const valTidakLayak = 50;
+
+  const PendapatanSedikit = null;
+  const pendapatanSedang = null;
+  const pendapatanBanyak = null;
   
+
+  const fuzzyMembershipKecil = (nilaiInput, kecil, sedang, besar) => {
+    if (nilaiInput <= kecil) {
+      return 1; // Nilai penuh jika <= kecil
+    }
+    if (nilaiInput > kecil && nilaiInput < sedang) {
+      return (sedang - nilaiInput) / (sedang - kecil); // Nilai antara kecil dan sedang
+    }
+    if (nilaiInput >= sedang) {
+      return 0; // Nilai di luar rentang
+    }
+  };
+
+  const fuzzyMembershipSedang = (nilaiInput, kecil, sedang, besar) => {
+    if (nilaiInput >= kecil && nilaiInput < sedang) {
+      return (nilaiInput - kecil) / (sedang - kecil);
+    }
+    if (nilaiInput === sedang) {
+      return 1;
+    }
+    if (nilaiInput > sedang && nilaiInput <= besar) {
+      return (besar - nilaiInput) / (besar - sedang);
+    }
+    return 0; // Nilai di luar rentang
+  };
+
+  const fuzzyMembershipBanyak = (nilaiInput, kecil, sedang, besar) => {
+    // console.log(nilaiInput, 'nilaiInput')
+    // console.log(sedang, 'sedang')
+    // console.log(besar, 'besar')
+    if (nilaiInput <= sedang) {
+      return 0; // Nilai penuh 0 jika <= sedang
+    }
+    if (nilaiInput > sedang && nilaiInput < besar) {
+      return (nilaiInput - sedang) / (besar - sedang); // Nilai antara sedang dan besar
+    }
+    if (nilaiInput >= besar) {
+      return 1; // Nilai penuh 1 jika >= besar
+    }
+  };
+  const fuzzyMembershipTidakLayak = (nilaiInput, TidakLayak, layak) => {
+    // console.log(nilaiInput, 'nilaiInput');
+    // console.log(TidakLayak, 'TidakLayak');
+    // console.log(layak, 'layak');
+
+    if (nilaiInput <= TidakLayak) {
+      return 1; // Keanggotaan penuh dalam kategori Tidak Layak
+    }
+    if (nilaiInput > TidakLayak && nilaiInput < layak) {
+      return (layak - nilaiInput) / (layak - TidakLayak); // Keanggotaan parsial
+    }
+    if (nilaiInput >= layak) {
+      return 0; // Tidak termasuk kategori Tidak Layak
+    }
+
+    // Return default jika terjadi kesalahan input
+    return null;
+  };
+  const fuzzyMembershipLayak = (nilaiInput, TidakLayak, layak) => {
+    // console.log(nilaiInput, 'nilaiInput')
+    // console.log(TidakLayak, 'TidakLayak')
+    // console.log(layak, 'layak')
+    if (nilaiInput <= TidakLayak) {
+      return 0; // Nilai penuh 0 jika <= sedang
+    }
+    if (nilaiInput > TidakLayak && nilaiInput < layak) {
+      return (nilaiInput - TidakLayak) / (layak - TidakLayak); // Nilai antara sedang dan besar
+    }
+    if (nilaiInput >= layak) {
+      return 1; // Nilai penuh 1 jika >= besar
+    }
+  };
+
+  function resultPendapatan(nomPendapatan) {
+    if (nomPendapatan < valPendapatanSedikit) {
+      const hasilSedikitPendapatan = fuzzyMembershipKecil(
+        nomPendapatan,
+        valPendapatanSedikit,
+        valPendapatanSedang,
+        valPendapatanBanyak
+      );
+      return { hasilSedikitPendapatan };
+    } else if (
+      nomPendapatan >= valPendapatanSedikit &&
+      nomPendapatan <= valPendapatanSedang
+    ) {
+      const hasilSedikitPendapatan = fuzzyMembershipKecil(
+        nomPendapatan,
+        valPendapatanSedikit,
+        valPendapatanSedang,
+        valPendapatanBanyak
+      );
+      const hasilSedangPendapatan = fuzzyMembershipSedang(
+        nomPendapatan,
+        valPendapatanSedikit,
+        valPendapatanSedang,
+        valPendapatanBanyak
+      );
+      return { hasilSedikitPendapatan, hasilSedangPendapatan };
+    } else if (
+      nomPendapatan > valPendapatanSedang &&
+      nomPendapatan <= valPendapatanBanyak
+    ) {
+      const hasilSedangPendapatan = fuzzyMembershipSedang(
+        nomPendapatan,
+        valPendapatanSedikit,
+        valPendapatanSedang,
+        valPendapatanBanyak
+      );
+      const hasilBanyakPendapatan = fuzzyMembershipBanyak(
+        nomPendapatan,
+        valPendapatanSedikit,
+        valPendapatanSedang,
+        valPendapatanBanyak
+      );
+      return { hasilSedangPendapatan, hasilBanyakPendapatan };
+    } else {
+      const hasilBanyakPendapatan = fuzzyMembershipBanyak(
+        nomPendapatan,
+        valPendapatanSedikit,
+        valPendapatanSedang,
+        valPendapatanBanyak
+      );
+      return { hasilBanyakPendapatan };
+    }
+  }
+  function resultPengajuan(nomPengajuan) {
+    if (nomPengajuan < valPengajuanSedikit) {
+      const hasilSedikittPengajuan = fuzzyMembershipKecil(
+        nomPengajuan,
+        valPengajuanSedikit,
+        valPengajuanSedang,
+        valPengajuanBanyak
+      );
+      return { hasilSedikittPengajuan };
+    } else if (
+      nomPengajuan >= valPengajuanSedikit &&
+      nomPengajuan <= valPengajuanSedang
+    ) {
+      const hasilSedikittPengajuan = fuzzyMembershipKecil(
+        nomPengajuan,
+        valPengajuanSedikit,
+        valPengajuanSedang,
+        valPengajuanBanyak
+      );
+      const hasilSedangtPengajuan = fuzzyMembershipSedang(
+        nomPengajuan,
+        valPengajuanSedikit,
+        valPengajuanSedang,
+        valPengajuanBanyak
+      );
+      return { hasilSedikittPengajuan, hasilSedangtPengajuan };
+    } else if (
+      nomPengajuan > valPengajuanSedang &&
+      nomPengajuan <= valPengajuanBanyak
+    ) {
+      const hasilSedangtPengajuan = fuzzyMembershipSedang(
+        nomPengajuan,
+        valPengajuanSedikit,
+        valPengajuanSedang,
+        valPengajuanBanyak
+      );
+      const hasilBanyaktPengajuan = fuzzyMembershipBanyak(
+        nomPengajuan,
+        valPengajuanSedikit,
+        valPengajuanSedang,
+        valPengajuanBanyak
+      );
+      return { hasilSedangtPengajuan, hasilBanyaktPengajuan };
+    } else {
+      const hasilBanyaktPengajuan = fuzzyMembershipBanyak(
+        nomPengajuan,
+        valPengajuanSedikit,
+        valPengajuanSedang,
+        valPengajuanBanyak
+      );
+      return { hasilBanyaktPengajuan };
+    }
+  }
+  function resultJangkaWaktu(nomJangkaWaktu) {
+    if (nomJangkaWaktu < valJangkaWaktuPendek) {
+      const hasilPendekJangkaWaktu = fuzzyMembershipKecil(
+        nomJangkaWaktu,
+        valJangkaWaktuPendek,
+        valJangkaWaktuSedang,
+        valJangkaWaktuPanjang
+      );
+      return { hasilPendekJangkaWaktu };
+    } else if (
+      nomJangkaWaktu >= valJangkaWaktuPendek &&
+      nomJangkaWaktu <= valJangkaWaktuSedang
+    ) {
+      const hasilPendekJangkaWaktu = fuzzyMembershipKecil(
+        nomJangkaWaktu,
+        valJangkaWaktuPendek,
+        valJangkaWaktuSedang,
+        valJangkaWaktuPanjang
+      );
+      const hasilSedangJangkaWaktu = fuzzyMembershipSedang(
+        nomJangkaWaktu,
+        valJangkaWaktuPendek,
+        valJangkaWaktuSedang,
+        valJangkaWaktuPanjang
+      );
+      return { hasilPendekJangkaWaktu, hasilSedangJangkaWaktu };
+    } else if (
+      nomJangkaWaktu > valJangkaWaktuSedang &&
+      nomJangkaWaktu <= valJangkaWaktuPanjang
+    ) {
+      const hasilSedangJangkaWaktu = fuzzyMembershipSedang(
+        nomJangkaWaktu,
+        valJangkaWaktuPendek,
+        valJangkaWaktuSedang,
+        valJangkaWaktuPanjang
+      );
+      const hasilPanjangJangkaWaktu = fuzzyMembershipBanyak(
+        nomJangkaWaktu,
+        valJangkaWaktuPendek,
+        valJangkaWaktuSedang,
+        valJangkaWaktuPanjang
+      );
+      return { hasilSedangJangkaWaktu, hasilPanjangJangkaWaktu };
+    } else {
+      const hasilPanjang = fuzzyMembershipBanyak(
+        nomJangkaWaktu,
+        valJangkaWaktuPendek,
+        valJangkaWaktuSedang,
+        valJangkaWaktuPanjang
+      );
+      return { hasilPanjangJangkaWaktu };
+    }
+  }
+  function resultJaminan(nomJaminan) {
+    if (nomJaminan < valJaminanKecil) {
+      const hasilKecilJaminan = fuzzyMembershipKecil(
+        nomJaminan,
+        valJaminanKecil,
+        valJaminanSedang,
+        valJaminanBesar
+      );
+      return { hasilKecilJaminan };
+    } else if (
+      nomJaminan >= valJaminanKecil &&
+      nomJaminan <= valJaminanSedang
+    ) {
+      const hasilKecilJaminan = fuzzyMembershipKecil(
+        nomJaminan,
+        valJaminanKecil,
+        valJaminanSedang,
+        valJaminanBesar
+      );
+      const hasilSedangJaminan = fuzzyMembershipSedang(
+        nomJaminan,
+        valJaminanKecil,
+        valJaminanSedang,
+        valJaminanBesar
+      );
+      return { hasilKecilJaminan, hasilSedangJaminan };
+    } else if (nomJaminan > valJaminanSedang && nomJaminan <= valJaminanBesar) {
+      const hasilSedangJaminan = fuzzyMembershipSedang(
+        nomJaminan,
+        valJaminanKecil,
+        valJaminanSedang,
+        valJaminanBesar
+      );
+      const hasilBesarJaminan = fuzzyMembershipBanyak(
+        nomJaminan,
+        valJaminanKecil,
+        valJaminanSedang,
+        valJaminanBesar
+      );
+      return { hasilSedangJaminan, hasilBesarJaminan };
+    } else {
+      const hasilBesarJaminan = fuzzyMembershipBanyak(
+        nomJaminan,
+        valJaminanKecil,
+        valJaminanSedang,
+        valJaminanBesar
+      );
+      return { hasilBesarJaminan };
+    }
+  }
+  function resultLayakTidakLayak(nomLayakTidakLayak) {
+    // console.log(nomLayakTidakLayak, 'nomLayakTidakLayak')
+
+    if (nomLayakTidakLayak <= valTidakLayak) {
+      const hasilTidakLayak = fuzzyMembershipTidakLayak(
+        nomLayakTidakLayak,
+        valTidakLayak,
+        valLayak
+      );
+      return { hasilTidakLayak };
+    } else if (
+      nomLayakTidakLayak > valTidakLayak &&
+      nomLayakTidakLayak <= valLayak
+    ) {
+      const hasilTidakLayak = fuzzyMembershipTidakLayak(
+        nomLayakTidakLayak,
+        valTidakLayak,
+        valLayak
+      );
+      const hasilLayak = fuzzyMembershipLayak(
+        nomLayakTidakLayak,
+        valTidakLayak,
+        valLayak
+      );
+      return { hasilTidakLayak, hasilLayak };
+    } else {
+      const hasilLayak = fuzzyMembershipLayak(
+        nomLayakTidakLayak,
+        valTidakLayak,
+        valLayak
+      );
+      return { hasilLayak };
+    }
+  }
+
+  const pendapatan = resultPendapatan(nomPendapatan);
+  const pengajuan = resultPengajuan(nomPengajuan);
+  const jangkaWaktu = resultJangkaWaktu(nomJangkaWaktu);
+  const jaminan = resultJaminan(nomJaminan);
+
+  const hasilGabungan = {};
+
+  // Fungsi untuk menggabungkan nilai dari objek
+  const mergeObjects = (target, source) => {
+    for (const [key, value] of Object.entries(source)) {
+      if (target.hasOwnProperty(key)) {
+        // Jika kunci sudah ada, gabungkan nilainya menjadi array
+        target[key] = Array.isArray(target[key]) ? [...target[key], value] : [target[key], value];
+      } else {
+        // Jika kunci belum ada, tambahkan nilai baru
+        target[key] = value;
+      }
+    }
+  };
+  
+  // Gabungkan objek-objek tersebut
+  mergeObjects(hasilGabungan, pendapatan);
+  mergeObjects(hasilGabungan, pengajuan);
+  mergeObjects(hasilGabungan, jangkaWaktu);
+  mergeObjects(hasilGabungan, jaminan);
+  
+  // Return objek hasil gabungan
+  // return hasilGabungan;
+  console.log(hasilGabungan, 'hasilGabungan')
+//   const data = {
+//     "hasilSedangPendapatan": 0.45,
+//     "hasilBanyakPendapatan": 0.55,
+//     "hasilSedangtPengajuan": 0.2,
+//     "hasilBanyaktPengajuan": 0.8,
+//     "hasilPendekJangkaWaktu": 0.3333333333333333,
+//     "hasilSedangJangkaWaktu": 0.6666666666666666,
+//     "hasilKecilJaminan": 1,
+//     "hasilSedangJaminan": 0
+// };
+
+// Mendapatkan array key dari objek
+function generateCombinations(data) {
+  const keys = Object.keys(data);
+  let combinations = [[]]; // Mulai dengan array kosong
+
+  for (let key of keys) {
+      const currentOptions = data[key];
+      const newCombinations = [];
+      
+      // Untuk setiap kombinasi yang ada, tambahkan setiap pilihan baru
+      for (let combination of combinations) {
+          for (let option of currentOptions) {
+              newCombinations.push([...combination, option]);
+          }
+      }
+      combinations = newCombinations; // Update kombinasi dengan yang baru
+  }
+
+  return combinations;
+}
+
+// Menghasilkan semua kombinasi
+const allCombinations = generateCombinations(hasilGabungan);
+
+// Menampilkan hasil kombinasi
+allCombinations.forEach(combination => {
+  console.log(combination.join(' | ')); // Menampilkan kombinasi dalam format yang rapi
+});
+console.log(allCombinations, allCombinations)
+
+  // console.log(resultPendapatan(nomPendapatan), "pendapatan");
+  // console.log(resultPengajuan(nomPengajuan), "pengajuan");
+  // console.log(resultJangkaWaktu(nomJangkaWaktu), "jangkaWaktu");
+  // console.log(resultJaminan(nomJaminan), "jaminan");
+
+  // console.log(resultLayakTidakLayak(2), "tes");
+
+  // const hasilSedikit = fuzzyMembershipKecil(
+  //   nomPendapatan,
+  //   valPendapatanSedikit,
+  //   valPendapatanSedang,
+  //   valPendapatanBanyak
+  // );
+  // const hasilSedang = fuzzyMembershipSedang(
+  //   nomPendapatan,
+  //   valPendapatanSedikit,
+  //   valPendapatanSedang,
+  //   valPendapatanBanyak
+  // );
+  // const hasilBanyak = fuzzyMembershipBanyak(
+  //   nomPendapatan,
+  //   valPendapatanSedikit,
+  //   valPendapatanSedang,
+  //   valPendapatanBanyak
+  // );
+  // console.log(hasilSedikit, 'hasilSedikit')
+  // console.log(hasilSedang, 'hasilSedang')
+  // console.log(hasilBanyak, 'hasilBanyak')
 
   return (
     <Paper sx={{ width: "100%", overflow: "hidden" }}>
@@ -760,7 +1252,6 @@ export default function ApprovalTable(props) {
                         </Button>
                       )}
                     </TableCell>
-
                   </TableRow>
                 );
               })}
