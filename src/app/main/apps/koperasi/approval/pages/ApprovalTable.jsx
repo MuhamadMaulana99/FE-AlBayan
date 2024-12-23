@@ -734,7 +734,7 @@ export default function ApprovalTable(props) {
 
   function resultPendapatan(nomPendapatan) {
     if (nomPendapatan < valPendapatanSedikit) {
-      const sedikitPendapatan = fuzzyMembershipKecil(
+      const SEDIKIT = fuzzyMembershipKecil(
         nomPendapatan,
         valPendapatanSedikit,
         valPendapatanSedang,
@@ -742,20 +742,20 @@ export default function ApprovalTable(props) {
       );
       return {
         pendapatan: {
-          sedikitPendapatan,
+          SEDIKIT,
         },
       };
     } else if (
       nomPendapatan >= valPendapatanSedikit &&
       nomPendapatan <= valPendapatanSedang
     ) {
-      const sedikitPendapatan = fuzzyMembershipKecil(
+      const SEDIKIT = fuzzyMembershipKecil(
         nomPendapatan,
         valPendapatanSedikit,
         valPendapatanSedang,
         valPendapatanBanyak
       );
-      const sedangPendapatan = fuzzyMembershipSedang(
+      const SEDANG = fuzzyMembershipSedang(
         nomPendapatan,
         valPendapatanSedikit,
         valPendapatanSedang,
@@ -763,21 +763,21 @@ export default function ApprovalTable(props) {
       );
       return {
         pendapatan: {
-          sedikitPendapatan,
-          sedangPendapatan,
+          SEDIKIT,
+          SEDANG,
         },
       };
     } else if (
       nomPendapatan > valPendapatanSedang &&
       nomPendapatan <= valPendapatanBanyak
     ) {
-      const sedangPendapatan = fuzzyMembershipSedang(
+      const SEDANG = fuzzyMembershipSedang(
         nomPendapatan,
         valPendapatanSedikit,
         valPendapatanSedang,
         valPendapatanBanyak
       );
-      const banyakPendapatan = fuzzyMembershipBanyak(
+      const BANYAK = fuzzyMembershipBanyak(
         nomPendapatan,
         valPendapatanSedikit,
         valPendapatanSedang,
@@ -785,12 +785,12 @@ export default function ApprovalTable(props) {
       );
       return {
         pendapatan: {
-          sedangPendapatan,
-          banyakPendapatan,
+          SEDANG,
+          BANYAK,
         },
       };
     } else {
-      const banyakPendapatan = fuzzyMembershipBanyak(
+      const BANYAK = fuzzyMembershipBanyak(
         nomPendapatan,
         valPendapatanSedikit,
         valPendapatanSedang,
@@ -798,14 +798,14 @@ export default function ApprovalTable(props) {
       );
       return {
         pendapatan: {
-          banyakPendapatan,
+          BANYAK,
         },
       };
     }
   }
   function resultPengajuan(nomPengajuan) {
     if (nomPengajuan < valPengajuanSedikit) {
-      const sedikittPengajuan = fuzzyMembershipKecil(
+      const SEDIKIT = fuzzyMembershipKecil(
         nomPengajuan,
         valPengajuanSedikit,
         valPengajuanSedang,
@@ -813,20 +813,20 @@ export default function ApprovalTable(props) {
       );
       return {
         pengajuan: {
-          sedikittPengajuan,
+          SEDIKIT,
         },
       };
     } else if (
       nomPengajuan >= valPengajuanSedikit &&
       nomPengajuan <= valPengajuanSedang
     ) {
-      const sedikittPengajuan = fuzzyMembershipKecil(
+      const SEDIKIT = fuzzyMembershipKecil(
         nomPengajuan,
         valPengajuanSedikit,
         valPengajuanSedang,
         valPengajuanBanyak
       );
-      const sedangtPengajuan = fuzzyMembershipSedang(
+      const SEDANG = fuzzyMembershipSedang(
         nomPengajuan,
         valPengajuanSedikit,
         valPengajuanSedang,
@@ -834,21 +834,21 @@ export default function ApprovalTable(props) {
       );
       return {
         pengajuan: {
-          sedikittPengajuan,
-          sedangtPengajuan,
+          SEDIKIT,
+          SEDANG,
         },
       };
     } else if (
       nomPengajuan > valPengajuanSedang &&
       nomPengajuan <= valPengajuanBanyak
     ) {
-      const sedangtPengajuan = fuzzyMembershipSedang(
+      const SEDANG = fuzzyMembershipSedang(
         nomPengajuan,
         valPengajuanSedikit,
         valPengajuanSedang,
         valPengajuanBanyak
       );
-      const banyaktPengajuan = fuzzyMembershipBanyak(
+      const BANYAK = fuzzyMembershipBanyak(
         nomPengajuan,
         valPengajuanSedikit,
         valPengajuanSedang,
@@ -856,12 +856,12 @@ export default function ApprovalTable(props) {
       );
       return {
         pengajuan: {
-          sedangtPengajuan,
-          banyaktPengajuan,
+          SEDANG,
+          BANYAK,
         },
       };
     } else {
-      const banyaktPengajuan = fuzzyMembershipBanyak(
+      const BANYAK = fuzzyMembershipBanyak(
         nomPengajuan,
         valPengajuanSedikit,
         valPengajuanSedang,
@@ -869,14 +869,14 @@ export default function ApprovalTable(props) {
       );
       return {
         pengajuan: {
-          banyaktPengajuan,
+          BANYAK,
         },
       };
     }
   }
   function resultJangkaWaktu(nomJangkaWaktu) {
     if (nomJangkaWaktu < valJangkaWaktuPendek) {
-      const pendekJangkaWaktu = fuzzyMembershipKecil(
+      const PENDEK = fuzzyMembershipKecil(
         nomJangkaWaktu,
         valJangkaWaktuPendek,
         valJangkaWaktuSedang,
@@ -884,20 +884,20 @@ export default function ApprovalTable(props) {
       );
       return {
         jangkaWaktu: {
-          pendekJangkaWaktu,
+          PENDEK,
         },
       };
     } else if (
       nomJangkaWaktu >= valJangkaWaktuPendek &&
       nomJangkaWaktu <= valJangkaWaktuSedang
     ) {
-      const pendekJangkaWaktu = fuzzyMembershipKecil(
+      const PENDEK = fuzzyMembershipKecil(
         nomJangkaWaktu,
         valJangkaWaktuPendek,
         valJangkaWaktuSedang,
         valJangkaWaktuPanjang
       );
-      const sedangJangkaWaktu = fuzzyMembershipSedang(
+      const SEDANG = fuzzyMembershipSedang(
         nomJangkaWaktu,
         valJangkaWaktuPendek,
         valJangkaWaktuSedang,
@@ -905,21 +905,21 @@ export default function ApprovalTable(props) {
       );
       return {
         jangkaWaktu: {
-          pendekJangkaWaktu,
-          sedangJangkaWaktu,
+          PENDEK,
+          SEDANG,
         },
       };
     } else if (
       nomJangkaWaktu > valJangkaWaktuSedang &&
       nomJangkaWaktu <= valJangkaWaktuPanjang
     ) {
-      const sedangJangkaWaktu = fuzzyMembershipSedang(
+      const SEDANG = fuzzyMembershipSedang(
         nomJangkaWaktu,
         valJangkaWaktuPendek,
         valJangkaWaktuSedang,
         valJangkaWaktuPanjang
       );
-      const panjangJangkaWaktu = fuzzyMembershipBanyak(
+      const PANJANG = fuzzyMembershipBanyak(
         nomJangkaWaktu,
         valJangkaWaktuPendek,
         valJangkaWaktuSedang,
@@ -927,12 +927,12 @@ export default function ApprovalTable(props) {
       );
       return {
         jangkaWaktu: {
-          sedangJangkaWaktu,
-          panjangJangkaWaktu,
+          SEDANG,
+          PANJANG,
         },
       };
     } else {
-      const panjangJangkaWaktu = fuzzyMembershipBanyak(
+      const PANJANG = fuzzyMembershipBanyak(
         nomJangkaWaktu,
         valJangkaWaktuPendek,
         valJangkaWaktuSedang,
@@ -940,14 +940,14 @@ export default function ApprovalTable(props) {
       );
       return {
         jangkaWaktu: {
-          panjangJangkaWaktu,
+          PANJANG,
         },
       };
     }
   }
   function resultJaminan(nomJaminan) {
     if (nomJaminan < valJaminanKecil) {
-      const kecilJaminan = fuzzyMembershipKecil(
+      const KECIL = fuzzyMembershipKecil(
         nomJaminan,
         valJaminanKecil,
         valJaminanSedang,
@@ -955,20 +955,20 @@ export default function ApprovalTable(props) {
       );
       return {
         jaminan: {
-          kecilJaminan,
+          KECIL,
         },
       };
     } else if (
       nomJaminan >= valJaminanKecil &&
       nomJaminan <= valJaminanSedang
     ) {
-      const kecilJaminan = fuzzyMembershipKecil(
+      const KECIL = fuzzyMembershipKecil(
         nomJaminan,
         valJaminanKecil,
         valJaminanSedang,
         valJaminanBesar
       );
-      const sedangJaminan = fuzzyMembershipSedang(
+      const SEDANG = fuzzyMembershipSedang(
         nomJaminan,
         valJaminanKecil,
         valJaminanSedang,
@@ -976,18 +976,18 @@ export default function ApprovalTable(props) {
       );
       return {
         jaminan: {
-          kecilJaminan,
-          sedangJaminan,
+          KECIL,
+          SEDANG,
         },
       };
     } else if (nomJaminan > valJaminanSedang && nomJaminan <= valJaminanBesar) {
-      const sedangJaminan = fuzzyMembershipSedang(
+      const SEDANG = fuzzyMembershipSedang(
         nomJaminan,
         valJaminanKecil,
         valJaminanSedang,
         valJaminanBesar
       );
-      const hasilBesarJaminan = fuzzyMembershipBanyak(
+      const BESAR = fuzzyMembershipBanyak(
         nomJaminan,
         valJaminanKecil,
         valJaminanSedang,
@@ -995,12 +995,12 @@ export default function ApprovalTable(props) {
       );
       return {
         jaminan: {
-          sedangJaminan,
-          hasilBesarJaminan,
+          SEDANG,
+          BESAR,
         },
       };
     } else {
-      const hasilBesarJaminan = fuzzyMembershipBanyak(
+      const BESAR = fuzzyMembershipBanyak(
         nomJaminan,
         valJaminanKecil,
         valJaminanSedang,
@@ -1008,7 +1008,7 @@ export default function ApprovalTable(props) {
       );
       return {
         jaminan: {
-          hasilBesarJaminan,
+          BESAR,
         },
       };
     }
@@ -1078,7 +1078,7 @@ export default function ApprovalTable(props) {
 
   // Return objek hasil gabungan
   // return hasilGabungan;
-  console.log(hasilGabungan, "hasilGabungan");
+  // console.log(hasilGabungan, "hasilGabungan");
 
   // console.log(resultPendapatan(nomPendapatan), "pendapatan");
   // console.log(resultPengajuan(nomPengajuan), "pengajuan");
@@ -1115,7 +1115,25 @@ export default function ApprovalTable(props) {
     combine({}, 0);
     return combinations;
   }
-  
+  const compare = (obj1, obj2) => {
+    // Periksa setiap elemen di obj2
+    return obj2.every(item => {
+        for (const key in obj1) {
+            if (obj1.hasOwnProperty(key)) {
+                // Bandingkan label
+                if (obj1[key].label !== item[key]) {
+                    return false; // Jika ada yang tidak cocok, langsung return false
+                }
+                // Bandingkan value jika diperlukan
+                if (obj1[key].value !== item[key].value) {
+                    return false;
+                }
+            }
+        }
+        return true; // Jika semua cocok, kembalikan true
+    });
+};
+
   // Contoh data hasilGabungan
   
   // Hitung kombinasi dan cetak hasil
@@ -1128,6 +1146,9 @@ export default function ApprovalTable(props) {
     );
   
     console.log(`${index + 1}:`, combo, `Value: ${aggregatedValue}`);
+
+    const result = compare(aggregatedValue, DataAturanFuzzy);
+    console.log(result, 'ress');
   
     // Mencari nilai terkecil dari combo
     const values = Object.values(combo).map((item) => item.value); // Ekstrak semua nilai value dari combo
@@ -1135,7 +1156,7 @@ export default function ApprovalTable(props) {
   
     // console.log(`Nilai terkecil dari combo ${index + 1}:`, minValue);
   });
-  console.log(DataAturanFuzzy, 'DataAturanFuzzy')
+  // console.log(DataAturanFuzzy, 'DataAturanFuzzy')
   
 
   return (
