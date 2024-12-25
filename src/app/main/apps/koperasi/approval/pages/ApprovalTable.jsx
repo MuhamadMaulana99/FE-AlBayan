@@ -34,7 +34,6 @@ import jsPDF from "jspdf";
 import FuseAnimate from "@fuse/core/FuseAnimate";
 import DataAturanFuzzy from "./DataAturanFuzzy";
 
-
 const top100Films = [
   { label: "KG", year: 1994 },
   { label: "Lusin", year: 1972 },
@@ -632,10 +631,10 @@ export default function ApprovalTable(props) {
   // const hasil = fuzzyTsukamoto(4000000, 5000000, 3, 1000000);
   // console.log("Hasil Fuzzy Tsukamoto:", hasil);
 
-  const nomPendapatan = 6200000;
-  const nomPengajuan = 9000000;
-  const nomJangkaWaktu = 5;
-  const nomJaminan = 8000000;
+  const nomPendapatan = 7000000;
+  const nomPengajuan = 3000000;
+  const nomJangkaWaktu = 10;
+  const nomJaminan = 10000000;
 
   const valPendapatanSedikit = 2000000;
   const valPendapatanSedang = 4000000;
@@ -1048,6 +1047,33 @@ export default function ApprovalTable(props) {
     }
   }
 
+  function resultValueZ(nilaiKombinasi, tf) {
+    if (tf === true) {
+      return nilaiKombinasi * (valLayak - valTidakLayak) + valTidakLayak;
+    } else if (tf === false) {
+      return valTidakLayak - nilaiKombinasi * (valTidakLayak - valLayak);
+    }else{
+      return null
+    }
+  }
+  
+  function multiplyAndSumArrays(array1, array2) {
+    // Pastikan kedua array memiliki panjang yang sama
+    if (array1.length !== array2.length) {
+        throw new Error("Array harus memiliki panjang yang sama.");
+    }
+
+    // Hasilkan array baru dengan hasil perkalian setiap elemen berdasarkan indeks
+    const result = array1.map((value, index) => value * array2[index]);
+
+    // Jumlahkan semua nilai dalam array result
+    const sum = result.reduce((acc, currentValue) => acc + currentValue, 0);
+    
+    return sum;
+}
+  // const test = resultValueZ(0.2)
+  // console.log(test, 'tessss')
+
   const pendapatan = resultPendapatan(nomPendapatan);
   const pengajuan = resultPengajuan(nomPengajuan);
   const jangkaWaktu = resultJangkaWaktu(nomJangkaWaktu);
@@ -1087,20 +1113,22 @@ export default function ApprovalTable(props) {
   function calculateCombinations(data) {
     const keys = Object.keys(data);
     const combinations = [];
-  
+
     function combine(current, depth) {
       if (depth === keys.length) {
         // Periksa jika salah satu nilai adalah 0, maka abaikan kombinasi ini
-        const hasZeroValue = Object.values(current).some((item) => item.value === 0);
+        const hasZeroValue = Object.values(current).some(
+          (item) => item.value === 0
+        );
         if (!hasZeroValue) {
           combinations.push(current);
         }
         return;
       }
-  
+
       const key = keys[depth];
       const values = data[key];
-  
+
       for (const [label, value] of Object.entries(values)) {
         combine(
           {
@@ -1111,53 +1139,62 @@ export default function ApprovalTable(props) {
         );
       }
     }
-  
+
     combine({}, 0);
     return combinations;
   }
-  const compare = (obj1, obj2) => {
-    // Periksa setiap elemen di obj2
-    return obj2.every(item => {
-        for (const key in obj1) {
-            if (obj1.hasOwnProperty(key)) {
-                // Bandingkan label
-                if (obj1[key].label !== item[key]) {
-                    return false; // Jika ada yang tidak cocok, langsung return false
-                }
-                // Bandingkan value jika diperlukan
-                if (obj1[key].value !== item[key].value) {
-                    return false;
-                }
-            }
-        }
-        return true; // Jika semua cocok, kembalikan true
-    });
-};
 
   // Contoh data hasilGabungan
-  
+
   // Hitung kombinasi dan cetak hasil
   const combinations = calculateCombinations(hasilGabungan);
-  
+  const trueFalse = [];
+  const allValueZ = [];
+  const valueCombine = [];
+
   combinations.forEach((combo, index) => {
     const aggregatedValue = Object.values(combo).reduce(
       (acc, item) => acc * item.value, // Mengalikan semua nilai value
       1
     );
-  
-    console.log(`${index + 1}:`, combo, `Value: ${aggregatedValue}`);
+    // console.log(`${index + 1}:`, combo, `Value: ${aggregatedValue}`);
+    const cariAturan = (pendapatan, pengajuan, jangkaWaktu, jaminan) => {
+      return DataAturanFuzzy.find(
+        (aturan) =>
+          aturan.pendapatan === pendapatan &&
+          aturan.pengajuan === pengajuan &&
+          aturan.jangkaWaktu === jangkaWaktu &&
+          aturan.jaminan === jaminan
+      );
+    };
 
-    const result = compare(aggregatedValue, DataAturanFuzzy);
-    console.log(result, 'ress');
-  
+    const aturanTerkait = cariAturan(
+      combo?.pendapatan?.label,
+      combo?.pengajuan?.label,
+      combo?.jangkaWaktu?.label,
+      combo?.jaminan?.label
+    );
+    // console.log(aturanTerkait, "aaa");
+    const resultCombineZ = resultValueZ(aggregatedValue, aturanTerkait?.result );
+    trueFalse.push(aturanTerkait?.result);
+    allValueZ.push(resultCombineZ);
+    valueCombine.push(aggregatedValue);
+
     // Mencari nilai terkecil dari combo
     const values = Object.values(combo).map((item) => item.value); // Ekstrak semua nilai value dari combo
     const minValue = Math.min(...values); // Cari nilai terkecil
-  
+
     // console.log(`Nilai terkecil dari combo ${index + 1}:`, minValue);
   });
   // console.log(DataAturanFuzzy, 'DataAturanFuzzy')
-  
+  console.log(valueCombine, "valueCombine");
+  console.log(allValueZ, "allValueZ");
+  // console.log(trueFalse, "trueFalse");
+  const totalMultipleValueCombineAndAllValue = multiplyAndSumArrays(valueCombine, allValueZ);
+  let totalAllValueCombine = valueCombine.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+  const valueZTerbobot = totalMultipleValueCombineAndAllValue / totalAllValueCombine;
+  console.log(valueZTerbobot, 'valueZTerbobot')
+
 
   return (
     <Paper sx={{ width: "100%", overflow: "hidden" }}>
