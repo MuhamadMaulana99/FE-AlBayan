@@ -631,10 +631,10 @@ export default function ApprovalTable(props) {
   // const hasil = fuzzyTsukamoto(4000000, 5000000, 3, 1000000);
   // console.log("Hasil Fuzzy Tsukamoto:", hasil);
 
-  const nomPendapatan = 7000000;
-  const nomPengajuan = 3000000;
-  const nomJangkaWaktu = 10;
-  const nomJaminan = 10000000;
+  const nomPendapatan = 10000000;
+  const nomPengajuan = 60000000;
+  const nomJangkaWaktu = 7;
+  const nomJaminan = 570000;
 
   const valPendapatanSedikit = 2000000;
   const valPendapatanSedang = 4000000;
@@ -1047,30 +1047,51 @@ export default function ApprovalTable(props) {
     }
   }
 
+  // function resultValueZ(nilaiKombinasi, tf) {
+  //   if (tf === true) {
+  //     return nilaiKombinasi * (valLayak - valTidakLayak) + valTidakLayak;
+  //   } else if (tf === false) {
+  //     return valTidakLayak - nilaiKombinasi * (valTidakLayak - valLayak);
+  //   }else{
+  //     return null
+  //   }
+  // }
+
   function resultValueZ(nilaiKombinasi, tf) {
     if (tf === true) {
-      return nilaiKombinasi * (valLayak - valTidakLayak) + valTidakLayak;
+      return nilaiKombinasi * valLayak;
     } else if (tf === false) {
-      return valTidakLayak - nilaiKombinasi * (valTidakLayak - valLayak);
-    }else{
-      return null
+      return nilaiKombinasi * valTidakLayak;
+    } else {
+      return null;
     }
   }
-  
+
+  // function resultValueZ(nilaiKombinasi, tf) {
+  //   if (tf === true) {
+  //     return nilaiKombinasi * (valLayak - valTidakLayak) + valTidakLayak;
+  //   } else if (tf === false) {
+  //     return valTidakLayak - nilaiKombinasi * (valTidakLayak - valLayak);
+  //   }else{
+  //     return null
+  //   }
+  // }
+
   function multiplyAndSumArrays(array1, array2) {
     // Pastikan kedua array memiliki panjang yang sama
     if (array1.length !== array2.length) {
-        throw new Error("Array harus memiliki panjang yang sama.");
+      throw new Error("Array harus memiliki panjang yang sama.");
     }
 
     // Hasilkan array baru dengan hasil perkalian setiap elemen berdasarkan indeks
     const result = array1.map((value, index) => value * array2[index]);
+    // console.log(result, 'result')
 
     // Jumlahkan semua nilai dalam array result
     const sum = result.reduce((acc, currentValue) => acc + currentValue, 0);
-    
+
     return sum;
-}
+  }
   // const test = resultValueZ(0.2)
   // console.log(test, 'tessss')
 
@@ -1151,13 +1172,22 @@ export default function ApprovalTable(props) {
   const trueFalse = [];
   const allValueZ = [];
   const valueCombine = [];
+  // console.log(combinations, 'combinations')
 
   combinations.forEach((combo, index) => {
-    const aggregatedValue = Object.values(combo).reduce(
-      (acc, item) => acc * item.value, // Mengalikan semua nilai value
-      1
-    );
-    // console.log(`${index + 1}:`, combo, `Value: ${aggregatedValue}`);
+    const valueCombo = [
+      combo.pendapatan.value,
+      combo.pengajuan.value,
+      combo.jangkaWaktu.value,
+      combo.jaminan.value,
+    ];
+    const mathMins = Math.min(...valueCombo);
+    // console.log(mathMins, 'mathMinsmathMins')
+    // const mathMins = Object.values(combo).reduce(
+    //   (acc, item) => acc * item.value, // Mengalikan semua nilai value
+    //   1
+    // );
+    // console.log(`${index + 1}:`, combo, `Value: ${mathMins}`);
     const cariAturan = (pendapatan, pengajuan, jangkaWaktu, jaminan) => {
       return DataAturanFuzzy.find(
         (aturan) =>
@@ -1175,10 +1205,10 @@ export default function ApprovalTable(props) {
       combo?.jaminan?.label
     );
     // console.log(aturanTerkait, "aaa");
-    const resultCombineZ = resultValueZ(aggregatedValue, aturanTerkait?.result );
+    const resultCombineZ = resultValueZ(mathMins, aturanTerkait?.result);
     trueFalse.push(aturanTerkait?.result);
     allValueZ.push(resultCombineZ);
-    valueCombine.push(aggregatedValue);
+    valueCombine.push(mathMins);
 
     // Mencari nilai terkecil dari combo
     const values = Object.values(combo).map((item) => item.value); // Ekstrak semua nilai value dari combo
@@ -1187,14 +1217,23 @@ export default function ApprovalTable(props) {
     // console.log(`Nilai terkecil dari combo ${index + 1}:`, minValue);
   });
   // console.log(DataAturanFuzzy, 'DataAturanFuzzy')
-  console.log(valueCombine, "valueCombine");
-  console.log(allValueZ, "allValueZ");
   // console.log(trueFalse, "trueFalse");
-  const totalMultipleValueCombineAndAllValue = multiplyAndSumArrays(valueCombine, allValueZ);
-  let totalAllValueCombine = valueCombine.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
-  const valueZTerbobot = totalMultipleValueCombineAndAllValue / totalAllValueCombine;
-  console.log(valueZTerbobot, 'valueZTerbobot')
+  const totalZValueBerbobot = multiplyAndSumArrays(
+    valueCombine,
+    allValueZ
+  );
+  // let totalAllValueCombine = valueCombine.reduce(
+  //   (accumulator, currentValue) => accumulator + currentValue,
+  //   0
+  // );
+  // const valueZTerbobot =
+  //   totalValueBerbobot / totalAllValueCombine;
+  // console.log(valueCombine, "valueCombine");
+  // console.log(allValueZ, "allValueZ");
 
+  console.log(totalZValueBerbobot, 'totalZValueBerbobot')
+  // console.log(totalAllValueCombine, 'totalAllValueCombine')
+  // console.log(valueZTerbobot, 'valueZTerbobot')
 
   return (
     <Paper sx={{ width: "100%", overflow: "hidden" }}>
