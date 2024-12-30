@@ -1,10 +1,10 @@
-import AppBar from '@mui/material/AppBar';
-import { ThemeProvider } from '@mui/material/styles';
-import Toolbar from '@mui/material/Toolbar';
-import clsx from 'clsx';
-import { memo } from 'react';
-import { useSelector } from 'react-redux';
-import { selectFooterTheme } from 'app/store/fuse/settingsSlice';
+import AppBar from "@mui/material/AppBar";
+import { ThemeProvider } from "@mui/material/styles";
+import Toolbar from "@mui/material/Toolbar";
+import clsx from "clsx";
+import { memo } from "react";
+import { useSelector } from "react-redux";
+import { selectFooterTheme } from "app/store/fuse/settingsSlice";
 
 function FooterLayout3(props) {
   const footerTheme = useSelector(selectFooterTheme);
@@ -13,7 +13,7 @@ function FooterLayout3(props) {
     <ThemeProvider theme={footerTheme}>
       <AppBar
         id="fuse-footer"
-        className={clsx('relative z-20 shadow-md', props.className)}
+        className={clsx("relative z-20 shadow-md", props.className)}
         color="default"
         style={{ backgroundColor: footerTheme.palette.background.paper }}
       >

@@ -567,7 +567,7 @@ function AngsuranHeader(props) {
           <FuseSvgIcon color="disabled">heroicons-solid:search</FuseSvgIcon>
 
           <Input
-            placeholder="Cari Barang"
+            placeholder="Cari Angsuran"
             className="flex flex-1"
             disableUnderline
             fullWidth

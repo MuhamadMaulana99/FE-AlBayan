@@ -1,14 +1,14 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import Button from '@mui/material/Button';
-import Input from '@mui/material/Input';
-import Paper from '@mui/material/Paper';
-import Typography from '@mui/material/Typography';
-import { motion } from 'framer-motion';
-import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
-import { showMessage } from 'app/store/fuse/messageSlice';
-import axios from 'axios';
-import { useDispatch } from 'react-redux';
-import { useState } from 'react';
+import Button from "@mui/material/Button";
+import Input from "@mui/material/Input";
+import Paper from "@mui/material/Paper";
+import Typography from "@mui/material/Typography";
+import { motion } from "framer-motion";
+import FuseSvgIcon from "@fuse/core/FuseSvgIcon";
+import { showMessage } from "app/store/fuse/messageSlice";
+import axios from "axios";
+import { useDispatch } from "react-redux";
+import { useState } from "react";
 import {
   Dialog,
   DialogActions,
@@ -16,14 +16,14 @@ import {
   DialogContentText,
   DialogTitle,
   TextField,
-} from '@mui/material';
+} from "@mui/material";
 
 function MasterStaffHeader(props) {
   const dispatch = useDispatch();
   const [data, setData] = useState({});
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
-  const [nama, setnama] = useState('');
+  const [nama, setnama] = useState("");
 
   const body = {
     nama,
@@ -47,13 +47,13 @@ function MasterStaffHeader(props) {
         setLoading(false);
         dispatch(
           showMessage({
-            message: 'Data Berhasil Tambahkan',
+            message: "Data Berhasil Tambahkan",
             autoHideDuration: 2000,
             anchorOrigin: {
-              vertical: 'top',
-              horizontal: 'center',
+              vertical: "top",
+              horizontal: "center",
             },
-            variant: 'success',
+            variant: "success",
           })
         );
       })
@@ -63,30 +63,30 @@ function MasterStaffHeader(props) {
         setLoading(false);
         const errStatus = err.response.status;
         const errMessage = err.response.data.message;
-        let messages = '';
+        let messages = "";
         if (errStatus === 401) {
-          messages = 'Unauthorized!!';
-          window.location.href = '/login';
+          messages = "Unauthorized!!";
+          window.location.href = "/login";
         } else if (errStatus === 500) {
-          messages = 'Server Error!!';
+          messages = "Server Error!!";
         } else if (errStatus === 404) {
-          messages = 'Not Found Error!!!';
+          messages = "Not Found Error!!!";
         } else if (errStatus === 408) {
-          messages = 'TimeOut Error!!';
+          messages = "TimeOut Error!!";
         } else if (errStatus === 400) {
           messages = errMessage;
         } else {
-          messages = 'Something Wrong!!';
+          messages = "Something Wrong!!";
         }
         dispatch(
           showMessage({
             message: messages,
             autoHideDuration: 2000,
             anchorOrigin: {
-              vertical: 'top',
-              horizontal: 'center',
+              vertical: "top",
+              horizontal: "center",
             },
-            variant: 'error',
+            variant: "error",
           })
         );
         console.log(err);
@@ -147,13 +147,13 @@ function MasterStaffHeader(props) {
           <FuseSvgIcon color="disabled">heroicons-solid:search</FuseSvgIcon>
 
           <Input
-            placeholder="Cari Barang"
+            placeholder="Cari"
             className="flex flex-1"
             disableUnderline
             fullWidth
             // value={searchText}
             inputProps={{
-              'aria-label': 'Search',
+              "aria-label": "Search",
             }}
             // onChange={(ev) => dispatch(setProductsSearchText(ev))}
           />

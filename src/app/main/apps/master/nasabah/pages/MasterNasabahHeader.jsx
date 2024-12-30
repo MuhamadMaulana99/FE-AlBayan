@@ -428,7 +428,7 @@ function MasterNasabahHeader(props) {
           <FuseSvgIcon color="disabled">heroicons-solid:search</FuseSvgIcon>
 
           <Input
-            placeholder="Cari Barang"
+            placeholder="Cari Nasabah"
             className="flex flex-1"
             disableUnderline
             fullWidth
