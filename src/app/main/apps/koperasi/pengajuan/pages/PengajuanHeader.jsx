@@ -644,7 +644,7 @@ function PengajuanHeader(props) {
           </Button>
         </DialogActions>
       </Dialog>
-      <div className="w-full flex justify-evenly">
+      <div className="w-full flex justify-between">
         <Typography
           component={motion.span}
           initial={{ x: -20 }}

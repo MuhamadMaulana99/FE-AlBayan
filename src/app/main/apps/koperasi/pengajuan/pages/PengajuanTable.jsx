@@ -180,20 +180,20 @@ const columns = [
     align: "left",
     textSytle: "font-bold",
   },
-  {
-    id: "noAkad",
-    label: "No Akad",
-    minWidth: 170,
-    align: "left",
-    textSytle: "",
-  },
-  {
-    id: "approve",
-    label: "Aprove",
-    minWidth: 170,
-    align: "left",
-    textSytle: "",
-  },
+  // {
+  //   id: "noAkad",
+  //   label: "No Akad",
+  //   minWidth: 170,
+  //   align: "left",
+  //   textSytle: "",
+  // },
+  // {
+  //   id: "approve",
+  //   label: "Aprove",
+  //   minWidth: 170,
+  //   align: "left",
+  //   textSytle: "",
+  // },
   {
     id: "statusBy",
     label: "StatusBy",
@@ -737,7 +737,7 @@ export default function PengajuanTable(props) {
 
   return (
     <Paper sx={{ width: "100%", overflow: "hidden" }}>
-      <div className="flex flex-auto items-center gap-4 grid-rows-1 ">
+      {/* <div className="flex flex-auto items-center gap-4 grid-rows-1 ">
         <div className="flex items-left mt-10 ml-20 w-1/2 flex-col md:flex-row md:items-center md:mt-0">
           <div className="w-full flex">
             <div>
@@ -766,7 +766,7 @@ export default function PengajuanTable(props) {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
       <Dialog
         className="py-20"
         open={open}
@@ -975,7 +975,7 @@ export default function PengajuanTable(props) {
                         ? "-"
                         : formatRupiah(parseInt(row?.accPermohonan))}
                     </TableCell>
-                    <TableCell>
+                    {/* <TableCell>
                       {row?.nomorAkad === null ? "-" : row?.nomorAkad}
                     </TableCell>
                     <TableCell>
@@ -992,7 +992,7 @@ export default function PengajuanTable(props) {
                           {row?.status === null ? "-" : row?.status}
                         </Button>
                       )}
-                    </TableCell>
+                    </TableCell> */}
                     <TableCell>
                       {row?.statusBy === null ? "-" : row?.statusBy}
                     </TableCell>

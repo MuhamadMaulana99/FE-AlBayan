@@ -902,15 +902,15 @@ export default function PermohonanTable(props) {
                           color="warning"
                           variant="contained"
                         >
-                          Tidak Layak
+                         {'Ditolak'}
                         </Button>
                       ) : (
                         <Button
                           onClick={() => handleClickopenAnalisa(row, row?.id)}
                           color="success"
-                          variant="contained"
+                          variant="contained" 
                         >
-                          Layak
+                          {"=> Pengajuan"}
                         </Button>
                       )}
                     </TableCell>
