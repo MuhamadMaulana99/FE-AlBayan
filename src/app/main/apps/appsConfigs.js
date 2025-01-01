@@ -1,3 +1,4 @@
+import DashboardConfig from './dashboard/DashboardConfig';
 import AngsuranConfig from './koperasi/angsuran/AngsuranConfig';
 import ApprovalConfig from './koperasi/approval/ApprovalConfig';
 import PengajuanConfig from './koperasi/pengajuan/PengajuanConfig';
@@ -18,6 +19,7 @@ const appsConfigs = [
   PengajuanConfig,
   PermohonanConfig,
   ApprovalConfig,
+  DashboardConfig,
 ];
 
 export default appsConfigs;
