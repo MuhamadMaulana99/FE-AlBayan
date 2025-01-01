@@ -43,7 +43,7 @@ function SignInPage() {
         password: passWord,
       })
       .then((res) => {
-        window.location.href = "apps/permohonan/";
+        window.location.href = "apps/dashboard/";
         localStorage.setItem("userRoles", JSON.stringify(res?.data));
         dispatch(
           showMessage({
