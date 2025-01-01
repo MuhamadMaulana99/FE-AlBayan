@@ -142,7 +142,7 @@ export default function ApprovalTable(props) {
   const dispatch = useDispatch();
   const { dataMasterBarang } = props;
   // console.log(getResponseName, "getResponseName");
-    const [openNotifikasi, setOpenNotifikasi] = React.useState(false);
+    const [openNotifikasi, setOpenNotifikasi] = useState(false);
   const [data, setData] = useState([]);
   const [getDataEdit, setgetDataEdit] = useState({});
   const [dataEdit, setDataEdit] = useState({
@@ -216,8 +216,24 @@ export default function ApprovalTable(props) {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
-  const handleClickOpenNotifikasi = () => {
+  const handleClickOpenNotifikasi = (id, row, trueFalse) => {
     setOpenNotifikasi(true);
+    setgetDataEdit({
+      id: row?.id,
+      penjualan: row?.penjualan,
+      hargaPokok: row?.hargaPokok,
+      biaya: row?.biaya,
+      labaUsaha: row?.hargaPokok,
+      pendapatanLain: row?.biaya,
+      jumlahPendapatan: row?.jumlahPendapatan,
+      kebutuhanRumahTangga: row?.kebutuhanRumahTangga,
+      biayaPendidikan: row?.biayaPendidikan,
+      biayaLainya: row?.biayaLainya,
+      jumlahBiayaLuarUsaha: row?.jumlahBiayaLuarUsaha,
+      pendapatanBersih: row?.pendapatanBersih,
+      rasioAngsuran: row?.rasioAngsuran,
+      trueFalse,
+    });
   };
   const handleCloseNotifikasi = () => {
     setOpenNotifikasi(false);
@@ -320,14 +336,15 @@ export default function ApprovalTable(props) {
   };
   const HandelApprove = (id, row, layakOrNot) => {
     setLoading(true);
-    if (dataLogin?.roleUser === "Kasir" || dataLogin?.roleUser === "Admin") {
+    if (dataLogin?.roleUser === "Admin") {
       axios
-        .put(`${process.env.REACT_APP_API_URL_API_}/pengajuanByApprove/${id}`, {
-          status: layakOrNot,
+        .put(`${process.env.REACT_APP_API_URL_API_}/pengajuanByApprove/${getDataEdit?.id}`, {
+          status: getDataEdit?.trueFalse,
         })
         .then((res) => {
           props?.getData();
           handleClose();
+          handleCloseNotifikasi();
           setLoading(false);
           dispatch(
             showMessage({
@@ -343,6 +360,7 @@ export default function ApprovalTable(props) {
         })
         .catch((err) => {
           handleClose();
+          handleCloseNotifikasi();
           setLoading(false);
           const errStatus = err.response.status;
           const errMessage = err.response.data.message;
@@ -377,7 +395,7 @@ export default function ApprovalTable(props) {
     } else {
       dispatch(
         showMessage({
-          message: "Silahkan Hubungi Kasir Untuk Aprove ",
+          message: "Silahkan Hubungi Admin Untuk Aprove ",
           autoHideDuration: 2000,
           anchorOrigin: {
             vertical: "top",
@@ -1177,15 +1195,15 @@ export default function ApprovalTable(props) {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">Analisa</DialogTitle>
+        <DialogTitle id="alert-dialog-title">Keputusan</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Apakah anda yakin dengan analisa ini?
+            Apakah anda yakin dengan keputusan ini?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseNotifikasi}>Tutup</Button>
-          <Button onClick={handleSaveAnalisa} autoFocus>
+          <Button onClick={HandelApprove} autoFocus>
             Simpan
           </Button>
         </DialogActions>
@@ -1339,14 +1357,14 @@ export default function ApprovalTable(props) {
                       {row?.status === null ? (
                         <div>
                           <Button
-                            onClick={() => HandelApprove(row?.id, row, true)}
+                            onClick={() => handleClickOpenNotifikasi(row?.id, row, true)}
                             color="info"
                             variant="contained"
                           >
                             Layak
                           </Button>
                           <Button
-                            onClick={() => HandelApprove(row?.id, row, false)}
+                            onClick={() => handleClickOpenNotifikasi(row?.id, row, false)}
                             color="warning"
                             variant="contained"
                           >
