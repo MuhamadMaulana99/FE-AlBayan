@@ -142,6 +142,7 @@ export default function ApprovalTable(props) {
   const dispatch = useDispatch();
   const { dataMasterBarang } = props;
   // console.log(getResponseName, "getResponseName");
+    const [openNotifikasi, setOpenNotifikasi] = React.useState(false);
   const [data, setData] = useState([]);
   const [getDataEdit, setgetDataEdit] = useState({});
   const [dataEdit, setDataEdit] = useState({
@@ -214,6 +215,12 @@ export default function ApprovalTable(props) {
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(+event.target.value);
     setPage(0);
+  };
+  const handleClickOpenNotifikasi = () => {
+    setOpenNotifikasi(true);
+  };
+  const handleCloseNotifikasi = () => {
+    setOpenNotifikasi(false);
   };
   const handleClickOpen = (id, row) => {
     setOpen(true);
@@ -311,12 +318,12 @@ export default function ApprovalTable(props) {
         console.log(err);
       });
   };
-  const HandelApprove = (id, row) => {
+  const HandelApprove = (id, row, layakOrNot) => {
     setLoading(true);
     if (dataLogin?.roleUser === "Kasir" || dataLogin?.roleUser === "Admin") {
       axios
         .put(`${process.env.REACT_APP_API_URL_API_}/pengajuanByApprove/${id}`, {
-          status: getResponseName?.name,
+          status: layakOrNot,
         })
         .then((res) => {
           props?.getData();
@@ -433,6 +440,20 @@ export default function ApprovalTable(props) {
         );
         console.log(err);
       });
+  };
+
+  const HandleNotifikasi = (kelayakan) => {
+    dispatch(
+      showMessage({
+        message: `Nasabah Sudah ${kelayakan}`,
+        autoHideDuration: 2000,
+        anchorOrigin: {
+          vertical: "top",
+          horizontal: "center",
+        },
+        variant: "warning",
+      })
+    );
   };
   if (props?.loading) {
     return <FuseLoading />;
@@ -560,57 +581,6 @@ export default function ApprovalTable(props) {
     link.click();
   };
 
-  // console.log(rows, "rows");
-
-  // Fungsi Keanggotaan Trapezoidal
-  // const fuzzyMembership = (x, a, b, c, d) => {
-  //   if (x <= a || x >= d) return 0;
-  //   if (x >= b && x <= c) return 1;
-  //   if (x > a && x < b) return (x - a) / (b - a);
-  //   if (x > c && x < d) return (d - x) / (d - c);
-  // };
-
-  // const fuzzyTsukamoto = (pendapatan, pengajuan, jangkaWaktu, nominalJaminan) => {
-  //   // Keanggotaan Pendapatan
-  //   const pendapatanSedikit = fuzzyMembership(pendapatan, 0, 0, 2000000, 4000000);
-  //   const pendapatanSedang = fuzzyMembership(pendapatan, 2000000, 4000000, 6000000, 8000000);
-  //   const pendapatanBanyak = fuzzyMembership(pendapatan, 6000000, 8000000, 10000000, 12000000);
-
-  //   // Keanggotaan Pengajuan
-  //   const pengajuanSedikit = fuzzyMembership(pengajuan, 0, 0, 3000000, 5000000);
-  //   const pengajuanSedang = fuzzyMembership(pengajuan, 3000000, 5000000, 7000000, 10000000);
-  //   const pengajuanBanyak = fuzzyMembership(pengajuan, 7000000, 10000000, 12000000, 15000000);
-
-  //   // Keanggotaan Jangka Waktu
-  //   const waktuPendek = fuzzyMembership(jangkaWaktu, 0, 0, 3, 6);
-  //   const waktuSedang = fuzzyMembership(jangkaWaktu, 3, 6, 9, 12);
-  //   const waktuPanjang = fuzzyMembership(jangkaWaktu, 9, 12, 15, 18);
-
-  //   // Keanggotaan Nominal Jaminan
-  //   const jaminanKecil = fuzzyMembership(nominalJaminan, 0, 0, 5000000, 7000000);
-  //   const jaminanSedang = fuzzyMembership(nominalJaminan, 5000000, 7000000, 8500000, 10000000);
-  //   const jaminanBesar = fuzzyMembership(nominalJaminan, 8500000, 10000000, 12000000, 15000000);
-
-  //   // Aturan Fuzzy Tsukamoto
-  //   const aturan = [
-  //     { nilai: 2000000, min: Math.min(pendapatanSedikit, pengajuanSedikit, waktuPendek, jaminanKecil) },
-  //     { nilai: 8000000, min: Math.min(pendapatanBanyak, pengajuanBanyak, waktuPanjang, jaminanBesar) },
-  //     { nilai: 5000000, min: Math.min(pendapatanSedang, pengajuanSedang, waktuSedang, jaminanSedang) }
-  //   ];
-
-  //   // Hitung Z dan total keanggotaan
-  //   const totalZ = aturan.reduce((sum, { nilai, min }) => sum + nilai * min, 0);
-  //   const totalKeanggotaan = aturan.reduce((sum, { min }) => sum + min, 0);
-
-  //   // Defuzzifikasi
-  //   const hasil = totalKeanggotaan === 0 ? 0 : totalZ / totalKeanggotaan;
-
-  //   return hasil.toFixed(2);
-  // };
-
-  // const hasil = fuzzyTsukamoto(4000000, 5000000, 3, 1000000);
-  // console.log("Hasil Fuzzy Tsukamoto:", hasil);
-
   const fuzzySakamotos = (
     valuePendapatan,
     valuePengajuan,
@@ -675,9 +645,6 @@ export default function ApprovalTable(props) {
     };
 
     const fuzzyMembershipBanyak = (nilaiInput, kecil, sedang, besar) => {
-      // console.log(nilaiInput, 'nilaiInput')
-      // console.log(sedang, 'sedang')
-      // console.log(besar, 'besar')
       if (nilaiInput <= sedang) {
         return 0; // Nilai penuh 0 jika <= sedang
       }
@@ -689,10 +656,6 @@ export default function ApprovalTable(props) {
       }
     };
     const fuzzyMembershipTidakLayak = (nilaiInput, TidakLayak, layak) => {
-      // console.log(nilaiInput, 'nilaiInput');
-      // console.log(TidakLayak, 'TidakLayak');
-      // console.log(layak, 'layak');
-
       if (nilaiInput <= TidakLayak) {
         return 1; // Keanggotaan penuh dalam kategori Tidak Layak
       }
@@ -707,9 +670,6 @@ export default function ApprovalTable(props) {
       return null;
     };
     const fuzzyMembershipLayak = (nilaiInput, TidakLayak, layak) => {
-      // console.log(nilaiInput, 'nilaiInput')
-      // console.log(TidakLayak, 'TidakLayak')
-      // console.log(layak, 'layak')
       if (nilaiInput <= TidakLayak) {
         return 0; // Nilai penuh 0 jika <= sedang
       }
@@ -1006,8 +966,6 @@ export default function ApprovalTable(props) {
       }
     }
     function resultLayakTidakLayak(nomLayakTidakLayak) {
-      // console.log(nomLayakTidakLayak, 'nomLayakTidakLayak')
-
       if (nomLayakTidakLayak <= valTidakLayak) {
         const hasilTidakLayak = fuzzyMembershipTidakLayak(
           nomLayakTidakLayak,
@@ -1040,16 +998,6 @@ export default function ApprovalTable(props) {
       }
     }
 
-    // function resultValueZ(nilaiKombinasi, tf) {
-    //   if (tf === true) {
-    //     return nilaiKombinasi * (valLayak - valTidakLayak) + valTidakLayak;
-    //   } else if (tf === false) {
-    //     return valTidakLayak - nilaiKombinasi * (valTidakLayak - valLayak);
-    //   }else{
-    //     return null
-    //   }
-    // }
-
     function resultValueZ(nilaiKombinasi, tf) {
       if (tf === true) {
         return nilaiKombinasi * valLayak;
@@ -1059,16 +1007,6 @@ export default function ApprovalTable(props) {
         return null;
       }
     }
-
-    // function resultValueZ(nilaiKombinasi, tf) {
-    //   if (tf === true) {
-    //     return nilaiKombinasi * (valLayak - valTidakLayak) + valTidakLayak;
-    //   } else if (tf === false) {
-    //     return valTidakLayak - nilaiKombinasi * (valTidakLayak - valLayak);
-    //   }else{
-    //     return null
-    //   }
-    // }
 
     function multiplyAndSumArrays(array1, array2) {
       // Pastikan kedua array memiliki panjang yang sama
@@ -1116,14 +1054,6 @@ export default function ApprovalTable(props) {
     mergeObjects(hasilGabungan, jangkaWaktu);
     mergeObjects(hasilGabungan, jaminan);
 
-    // Return objek hasil gabungan
-    // return hasilGabungan;
-    // console.log(hasilGabungan, "hasilGabungan");
-
-    // console.log(resultPendapatan(nomPendapatan), "pendapatan");
-    // console.log(resultPengajuan(nomPengajuan), "pengajuan");
-    // console.log(resultJangkaWaktu(nomJangkaWaktu), "jangkaWaktu");
-    // console.log(resultJaminan(nomJaminan), "jaminan");
     function calculateCombinations(data) {
       const keys = Object.keys(data);
       const combinations = [];
@@ -1175,12 +1105,6 @@ export default function ApprovalTable(props) {
         combo.jaminan.value,
       ];
       const mathMins = Math.min(...valueCombo);
-      // console.log(mathMins, 'mathMinsmathMins')
-      // const mathMins = Object.values(combo).reduce(
-      //   (acc, item) => acc * item.value, // Mengalikan semua nilai value
-      //   1
-      // );
-      // console.log(`${index + 1}:`, combo, `Value: ${mathMins}`);
       const cariAturan = (pendapatan, pengajuan, jangkaWaktu, jaminan) => {
         return DataAturanFuzzy.find(
           (aturan) =>
@@ -1206,29 +1130,13 @@ export default function ApprovalTable(props) {
       // Mencari nilai terkecil dari combo
       const values = Object.values(combo).map((item) => item.value); // Ekstrak semua nilai value dari combo
       const minValue = Math.min(...values); // Cari nilai terkecil
-
-      // console.log(`Nilai terkecil dari combo ${index + 1}:`, minValue);
     });
-    // console.log(DataAturanFuzzy, 'DataAturanFuzzy')
-    // console.log(trueFalse, "trueFalse");
     const totalZValueBerbobot = multiplyAndSumArrays(valueCombine, allValueZ);
-    // let totalAllValueCombine = valueCombine.reduce(
-    //   (accumulator, currentValue) => accumulator + currentValue,
-    //   0
-    // );
-    // const valueZTerbobot =
-    //   totalValueBerbobot / totalAllValueCombine;
-    // console.log(valueCombine, "valueCombine");
-    // console.log(allValueZ, "allValueZ");
-
-    // console.log(totalZValueBerbobot, "totalZValueBerbobot");
-    // console.log(totalAllValueCombine, 'totalAllValueCombine')
-    // console.log(valueZTerbobot, 'valueZTerbobot')
 
     return parseFloat(totalZValueBerbobot.toFixed(2));
   };
 
-  // const tessss = fuzzySakamotos(10000000, 60000000, 7, 570000);
+  // const tessss = fuzzySakamotos(8000000, 10000000, 6, 7000000);
   // console.log(tessss, "tessss");
 
   return (
@@ -1263,6 +1171,25 @@ export default function ApprovalTable(props) {
           </div>
         </div>
       </div>
+      <Dialog
+        open={openNotifikasi}
+        onClose={handleCloseNotifikasi}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">Analisa</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Apakah anda yakin dengan analisa ini?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseNotifikasi}>Tutup</Button>
+          <Button onClick={handleSaveAnalisa} autoFocus>
+            Simpan
+          </Button>
+        </DialogActions>
+      </Dialog>
       <Dialog
         className="py-20"
         open={open}
@@ -1385,6 +1312,13 @@ export default function ApprovalTable(props) {
                 //     amount.toLocaleString("id-ID", { minimumFractionDigits: 0 })
                 //   );
                 // }
+                // console.log(
+                //   extractInteger(row?.jaminan),
+                //   " extractInteger(row?.jaminan)"
+                // );
+                // console.log(row?.jumlahPendapatan, "  row?.jumlahPendapatan");
+                // console.log(row?.nominalPermohonan, " row?.nominalPermohonan");
+                // console.log(row?.jangkaWaktu, " row?.jangkaWaktu");
 
                 return (
                   <TableRow key={row.id} hover role="checkbox" tabIndex={-1}>
@@ -1396,31 +1330,51 @@ export default function ApprovalTable(props) {
                       {fuzzySakamotos(
                         row?.jumlahPendapatan,
                         row?.nominalPermohonan,
-                        row?.jangkaWaktu,
+                        extractInteger(row?.jangkaWaktu),
                         extractInteger(row?.jaminan)
                       )}
                       {/* {fuzzySakamotos(10000000, 60000000, 7, 570000)} */}
                     </TableCell>
                     <TableCell>
-                      {row?.status !== null ? (
+                      {row?.status === null ? (
                         <div>
                           <Button
-                            onClick={() => HandelApprove(row?.id, row)}
+                            onClick={() => HandelApprove(row?.id, row, true)}
                             color="info"
                             variant="contained"
                           >
                             Layak
                           </Button>
                           <Button
-                            onClick={() => HandelApprove(row?.id, row)}
+                            onClick={() => HandelApprove(row?.id, row, false)}
                             color="warning"
                             variant="contained"
                           >
                             Tidak Layak
                           </Button>
                         </div>
+                      ) : row?.status === "1" ? (
+                        <Button
+                          onClick={() => HandleNotifikasi("Layak")}
+                          color="info"
+                          variant="contained"
+                        >
+                          Layak
+                        </Button>
+                      ) : row?.status === "0" ? (
+                        <Button
+                          onClick={() => HandleNotifikasi("Tidak Layak")}
+                          color="warning"
+                          variant="contained"
+                        >
+                          Tidak Layak
+                        </Button>
                       ) : (
-                        <Button color="success" variant="contained">
+                        <Button
+                          color="success"
+                          variant="contained"
+                          onClick={() => HandleNotifikasi("Error")}
+                        >
                           {row?.status === null ? "-" : row?.status}
                         </Button>
                       )}

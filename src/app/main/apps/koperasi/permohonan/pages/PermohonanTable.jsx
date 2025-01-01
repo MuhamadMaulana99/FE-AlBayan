@@ -910,7 +910,7 @@ export default function PermohonanTable(props) {
                           color="success"
                           variant="contained" 
                         >
-                          {"=> Pengajuan"}
+                          {"Pengajuan"}
                         </Button>
                       )}
                     </TableCell>
