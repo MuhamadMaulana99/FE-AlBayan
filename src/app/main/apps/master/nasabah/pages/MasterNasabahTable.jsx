@@ -34,7 +34,7 @@ import jsPDF from "jspdf";
 import { useState } from "react";
 
 const columns = [
-  { id: "no", label: "NO", minWidth: 170, align: "left" },
+  { id: "no", label: "NO", minWidth: 60, align: "left" },
   {
     id: "nama",
     label: "Nama",

@@ -44,7 +44,7 @@ const columns = [
   {
     id: "no",
     label: "NO",
-    minWidth: 170,
+    minWidth: 50,
     align: "left",
     textSytle: "",
   },
@@ -142,7 +142,7 @@ export default function ApprovalTable(props) {
   const dispatch = useDispatch();
   const { dataMasterBarang } = props;
   // console.log(getResponseName, "getResponseName");
-    const [openNotifikasi, setOpenNotifikasi] = useState(false);
+  const [openNotifikasi, setOpenNotifikasi] = useState(false);
   const [data, setData] = useState([]);
   const [getDataEdit, setgetDataEdit] = useState({});
   const [dataEdit, setDataEdit] = useState({
@@ -338,9 +338,12 @@ export default function ApprovalTable(props) {
     setLoading(true);
     if (dataLogin?.roleUser === "Admin") {
       axios
-        .put(`${process.env.REACT_APP_API_URL_API_}/pengajuanByApprove/${getDataEdit?.id}`, {
-          status: getDataEdit?.trueFalse,
-        })
+        .put(
+          `${process.env.REACT_APP_API_URL_API_}/pengajuanByApprove/${getDataEdit?.id}`,
+          {
+            status: getDataEdit?.trueFalse,
+          }
+        )
         .then((res) => {
           props?.getData();
           handleClose();
@@ -395,7 +398,7 @@ export default function ApprovalTable(props) {
     } else {
       dispatch(
         showMessage({
-          message: "Silahkan Hubungi Admin Untuk Aprove ",
+          message: "Silahkan Hubungi Admin Untuk Approval ",
           autoHideDuration: 2000,
           anchorOrigin: {
             vertical: "top",
@@ -463,7 +466,7 @@ export default function ApprovalTable(props) {
   const HandleNotifikasi = (kelayakan) => {
     dispatch(
       showMessage({
-        message: `Nasabah Sudah ${kelayakan}`,
+        message: `Nasabah Sudah Approval: ${kelayakan}`,
         autoHideDuration: 2000,
         anchorOrigin: {
           vertical: "top",
@@ -1357,14 +1360,18 @@ export default function ApprovalTable(props) {
                       {row?.status === null ? (
                         <div>
                           <Button
-                            onClick={() => handleClickOpenNotifikasi(row?.id, row, true)}
+                            onClick={() =>
+                              handleClickOpenNotifikasi(row?.id, row, true)
+                            }
                             color="info"
                             variant="contained"
                           >
                             Layak
                           </Button>
                           <Button
-                            onClick={() => handleClickOpenNotifikasi(row?.id, row, false)}
+                            onClick={() =>
+                              handleClickOpenNotifikasi(row?.id, row, false)
+                            }
                             color="warning"
                             variant="contained"
                           >

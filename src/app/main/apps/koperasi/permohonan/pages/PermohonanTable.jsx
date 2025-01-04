@@ -45,7 +45,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 const columns = [
-  { id: "no", label: "NO", minWidth: 170, align: "left" },
+  { id: "no", label: "NO", minWidth: 60, align: "left" },
   {
     id: "namaNasabah",
     label: "Nama Nasabah",
@@ -676,7 +676,7 @@ export default function PermohonanTable(props) {
               <CloseIcon />
             </IconButton>
             <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-              Analisa {persentase}%
+              Analisis 5C: {persentase}%
             </Typography>
             <Button
               disabled={selectedItemsValue.length === 0}
@@ -894,7 +894,7 @@ export default function PermohonanTable(props) {
                           color="info"
                           variant="contained"
                         >
-                          Analisa
+                          Analisis 5C
                         </Button>
                       ) : row?.persentase < 70 ? (
                         <Button
@@ -902,13 +902,13 @@ export default function PermohonanTable(props) {
                           color="warning"
                           variant="contained"
                         >
-                         {'Ditolak'}
+                          {"Ditolak"}
                         </Button>
                       ) : (
                         <Button
                           onClick={() => handleClickopenAnalisa(row, row?.id)}
                           color="success"
-                          variant="contained" 
+                          variant="contained"
                         >
                           {"Pengajuan"}
                         </Button>

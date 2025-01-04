@@ -43,7 +43,7 @@ const columns = [
   {
     id: "no",
     label: "NO",
-    minWidth: 170,
+    minWidth: 60,
     align: "left",
     textSytle: "",
   },

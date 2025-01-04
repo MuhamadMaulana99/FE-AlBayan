@@ -1218,10 +1218,7 @@ export default function ApprovalTable(props) {
   });
   // console.log(DataAturanFuzzy, 'DataAturanFuzzy')
   // console.log(trueFalse, "trueFalse");
-  const totalZValueBerbobot = multiplyAndSumArrays(
-    valueCombine,
-    allValueZ
-  );
+  const totalZValueBerbobot = multiplyAndSumArrays(valueCombine, allValueZ);
   // let totalAllValueCombine = valueCombine.reduce(
   //   (accumulator, currentValue) => accumulator + currentValue,
   //   0
@@ -1231,7 +1228,7 @@ export default function ApprovalTable(props) {
   // console.log(valueCombine, "valueCombine");
   // console.log(allValueZ, "allValueZ");
 
-  console.log(totalZValueBerbobot, 'totalZValueBerbobot')
+  console.log(totalZValueBerbobot, "totalZValueBerbobot");
   // console.log(totalAllValueCombine, 'totalAllValueCombine')
   // console.log(valueZTerbobot, 'valueZTerbobot')
 

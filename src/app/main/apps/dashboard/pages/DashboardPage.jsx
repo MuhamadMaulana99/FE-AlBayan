@@ -4,27 +4,26 @@ import Chart from "react-apexcharts";
 const DashboardPage = (props) => {
   const data = props?.data;
 
-
   const statusSummary = {
     menunggu: { count: 0, totalNominal: 0 },
     layak: { count: 0, totalNominal: 0 },
-    tidakLayak: { count: 0, totalNominal: 0 }
-};
+    tidakLayak: { count: 0, totalNominal: 0 },
+  };
 
-data.forEach(item => {
+  data.forEach((item) => {
     if (item.status === null) {
-        statusSummary.menunggu.count += 1;
-        statusSummary.menunggu.totalNominal += item.nominalPermohonan;
+      statusSummary.menunggu.count += 1;
+      statusSummary.menunggu.totalNominal += item.nominalPermohonan;
     } else if (item.status === "1") {
-        statusSummary.layak.count += 1;
-        statusSummary.layak.totalNominal += item.nominalPermohonan;
+      statusSummary.layak.count += 1;
+      statusSummary.layak.totalNominal += item.nominalPermohonan;
     } else if (item.status === "0") {
-        statusSummary.tidakLayak.count += 1;
-        statusSummary.tidakLayak.totalNominal += item.nominalPermohonan;
+      statusSummary.tidakLayak.count += 1;
+      statusSummary.tidakLayak.totalNominal += item.nominalPermohonan;
     }
-});
+  });
 
-// console.log(statusSummary, 'ddd');
+  // console.log(statusSummary, 'ddd');
   // Data untuk Bar Chart
   const barChartOptions = {
     chart: {
@@ -53,7 +52,6 @@ data.forEach(item => {
 
   // Data untuk Pie Chart
   const pieChartOptions = {
-    
     labels: ["Menunggu", "Layak", "Tidak Layak"],
     colors: ["#00E396", "#FF4560", "#775DD0"], // Tambahkan warna untuk kategori "Menunggu"
     legend: {
@@ -82,7 +80,7 @@ data.forEach(item => {
 
   return (
     <div
-    className="mt-10"
+      className="mt-10"
       style={{
         display: "flex",
         justifyContent: "space-around",
@@ -96,8 +94,8 @@ data.forEach(item => {
           series={barChartSeries}
           type="bar"
           height={350}
-          />
-          <h2 className=" w-full text-center">Jumlah Nasabah</h2>
+        />
+        <h2 className=" w-full text-center">Jumlah Nasabah</h2>
       </div>
 
       {/* Pie Chart */}
@@ -107,8 +105,8 @@ data.forEach(item => {
           series={pieChartSeries}
           type="pie"
           height={350}
-          />
-          <h2 className=" w-full text-center mt-48">Proporsi Nasabah</h2>
+        />
+        <h2 className=" w-full text-center mt-48">Nominal Pembiayaan</h2>
       </div>
     </div>
   );
