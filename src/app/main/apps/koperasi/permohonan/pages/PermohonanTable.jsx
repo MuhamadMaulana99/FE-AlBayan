@@ -916,7 +916,7 @@ export default function PermohonanTable(props) {
                     </TableCell>
                     <TableCell>
                       <div className="flex justify-center">
-                        <div>
+                        {/* <div>
                           <IconButton
                             onClick={() => handleClickOpen(row.id, row)}
                             color="info"
@@ -928,7 +928,7 @@ export default function PermohonanTable(props) {
                           >
                             <EditIcon />
                           </IconButton>
-                        </div>
+                        </div> */}
                         <div>
                           <IconButton
                             onClick={(e) => HandelDelete(row.id)}
