@@ -71,6 +71,7 @@ function convertToInteger(currency) {
 }
 
 function PengajuanHeader(props) {
+  const { searchTerm, setSearchTerm } = props;
   const fileInputRef = useRef(null);
   const dispatch = useDispatch();
   const currentDate = moment().format();
@@ -320,12 +321,12 @@ function PengajuanHeader(props) {
   };
 
   // console.log(`${Math.round(resultAcc)}%`, 'resss');
-  console.log(getDataBody, 'stateBody')
+  console.log(getDataBody, "stateBody");
 
   useEffect(() => {
     setgetDataBody({
       penjualan: stateBody?.penjualan,
-      namaNasabah:  stateBody?.rekening?.namaNasabah,
+      namaNasabah: stateBody?.rekening?.namaNasabah,
       rekening: JSON.stringify(stateBody?.rekening),
       hargaPokok: stateBody?.hargaPokok,
       biaya: stateBody?.biaya,
@@ -645,17 +646,17 @@ function PengajuanHeader(props) {
           </Button>
         </DialogActions>
       </Dialog>
-      <div className="w-full flex justify-between">
-        <Typography
-          component={motion.span}
-          initial={{ x: -20 }}
-          animate={{ x: 0, transition: { delay: 0.2 } }}
-          delay={300}
-          className="text-24 md:text-32 font-extrabold tracking-tight"
-        >
-          Pengajuan
-        </Typography>
-      </div>
+
+      <Typography
+        component={motion.span}
+        initial={{ x: -20 }}
+        animate={{ x: 0, transition: { delay: 0.2 } }}
+        delay={300}
+        className="text-24 md:text-32 font-extrabold tracking-tight"
+      >
+        Pengajuan
+      </Typography>
+
       <div className="flex flex-col w-full sm:w-auto sm:flex-row space-y-16 sm:space-y-0 flex-1 items-center justify-end space-x-8">
         <Paper
           component={motion.div}
@@ -664,16 +665,17 @@ function PengajuanHeader(props) {
           className="flex items-center w-full sm:max-w-256 space-x-8 px-16 rounded-full border-1 shadow-0"
         >
           <FuseSvgIcon color="disabled">heroicons-solid:search</FuseSvgIcon>
-
           <Input
-            placeholder="Cari Pengajuan"
+            placeholder="Cari User"
             className="flex flex-1"
-            disableUnderl
+            disableUnderline
+            fullWidth
             // value={searchText}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
             inputProps={{
               "aria-label": "Search",
             }}
-            // onChange={(ev) => dispatch(setProductsSearchText(ev))}
           />
         </Paper>
         <motion.div

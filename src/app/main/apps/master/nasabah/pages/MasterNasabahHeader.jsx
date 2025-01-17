@@ -25,6 +25,7 @@ const jenKel = [
 ];
 
 function MasterNasabahHeader(props) {
+  const { searchTerm, setSearchTerm } = props;
   const dispatch = useDispatch();
   const [data, setData] = useState({});
   const [loading, setLoading] = useState(true);
@@ -432,11 +433,11 @@ function MasterNasabahHeader(props) {
             className="flex flex-1"
             disableUnderline
             fullWidth
-            // value={searchText}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
             inputProps={{
               "aria-label": "Search",
             }}
-            // onChange={(ev) => dispatch(setProductsSearchText(ev))}
           />
         </Paper>
         <motion.div

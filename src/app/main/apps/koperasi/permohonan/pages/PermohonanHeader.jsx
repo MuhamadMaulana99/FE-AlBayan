@@ -37,6 +37,7 @@ const top100Films = [
 ];
 
 function PermohonanHeader(props) {
+  const { searchTerm, setSearchTerm } = props;
   const dispatch = useDispatch();
   const currentDate = moment().format();
   const { dataNasabah } = props;
@@ -441,17 +442,17 @@ function PermohonanHeader(props) {
           </Button>
         </DialogActions>
       </Dialog>
-      <div className="w-full flex justify-between">
-        <Typography
-          component={motion.span}
-          initial={{ x: -20 }}
-          animate={{ x: 0, transition: { delay: 0.2 } }}
-          delay={300}
-          className="text-24 md:text-32 font-extrabold tracking-tight"
-        >
-          Permohonan
-        </Typography>
-        {/* <div className="flex flex-auto items-center gap-4 grid-rows-1 ">
+
+      <Typography
+        component={motion.span}
+        initial={{ x: -20 }}
+        animate={{ x: 0, transition: { delay: 0.2 } }}
+        delay={300}
+        className="text-24 md:text-32 font-extrabold tracking-tight"
+      >
+        Permohonan
+      </Typography>
+      {/* <div className="flex flex-auto items-center gap-4 grid-rows-1 ">
           <div className="flex items-left mt-10 ml-20 w-1/2 flex-col md:flex-row md:items-center md:mt-0">
             <div className="w-full flex">
               <div>
@@ -483,7 +484,7 @@ function PermohonanHeader(props) {
             </div>
           </div>
         </div> */}
-      </div>
+
       <div className="flex flex-col w-full sm:w-auto sm:flex-row space-y-16 sm:space-y-0 flex-1 items-center justify-end space-x-8">
         <Paper
           component={motion.div}
@@ -496,12 +497,14 @@ function PermohonanHeader(props) {
           <Input
             placeholder="Cari Permohonan"
             className="flex flex-1"
-            disableUnderl
+            disableUnderline
+            fullWidth
             // value={searchText}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
             inputProps={{
               "aria-label": "Search",
             }}
-            // onChange={(ev) => dispatch(setProductsSearchText(ev))}
           />
         </Paper>
         <motion.div
