@@ -196,7 +196,7 @@ function PengajuanHeader(props) {
     jangkaWaktu: getDataBody?.jangkaWaktu,
     nominalPermohonan: convertToInteger(getDataBody?.nominalPermohonan),
     tujuanPembiayaan: getDataBody?.tujuanPembiayaan,
-    jaminan: getDataBody?.jaminan,
+    jaminan: convertToInteger(getDataBody?.jaminan),
     accPermohonan: countAccPermohonan,
     nomorAkad: getDataBody?.nomorAkad,
     status: getDataBody?.status,
@@ -205,7 +205,7 @@ function PengajuanHeader(props) {
     foto: null,
   };
 
-  // console.log(bodys, "bodys");
+  console.log(bodys, "bodys");
 
   const HandelSubmit = () => {
     setLoading(true);
@@ -214,7 +214,7 @@ function PengajuanHeader(props) {
       .then((res) => {
         // setData(res?.data);
         props.getData();
-        handleClose();
+        // handleClose();
         setLoading(false);
         dispatch(
           showMessage({
@@ -320,12 +320,13 @@ function PengajuanHeader(props) {
   };
 
   // console.log(`${Math.round(resultAcc)}%`, 'resss');
+  console.log(getDataBody, 'stateBody')
 
   useEffect(() => {
     setgetDataBody({
       penjualan: stateBody?.penjualan,
-      namaNasabah: stateBody?.rekening?.namaNasabah,
-      rekening: stateBody?.rekening?.rekening,
+      namaNasabah:  stateBody?.rekening?.namaNasabah,
+      rekening: JSON.stringify(stateBody?.rekening),
       hargaPokok: stateBody?.hargaPokok,
       biaya: stateBody?.biaya,
       biayaLainya: stateBody?.biayaLainya,

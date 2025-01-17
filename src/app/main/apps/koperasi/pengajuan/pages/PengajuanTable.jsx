@@ -16,6 +16,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import {
   Alert,
+  Autocomplete,
   Dialog,
   DialogActions,
   DialogContent,
@@ -26,12 +27,13 @@ import {
 } from "@mui/material";
 import FuseLoading from "@fuse/core/FuseLoading";
 import Button from "@mui/material/Button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ExcelJS from "exceljs";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import PrintIcon from "@mui/icons-material/Print";
 import jsPDF from "jspdf";
 import FuseAnimate from "@fuse/core/FuseAnimate";
+import moment from "moment";
 
 const top100Films = [
   { label: "KG", year: 1994 },
@@ -225,6 +227,29 @@ const columns = [
   },
 ];
 
+function convertToInteger(currency) {
+  try {
+    // Validasi input harus berupa string
+    if (typeof currency !== "string") {
+      throw new Error("Input harus berupa string.");
+    }
+
+    // Hapus semua karakter yang bukan angka
+    let angka = currency.replace(/[^0-9]/g, "");
+
+    // Pastikan hasilnya tidak kosong
+    if (angka === "") {
+      throw new Error("Nilai angka tidak valid.");
+    }
+
+    // Ubah menjadi integer
+    return parseInt(angka, 10);
+  } catch (error) {
+    console.error(error.message);
+    return 0; // Nilai default jika terjadi kesalahan
+  }
+}
+
 function createData(
   no,
   id,
@@ -282,6 +307,8 @@ function createData(
 }
 
 export default function PengajuanTable(props) {
+  const { dataPermohonanApprove } = props;
+  const currentDate = moment().format();
   const userRoles = JSON.parse(localStorage.getItem("userRoles"));
   let getAllUserResponse;
   let getResponseName;
@@ -294,38 +321,41 @@ export default function PengajuanTable(props) {
   const dataMasterSuplayer = props?.dataMasterSuplayer;
   const dispatch = useDispatch();
   const { dataMasterBarang } = props;
-  console.log(getResponseName, "getResponseName");
+  // console.log(getResponseName, "getResponseName");
   const [data, setData] = useState([]);
   const [getDataEdit, setgetDataEdit] = useState({});
   const [dataEdit, setDataEdit] = useState({
-    id: null,
-    penjualan: null,
-    hargaPokok: "",
-    biaya: "",
-    labaUsaha: null,
-    pendapatanLain: null,
-    jumlahPendapatan: null,
-    kebutuhanRumahTangga: null,
-    biayaPendidikan: null,
-    biayaLainya: null,
-    jumlahBiayaLuarUsaha: null,
+    penjualan: 0,
+    namaNasabah: null,
+    rekening: null,
+    hargaPokok: 0,
+    biaya: 0,
+    labaUsaha: 0,
+    pendapatanLain: 0,
+    jumlahPendapatan: 0,
+    kebutuhanRumahTangga: 0,
+    biayaPendidikan: 0,
+    biayaLainnya: 0,
+    jumlahBiayaLuarUsaha: 0,
     pendapatanBersih: null,
-    rasioAngsuran: null,
-    jangkaWaktu: null,
-    nominalPermohonan: null,
+    rasioAngsuran: 0,
+    jangkaWaktu: 0,
+    nominalPermohonan: 0,
     tujuanPembiayaan: null,
-    jaminan: null,
-    accPermohonan: null,
+    jaminan: 0,
+    biayaLainya: 0,
+    accPermohonan: 0,
     nomorAkad: null,
     status: null,
-    statusBy: null,
-    statusAt: null,
+    statusBy: dataLogin?.roleUser === "admin" ? null : getResponseName?.name,
+    statusAt: dataLogin?.roleUser === "admin" ? null : currentDate,
     foto: null,
   });
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [getDataBody, setgetDataBody] = useState({});
   const rows = props?.data;
   // if (dataLogin?.roleUser === 'Staff') {
   //   rows = props?.data.filter((word) => word.jumlahPendapatan === getResponseName?.name);
@@ -368,51 +398,141 @@ export default function PengajuanTable(props) {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
+  const formatToRupiah = (value) => {
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0,
+    }).format(value || 0);
+  };
+
+  function parseCurrencyIDR(value) {
+    if (!value) return 0;
+    return parseInt(String(value).replace(/[^0-9]/g, ""), 10);
+  }
+
+  console.log(getDataEdit, "getDataEdit");
+
   const handleClickOpen = (id, row) => {
     setOpen(true);
     setDataEdit(row);
-    setDataEdit({
+    const formattedDataEdit = {
       id: row?.id,
-      penjualan: row?.penjualan,
-      hargaPokok: row?.hargaPokok,
-      biaya: row?.biaya,
-      labaUsaha: row?.hargaPokok,
-      pendapatanLain: row?.biaya,
-      jumlahPendapatan: row?.jumlahPendapatan,
-      kebutuhanRumahTangga: row?.kebutuhanRumahTangga,
-      biayaPendidikan: row?.biayaPendidikan,
-      biayaLainya: row?.biayaLainya,
-      jumlahBiayaLuarUsaha: row?.jumlahBiayaLuarUsaha,
-      pendapatanBersih: row?.pendapatanBersih,
+      penjualan: formatToRupiah(row?.penjualan),
+      hargaPokok: formatToRupiah(row?.hargaPokok),
+      biaya: formatToRupiah(row?.biaya),
+      labaUsaha: formatToRupiah(row?.hargaPokok), // Aslinya sama dengan hargaPokok
+      pendapatanLain: formatToRupiah(row?.biaya), // Aslinya sama dengan biaya
+      jumlahPendapatan: formatToRupiah(row?.jumlahPendapatan),
+      kebutuhanRumahTangga: formatToRupiah(row?.kebutuhanRumahTangga),
+      biayaPendidikan: formatToRupiah(row?.biayaPendidikan),
+      biayaLainya: formatToRupiah(row?.biayaLainya),
+      jumlahBiayaLuarUsaha: formatToRupiah(row?.jumlahBiayaLuarUsaha),
+      pendapatanBersih: formatToRupiah(row?.pendapatanBersih),
       rasioAngsuran: row?.rasioAngsuran,
-    });
-    setgetDataEdit(row);
+      jangkaWaktu: row?.jangkaWaktu,
+      nominalPermohonan: formatToRupiah(row?.nominalPermohonan),
+      jaminan: formatToRupiah(row?.jaminan),
+      rekening: row?.rekening,
+      tujuanPembiayaan: row?.tujuanPembiayaan,
+      nomorAkad: row?.nomorAkad,
+    };
+
+    setDataEdit(formattedDataEdit);
+    // setgetDataEdit(ParseFormattedDataEdit);
   };
   const handleClose = () => {
     setOpen(false);
   };
 
-  const body = {
-    penjualan: dataEdit?.penjualan,
-    hargaPokok: dataEdit?.hargaPokok,
-    biaya: dataEdit?.biaya,
-    labaUsaha: dataEdit?.labaUsaha,
-    pendapatanLain: dataEdit?.pendapatanLain,
-    jumlahPendapatan: dataEdit?.jumlahPendapatan,
-    kebutuhanRumahTangga: dataEdit?.kebutuhanRumahTangga,
-    biayaPendidikan: dataEdit?.biayaPendidikan,
-    jumlahBiayaLuarUsaha: dataEdit?.jumlahBiayaLuarUsaha,
-    pendapatanBersih: dataEdit?.pendapatanBersih,
+  function calculatePercentage(part, whole) {
+    return (part / whole) * 100;
+  }
+
+  const countLabaUsaha =
+    parseInt(convertToInteger(dataEdit?.penjualan), 10) -
+    parseInt(convertToInteger(dataEdit?.hargaPokok), 10) -
+    parseInt(convertToInteger(dataEdit?.biaya), 10);
+  const countJumlahPendapatan =
+    parseInt(countLabaUsaha, 10) +
+    parseInt(convertToInteger(dataEdit?.pendapatanLain), 10);
+  const countJumlahBiayaLuarUsaha =
+    parseInt(convertToInteger(dataEdit?.kebutuhanRumahTangga), 10) +
+    parseInt(convertToInteger(dataEdit?.biayaPendidikan), 10) +
+    parseInt(convertToInteger(dataEdit?.biayaLainnya), 10);
+  const countPendapatanBersih =
+    countJumlahPendapatan - countJumlahBiayaLuarUsaha;
+  const countAccPermohonan =
+    (parseInt(dataEdit?.rasioAngsuran, 10) / 100) *
+    countPendapatanBersih *
+    parseInt(dataEdit?.jangkaWaktu, 10);
+  // console.log(convertToInteger(dataEdit?.penjualan), 'dataEdit')
+
+  const resultAcc = calculatePercentage(100, countAccPermohonan);
+
+  const bodyEdit = {
+    rekening: JSON.stringify(dataEdit?.rekening),
+    penjualan: parseCurrencyIDR(dataEdit?.penjualan),
+    namaNasabah: dataEdit?.namaNasabah,
+    rekening: dataEdit?.rekening,
+    hargaPokok: parseCurrencyIDR(dataEdit?.hargaPokok),
+    biaya: parseCurrencyIDR(dataEdit?.biaya),
+    biayaLainya: parseCurrencyIDR(dataEdit?.biayaLainya),
+    labaUsaha: countLabaUsaha,
+    pendapatanLain: parseCurrencyIDR(dataEdit?.pendapatanLain),
+    jumlahPendapatan: countJumlahPendapatan,
+    kebutuhanRumahTangga: parseCurrencyIDR(dataEdit?.kebutuhanRumahTangga),
+    biayaPendidikan: parseCurrencyIDR(dataEdit?.biayaPendidikan),
+    jumlahBiayaLuarUsaha: countJumlahBiayaLuarUsaha,
+    pendapatanBersih: countPendapatanBersih,
     rasioAngsuran: dataEdit?.rasioAngsuran,
+    jangkaWaktu: dataEdit?.jangkaWaktu,
+    nominalPermohonan: parseCurrencyIDR(dataEdit?.nominalPermohonan),
+    tujuanPembiayaan: dataEdit?.tujuanPembiayaan,
+    jaminan: parseCurrencyIDR(dataEdit?.jaminan),
+    accPermohonan: countAccPermohonan,
+    nomorAkad: dataEdit?.nomorAkad,
+    status: dataEdit?.status,
+    statusBy: dataEdit?.statusBy,
+    statusAt: dataEdit?.statusAt,
+    foto: null,
   };
-  // console.log(body, 'body');
+  useEffect(() => {
+    setgetDataBody({
+      rekening: JSON.stringify(dataEdit?.rekening),
+      penjualan: parseCurrencyIDR(dataEdit?.penjualan),
+      namaNasabah: dataEdit?.namaNasabah,
+      hargaPokok: parseCurrencyIDR(dataEdit?.hargaPokok),
+      biaya: parseCurrencyIDR(dataEdit?.biaya),
+      biayaLainya: parseCurrencyIDR(dataEdit?.biayaLainya),
+      labaUsaha: countLabaUsaha,
+      pendapatanLain: parseCurrencyIDR(dataEdit?.pendapatanLain),
+      jumlahPendapatan: countJumlahPendapatan,
+      kebutuhanRumahTangga: parseCurrencyIDR(dataEdit?.kebutuhanRumahTangga),
+      biayaPendidikan: parseCurrencyIDR(dataEdit?.biayaPendidikan),
+      jumlahBiayaLuarUsaha: countJumlahBiayaLuarUsaha,
+      pendapatanBersih: countPendapatanBersih,
+      rasioAngsuran: dataEdit?.rasioAngsuran,
+      jangkaWaktu: dataEdit?.jangkaWaktu,
+      nominalPermohonan: parseCurrencyIDR(dataEdit?.nominalPermohonan),
+      tujuanPembiayaan: dataEdit?.tujuanPembiayaan,
+      jaminan: parseCurrencyIDR(dataEdit?.jaminan),
+      accPermohonan: countAccPermohonan,
+      nomorAkad: dataEdit?.nomorAkad,
+      status: dataEdit?.status,
+      statusBy: dataEdit?.statusBy,
+      statusAt: dataEdit?.statusAt,
+      foto: null,
+    });
+  }, [dataEdit]);
+  // console.log(getDataBody, "getDataBody");
 
   const HandelEdit = (id) => {
     setLoading(true);
     axios
       .put(
         `${process.env.REACT_APP_API_URL_API_}/pengajuan/${dataEdit?.id}`,
-        body
+        getDataBody
       )
       .then((res) => {
         props?.getData();
@@ -733,7 +853,8 @@ export default function PengajuanTable(props) {
     link.click();
   };
 
-  // console.log(dataEdit, 'dataEdit')
+  // console.log(dataPermohonanApprove, 'dataPermohonanApprove')
+  // console.log(dataEdit, "dataEdit");
 
   return (
     <Paper sx={{ width: "100%", overflow: "hidden" }}>
@@ -768,6 +889,7 @@ export default function PengajuanTable(props) {
         </div>
       </div> */}
       <Dialog
+        maxWidth="lg"
         className="py-20"
         open={open}
         onClose={handleClose}
@@ -777,79 +899,243 @@ export default function PengajuanTable(props) {
         <DialogTitle id="alert-dialog-title">Edit</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            <div className="mt-10">
-              <div className="flex gap-5">
-                <TextField
-                  fullWidth
-                  value={dataEdit?.penjualan}
-                  onChange={(e) => {
-                    setDataEdit({
-                      ...dataEdit,
-                      penjualan: e.target.value,
-                    });
-                  }}
-                  id="outlined-basic"
-                  label="No Akad"
-                  type="number"
-                  variant="outlined"
-                />
-                <TextField
-                  fullWidth
-                  value={dataEdit?.hargaPokok}
-                  onChange={(e) => {
-                    setDataEdit({
-                      ...dataEdit,
-                      hargaPokok: e.target.value,
-                    });
-                  }}
-                  id="outlined-basic"
-                  label="Staff Basil"
-                  type="number"
-                  variant="outlined"
-                />
-                <TextField
-                  fullWidth
-                  value={dataEdit?.biaya}
-                  onChange={(e) => {
-                    setDataEdit({
-                      ...dataEdit,
-                      biaya: e.target.value,
-                    });
-                  }}
-                  id="outlined-basic"
-                  label="Staff Pokok"
-                  type="number"
-                  variant="outlined"
-                />
-                <TextField
-                  fullWidth
-                  value={dataEdit?.labaUsaha}
-                  onChange={(e) => {
-                    setDataEdit({
-                      ...dataEdit,
-                      labaUsaha: e.target.value,
-                    });
-                  }}
-                  id="outlined-basic"
-                  label="Acc Basil"
-                  type="number"
-                  variant="outlined"
-                />
-                <TextField
-                  fullWidth
-                  value={dataEdit?.pendapatanLain}
-                  onChange={(e) => {
-                    setDataEdit({
-                      ...dataEdit,
-                      pendapatanLain: e.target.value,
-                    });
-                  }}
-                  id="outlined-basic"
-                  label="Acc Pokok"
-                  type="number"
-                  variant="outlined"
-                />
-              </div>
+            <div className="flex flex-wrap gap-5 p-10">
+              <Autocomplete
+                disablePortal
+                id="combo-box-demo"
+                options={dataPermohonanApprove}
+                value={dataEdit?.rekening}
+                getOptionLabel={(option) => option.rekening}
+                sx={{ width: 370 }}
+                onChange={(e, newValue) => {
+                  // console.log(newValue, '1000000');
+                  setDataEdit({ ...dataEdit, rekening: newValue });
+                }}
+                renderInput={(params) => (
+                  <TextField {...params} label="Data Nasabah" />
+                )}
+              />
+              <TextField
+                value={dataEdit?.penjualan}
+                onChange={(e) => {
+                  const rawValue = e.target.value.replace(/[^0-9]/g, "");
+                  const formattedValue = new Intl.NumberFormat("id-ID", {
+                    style: "currency",
+                    currency: "IDR",
+                    minimumFractionDigits: 0,
+                  }).format(rawValue);
+                  setDataEdit({ ...dataEdit, penjualan: formattedValue });
+                  // settriggerAccBasil({ ...dataEdit, accBasil: dataEdit?.staffBasil})
+                }}
+                sx={{ width: 370 }}
+                id="outlined-basic"
+                label="Penjualan"
+                variant="outlined"
+              />
+              <TextField
+                value={dataEdit?.hargaPokok}
+                onChange={(e) => {
+                  const rawValue = e.target.value.replace(/[^0-9]/g, "");
+                  const formattedValue = new Intl.NumberFormat("id-ID", {
+                    style: "currency",
+                    currency: "IDR",
+                    minimumFractionDigits: 0,
+                  }).format(rawValue);
+                  setDataEdit({ ...dataEdit, hargaPokok: formattedValue });
+                  // settriggerAccBasil({ ...dataEdit, accBasil: dataEdit?.staffBasil})
+                }}
+                sx={{ width: 370 }}
+                id="outlined-basic"
+                label="Harga Pokok"
+                variant="outlined"
+              />
+              <TextField
+                value={dataEdit?.biaya}
+                onChange={(e) => {
+                  const rawValue = e.target.value.replace(/[^0-9]/g, "");
+                  const formattedValue = new Intl.NumberFormat("id-ID", {
+                    style: "currency",
+                    currency: "IDR",
+                    minimumFractionDigits: 0,
+                  }).format(rawValue);
+                  setDataEdit({ ...dataEdit, biaya: formattedValue });
+                }}
+                sx={{ width: 370 }}
+                id="outlined-basic"
+                label="Biaya"
+                variant="outlined"
+              />
+
+              <TextField
+                value={dataEdit?.pendapatanLain}
+                onChange={(e) => {
+                  const rawValue = e.target.value.replace(/[^0-9]/g, "");
+                  const formattedValue = new Intl.NumberFormat("id-ID", {
+                    style: "currency",
+                    currency: "IDR",
+                    minimumFractionDigits: 0,
+                  }).format(rawValue);
+
+                  setDataEdit({
+                    ...dataEdit,
+                    pendapatanLain: formattedValue,
+                  });
+                }}
+                sx={{ width: 370 }}
+                id="outlined-basic"
+                label="Pendapatan Lain"
+                variant="outlined"
+              />
+
+              <TextField
+                value={dataEdit?.kebutuhanRumahTangga}
+                onChange={(e) => {
+                  const rawValue = e.target.value.replace(/[^0-9]/g, "");
+                  const formattedValue = new Intl.NumberFormat("id-ID", {
+                    style: "currency",
+                    currency: "IDR",
+                    minimumFractionDigits: 0,
+                  }).format(rawValue);
+                  setDataEdit({
+                    ...dataEdit,
+                    kebutuhanRumahTangga: formattedValue,
+                  });
+                }}
+                sx={{ width: 370 }}
+                id="outlined-basic"
+                label="Kebutuhan Rumah Tangga"
+                variant="outlined"
+              />
+              <TextField
+                value={dataEdit?.biayaPendidikan}
+                onChange={(e) => {
+                  const rawValue = e.target.value.replace(/[^0-9]/g, "");
+                  const formattedValue = new Intl.NumberFormat("id-ID", {
+                    style: "currency",
+                    currency: "IDR",
+                    minimumFractionDigits: 0,
+                  }).format(rawValue);
+                  setDataEdit({
+                    ...dataEdit,
+                    biayaPendidikan: formattedValue,
+                  });
+                }}
+                sx={{ width: 370 }}
+                id="outlined-basic"
+                label="Biaya Pendidikan"
+                variant="outlined"
+              />
+              <TextField
+                value={dataEdit?.biayaLainya}
+                onChange={(e) => {
+                  const rawValue = e.target.value.replace(/[^0-9]/g, "");
+                  const formattedValue = new Intl.NumberFormat("id-ID", {
+                    style: "currency",
+                    currency: "IDR",
+                    minimumFractionDigits: 0,
+                  }).format(rawValue);
+
+                  setDataEdit({ ...dataEdit, biayaLainya: formattedValue });
+                }}
+                sx={{ width: 370 }}
+                id="outlined-basic"
+                label="Biaya Lainnya"
+                variant="outlined"
+              />
+
+              <TextField
+                value={dataEdit?.rasioAngsuran}
+                onChange={(e) =>
+                  setDataEdit({ ...dataEdit, rasioAngsuran: e.target.value })
+                }
+                sx={{ width: 370 }}
+                id="outlined-basic"
+                label="Rasio Angsuran"
+                // helperText="persen%"
+                type="number"
+                variant="outlined"
+              />
+
+              <TextField
+                value={dataEdit?.jangkaWaktu}
+                onChange={(e) =>
+                  setDataEdit({ ...dataEdit, jangkaWaktu: e.target.value })
+                }
+                sx={{ width: 370 }}
+                id="outlined-basic"
+                label="Jangka Waktu"
+                // helperText="bulan cnth 1bulan"
+                type="number"
+                variant="outlined"
+              />
+              <TextField
+                value={dataEdit?.nominalPermohonan}
+                onChange={(e) => {
+                  const rawValue = e.target.value.replace(/[^0-9]/g, "");
+                  const formattedValue = new Intl.NumberFormat("id-ID", {
+                    style: "currency",
+                    currency: "IDR",
+                    minimumFractionDigits: 0,
+                  }).format(rawValue);
+                  setDataEdit({
+                    ...dataEdit,
+                    nominalPermohonan: formattedValue,
+                  });
+                }}
+                sx={{ width: 370 }}
+                id="outlined-basic"
+                label="Nominal Pemohonan"
+                variant="outlined"
+              />
+              <TextField
+                value={dataEdit?.tujuanPembiayaan}
+                onChange={(e) =>
+                  setDataEdit({
+                    ...dataEdit,
+                    tujuanPembiayaan: e.target.value,
+                  })
+                }
+                sx={{ width: 370 }}
+                id="outlined-basic"
+                label="Tujuan Pembiyaan"
+                type="text"
+                variant="outlined"
+              />
+              <TextField
+                value={dataEdit?.jaminan}
+                // onChange={(e) =>
+                //   setDataEdit({ ...dataEdit, jaminan: e.target.value })
+                // }
+                onChange={(e) => {
+                  const rawValue = e.target.value.replace(/[^0-9]/g, "");
+                  const formattedValue = new Intl.NumberFormat("id-ID", {
+                    style: "currency",
+                    currency: "IDR",
+                    minimumFractionDigits: 0,
+                  }).format(rawValue);
+                  setDataEdit({
+                    ...dataEdit,
+                    jaminan: formattedValue,
+                  });
+                }}
+                sx={{ width: 370 }}
+                id="outlined-basic"
+                label="Jaminan"
+                type="text"
+                variant="outlined"
+              />
+
+              <TextField
+                value={dataEdit?.nomorAkad}
+                onChange={(e) =>
+                  setDataEdit({ ...dataEdit, nomorAkad: e.target.value })
+                }
+                sx={{ width: 370 }}
+                id="outlined-basic"
+                label="Nomor Akad"
+                type="text"
+                variant="outlined"
+              />
             </div>
           </DialogContentText>
         </DialogContent>
@@ -882,7 +1168,7 @@ export default function PengajuanTable(props) {
             {rows
               ?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row, index) => {
-                // console.log(row, 'oo');
+                console.log(row, "oo");
                 function formatRupiah(amount) {
                   return (
                     "Rp. " +
@@ -893,10 +1179,14 @@ export default function PengajuanTable(props) {
                   <TableRow key={row.id} hover role="checkbox" tabIndex={-1}>
                     <TableCell>{index + 1}.</TableCell>
                     <TableCell>
-                      {row?.namaNasabah === null ? "-" : row?.namaNasabah}
+                      {row?.rekening?.namaNasabah === null
+                        ? "-"
+                        : row?.rekening?.namaNasabah}
                     </TableCell>
                     <TableCell>
-                      {row?.rekening === null ? "-" : row?.rekening}
+                      {row?.rekening?.rekening === null
+                        ? "-"
+                        : row?.rekening?.rekening}
                     </TableCell>
                     <TableCell>
                       {row?.penjualan === null
