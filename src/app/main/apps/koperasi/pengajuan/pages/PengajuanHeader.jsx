@@ -352,6 +352,7 @@ function PengajuanHeader(props) {
       // foto: `data:${getNameFile?.type};base64,${stateBody?.foto}`,
     });
   }, [stateBody]);
+  // maulana
 
   return (
     <div className="flex flex-col sm:flex-row space-y-16 sm:space-y-0 flex-1 w-full items-center justify-between py-32 px-24 md:px-32">
