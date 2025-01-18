@@ -215,7 +215,7 @@ function PengajuanHeader(props) {
       .then((res) => {
         // setData(res?.data);
         props.getData();
-        // handleClose();
+        handleClose();
         setLoading(false);
         dispatch(
           showMessage({
