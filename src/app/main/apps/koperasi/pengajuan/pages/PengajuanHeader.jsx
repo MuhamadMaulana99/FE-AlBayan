@@ -100,7 +100,7 @@ function PengajuanHeader(props) {
     jumlahPendapatan: 0,
     kebutuhanRumahTangga: 0,
     biayaPendidikan: 0,
-    biayaLainnya: 0,
+    biayaLainya: 0,
     jumlahBiayaLuarUsaha: 0,
     pendapatanBersih: null,
     rasioAngsuran: 0,
@@ -132,14 +132,20 @@ function PengajuanHeader(props) {
   const countJumlahBiayaLuarUsaha =
     parseInt(convertToInteger(stateBody?.kebutuhanRumahTangga), 10) +
     parseInt(convertToInteger(stateBody?.biayaPendidikan), 10) +
-    parseInt(convertToInteger(stateBody?.biayaLainnya), 10);
+    parseInt(convertToInteger(stateBody?.biayaLainya), 10);
   const countPendapatanBersih =
     countJumlahPendapatan - countJumlahBiayaLuarUsaha;
   const countAccPermohonan =
     (parseInt(stateBody?.rasioAngsuran, 10) / 100) *
     countPendapatanBersih *
     parseInt(stateBody?.jangkaWaktu, 10);
-  // console.log(convertToInteger(stateBody?.penjualan), 'stateBody')
+  console.log(stateBody, 'stateBody')
+  // console.log(countJumlahBiayaLuarUsaha, 'countJumlahBiayaLuarUsaha')
+  // console.log(parseInt(convertToInteger(stateBody?.kebutuhanRumahTangga), 10), 'parseInt(convertToInteger(stateBody?.kebutuhanRumahTangga), 10)')
+  // console.log(parseInt(convertToInteger(stateBody?.biayaPendidikan), 10), 'parseInt(convertToInteger(stateBody?.biayaPendidikan), 10)')
+  // console.log(parseInt(convertToInteger(stateBody?.biayaLainya), 10), 'parseInt(convertToInteger(stateBody?.biayaLainya), 10)')
+  // console.log(stateBody?.biayaLainya, 'biayaLainya')
+  // console.log(stateBody?.biayaPendidikan, 'biayaPendidikan')
 
   const resultAcc = calculatePercentage(100, countAccPermohonan);
 
@@ -161,7 +167,7 @@ function PengajuanHeader(props) {
       jumlahPendapatan: 0,
       kebutuhanRumahTangga: 0,
       biayaPendidikan: 0,
-      biayaLainnya: 0,
+      biayaLainya: 0,
       jumlahBiayaLuarUsaha: 0,
       pendapatanBersih: null,
       rasioAngsuran: 0,
