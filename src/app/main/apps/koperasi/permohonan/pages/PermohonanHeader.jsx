@@ -75,7 +75,7 @@ function PermohonanHeader(props) {
   }, [stateBody?.rekening, dataNasabah]);
   // console.log(getDataNasabahById, 'sss');
   const body = {
-    namaNasabah: getDataNasabahById[0]?.nama,
+    namaNasabah: JSON.stringify(getDataNasabahById[0]),
     rekening: getDataNasabahById[0]?.mstRekening,
     jenisKelamin: getDataNasabahById[0]?.mstjenisKelamin?.kelamin,
     alamat: getDataNasabahById[0]?.mstAlamat,
@@ -84,7 +84,7 @@ function PermohonanHeader(props) {
     provinsi: getDataNasabahById[0]?.mstProvinsi,
     saldoTabungan: stateBody?.saldoTabungan?.replace(/[^\d]/g, ""),
   };
-  console.log(body, "body");
+  // console.log(body, "body");
   // console.log(stateBody, 'stateBody')
 
   const handleClickOpen = () => {
@@ -93,6 +93,16 @@ function PermohonanHeader(props) {
 
   const handleClose = () => {
     setOpen(false);
+    setStateBody({
+      namaNasabah: null,
+      rekening: null,
+      jenisKelamin: null,
+      alamat: null,
+      kecamatan: null,
+      kabupaten: null,
+      provinsi: null,
+      saldoTabungan: null,
+    })
   };
 
   const HandelSubmit = () => {
@@ -151,136 +161,6 @@ function PermohonanHeader(props) {
         );
       });
   };
-
-  const DataForBody = [];
-  const dataFinal = [];
-  const datas = {
-    no: null,
-    kodeBarang: null,
-    namaBarang: null,
-    stock: null,
-    tanggalKeluar: null,
-  };
-  for (let index = 0; index < data.length; index++) {
-    dataFinal.push({
-      ...datas,
-      no: index + 1,
-      kodeBarang: data[index].kodeBarang?.kodeBarang,
-      namaBarang: data[index].kodeBarang?.namaBarang,
-      stock: data[index].jmlKeluar,
-      tanggalKeluar: moment(data[index].tglKeluar).format("YYYY-DD-MM"),
-    });
-  }
-
-  for (let index = 0; index < data.length; index++) {
-    if (data.length !== 0) {
-      DataForBody.push(Object.values(dataFinal[index]));
-    }
-  }
-  const downloadPDF = () => {
-    const doc = new jsPDF("l", "pt", "legal");
-    doc.text(
-      `Laporan Data Barang Keluar KARYA PUTRA 2 Tanggal ${moment().format(
-        "LL"
-      )}`,
-      20,
-      20
-    );
-    doc.text(`jl.Kademangan RT. 05/02`, 400, 50);
-    doc.text(`Kel - Kademangan Setu, Tangsel`, 374, 70);
-    const index = 0;
-    doc.setFontSize(10);
-    autoTable(doc, {
-      theme: "striped",
-      margin: { top: 95 },
-      head: [["No", "Kode Barang", "Nama Barang", "Stok Barang", "Tanggal"]],
-      headStyles: { fontSize: 7, halign: "center" },
-      columnStyles: {
-        0: { fontSize: 7, halign: "center" },
-        1: { fontSize: 7, halign: "center" },
-        2: { fontSize: 7, halign: "center" },
-        3: { fontSize: 7, halign: "center" },
-        4: { fontSize: 7, halign: "center" },
-        5: { fontSize: 7, halign: "center" },
-        6: { fontSize: 7, halign: "center" },
-        7: { fontSize: 7, halign: "center" },
-        // 7: { fontSize: 7, halign: 'center' },
-      },
-
-      body: DataForBody,
-      // body: [DataPDF, DataPDF],
-    });
-    doc.save(`Data Barang Keluar ${moment().format("LL")}.pdf`);
-  };
-  // console.log(data, 'data');
-  function exportExcel() {
-    // create workbook by api.
-    const workbook = new Workbook();
-    // must create one more sheet.
-    const sheet = workbook.addWorksheet("Data Barang Keluar");
-    const worksheet = workbook.getWorksheet("Data Barang Keluar");
-
-    /* TITLE */
-    worksheet.mergeCells("A1", "G1");
-    worksheet.getCell("A1").value = "Barang Keluar";
-    worksheet.getCell("A1").alignment = { horizontal: "left" };
-
-    worksheet.mergeCells("A3", "B3");
-
-    worksheet.getCell("C5").alignment = { horizontal: "left" };
-
-    /* Header Table */
-    worksheet.getCell("A7").value = "NO";
-    worksheet.getCell("A7").alignment = { horizontal: "center" };
-
-    worksheet.getCell("B7").value = "Kode Barang";
-    worksheet.getCell("B7").alignment = { horizontal: "center" };
-
-    worksheet.getCell("C7").value = "Nama Barang";
-    worksheet.getCell("C7").alignment = { horizontal: "center" };
-
-    worksheet.getCell("D7").value = "Stok";
-    worksheet.getCell("D7").alignment = { horizontal: "center" };
-
-    worksheet.getCell("E7").value = "Tanggal Keluar";
-    worksheet.getCell("E7").alignment = { horizontal: "center" };
-
-    /* Column headers */
-    worksheet.getRow(6).values = [""];
-    worksheet.columns = [
-      { key: "data_a", width: 10 },
-      { key: "data_b", width: 20 },
-      { key: "data_c", width: 20 },
-      { key: "data_d", width: 20 },
-      { key: "data_e", width: 20 },
-    ];
-    /* Now we use the keys we defined earlier to insert your data by iterating through arrData
-    and calling worksheet.addRow()
-    */
-    data.forEach(function (data, index) {
-      worksheet.addRow({
-        data_a: `${index + 1}`,
-        data_b: data?.kodeBarang?.kodeBarang,
-        data_c: data?.kodeBarang?.namaBarang,
-        data_d: data.jmlKeluar,
-        data_e: moment(data.tglKeluar).format("YYYY-DD-MM"),
-      });
-    });
-
-    (async () => {
-      const buffer = await workbook.xlsx.writeBuffer();
-      const fileType =
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-      const fileExtension = ".xlsx";
-
-      const blob = new Blob([buffer], { type: fileType });
-
-      saveAs(
-        blob,
-        `Data barang Keluar Tanggal ${moment().format("LL")}${fileExtension}`
-      );
-    })();
-  }
 
   return (
     <div className="flex flex-col sm:flex-row space-y-16 sm:space-y-0 flex-1 w-full items-center justify-between py-32 px-24 md:px-32">

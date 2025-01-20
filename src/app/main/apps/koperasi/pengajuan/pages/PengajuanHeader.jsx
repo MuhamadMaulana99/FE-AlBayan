@@ -139,7 +139,7 @@ function PengajuanHeader(props) {
     (parseInt(stateBody?.rasioAngsuran, 10) / 100) *
     countPendapatanBersih *
     parseInt(stateBody?.jangkaWaktu, 10);
-  console.log(stateBody, 'stateBody')
+  // console.log(stateBody, 'stateBody')
   // console.log(countJumlahBiayaLuarUsaha, 'countJumlahBiayaLuarUsaha')
   // console.log(parseInt(convertToInteger(stateBody?.kebutuhanRumahTangga), 10), 'parseInt(convertToInteger(stateBody?.kebutuhanRumahTangga), 10)')
   // console.log(parseInt(convertToInteger(stateBody?.biayaPendidikan), 10), 'parseInt(convertToInteger(stateBody?.biayaPendidikan), 10)')

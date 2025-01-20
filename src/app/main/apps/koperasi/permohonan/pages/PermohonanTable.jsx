@@ -205,9 +205,9 @@ export default function PermohonanTable(props) {
   //   rows = props?.data.filter((word) => word.kabupaten === getResponseName?.name);
   // }
   const propsFromParent = (analisa) => {
-    console.log(analisa, "analisaa");
+    // console.log(analisa, "analisaa");
   };
-  console.log(rows, "rows");
+  // console.log(rows, "rows");
 
   rows?.map((item, index) =>
     createData(
@@ -329,14 +329,14 @@ export default function PermohonanTable(props) {
 
   useEffect(() => {
     const result = dataNasabah.filter(
-      (item) => item.mstRekening === dataEdit?.rekening?.mstRekening
+      (item) => item.mstRekening === dataEdit?.namaNasabah?.mstRekening
     );
     setgetDataNasabahById(result);
   }, [dataEdit, dataNasabah]);
 
   const body = {
-    namaNasabah: dataEdit?.namaNasabah,
-    rekening: dataEdit?.rekening?.mstRekening,
+    namaNasabah: JSON.stringify(dataEdit?.namaNasabah),
+    rekening: dataEdit?.namaNasabah?.mstRekening,
     jenisKelamin: dataEdit?.jenisKelamin,
     alamat: dataEdit?.alamat,
     kecamatan: dataEdit?.kecamatan,
@@ -344,10 +344,11 @@ export default function PermohonanTable(props) {
     provinsi: dataEdit?.provinsi,
     saldoTabungan: dataEdit?.saldoTabungan,
   };
-  // console.log(body, 'body');
+  console.log(body, 'body');
   // console.log(dataNasabah, 'dataNasabah');
   // console.log(getDataNasabahById, 'getDataNasabahById');
   // console.log(rows, 'rows');
+  // console.log(dataEdit, 'dataEdit')
 
   const HandelEdit = (id) => {
     setLoading(true);
@@ -712,11 +713,11 @@ export default function PermohonanTable(props) {
                 disablePortal
                 id="combo-box-demo"
                 options={dataNasabah}
-                value={dataEdit?.rekening}
+                value={dataEdit?.namaNasabah}
                 getOptionLabel={(option) => option.mstRekening}
                 sx={{ width: 300 }}
                 onChange={(e, newValue) => {
-                  setDataEdit({ ...dataEdit, rekening: newValue });
+                  setDataEdit({ ...dataEdit, namaNasabah: newValue });
                 }}
                 renderInput={(params) => (
                   <TextField {...params} label="Data Nasabah" />
@@ -855,11 +856,12 @@ export default function PermohonanTable(props) {
                     amount.toLocaleString("id-ID", { minimumFractionDigits: 0 })
                   );
                 }
+                // console.log(row, 'ooo')
                 return (
                   <TableRow key={row.id} hover role="checkbox" tabIndex={-1}>
                     <TableCell>{index + 1}.</TableCell>
                     <TableCell>
-                      {row?.namaNasabah === null ? "-" : row?.namaNasabah}
+                      {row?.namaNasabah?.nama === null ? "-" : row?.namaNasabah?.nama}
                     </TableCell>
                     <TableCell>
                       {row?.rekening === null ? "-" : row?.rekening}
@@ -916,7 +918,7 @@ export default function PermohonanTable(props) {
                     </TableCell>
                     <TableCell>
                       <div className="flex justify-center">
-                        {/* <div>
+                        <div>
                           <IconButton
                             onClick={() => handleClickOpen(row.id, row)}
                             color="info"
@@ -928,7 +930,7 @@ export default function PermohonanTable(props) {
                           >
                             <EditIcon />
                           </IconButton>
-                        </div> */}
+                        </div>
                         <div>
                           <IconButton
                             onClick={(e) => HandelDelete(row.id)}
