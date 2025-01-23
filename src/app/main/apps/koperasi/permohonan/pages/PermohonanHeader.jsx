@@ -21,20 +21,7 @@ import { useDispatch } from "react-redux";
 import axios from "axios";
 import { showMessage } from "app/store/fuse/messageSlice";
 import { Autocomplete, TextField } from "@mui/material";
-import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import moment from "moment";
-import jsPDF from "jspdf";
-import { saveAs } from "file-saver";
-import PrintIcon from "@mui/icons-material/Print";
-import autoTable from "jspdf-autotable";
-import FuseAnimate from "@fuse/core/FuseAnimate";
-import { Workbook } from "exceljs";
-
-const top100Films = [
-  { label: "KG", year: 1994 },
-  { label: "Lusin", year: 1972 },
-  { label: "Bal", year: 1994 },
-];
 
 function PermohonanHeader(props) {
   const { searchTerm, setSearchTerm } = props;

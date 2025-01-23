@@ -1179,9 +1179,9 @@ export default function PengajuanTable(props) {
                   <TableRow key={row.id} hover role="checkbox" tabIndex={-1}>
                     <TableCell>{index + 1}.</TableCell>
                     <TableCell>
-                      {row?.rekening?.namaNasabah === null
+                      {row?.namaNasabah?.nama === null
                         ? "-"
-                        : row?.rekening?.namaNasabah}
+                        : row?.namaNasabah?.nama}
                     </TableCell>
                     <TableCell>
                       {row?.rekening?.rekening === null

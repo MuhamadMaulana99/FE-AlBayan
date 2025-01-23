@@ -17,7 +17,6 @@ function Permohonan() {
   // console.log(dataNasabah, 'dataNasabah');
   const [searchTerm, setSearchTerm] = useState("");
 
-  console.log(data, "dataa");
   const filteredUsers = data?.filter((user) =>
     user?.namaNasabah?.nama?.toLowerCase().includes(searchTerm.toLowerCase())
   );

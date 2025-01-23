@@ -19,7 +19,7 @@ function Pengajuan() {
   console.log(data, "dataa");
   const filteredUsers = data?.filter(
     (user) =>
-      user.namaNasabah.toLowerCase().includes(searchTerm.toLowerCase())
+     user?.namaNasabah?.nama?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const isMobile = useThemeMediaQuery((theme) => theme.breakpoints.down("lg"));

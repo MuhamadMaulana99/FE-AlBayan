@@ -29,12 +29,6 @@ import autoTable from "jspdf-autotable";
 import FuseAnimate from "@fuse/core/FuseAnimate";
 import { Workbook } from "exceljs";
 
-const top100Films = [
-  { label: "KG", year: 1994 },
-  { label: "Lusin", year: 1972 },
-  { label: "Bal", year: 1994 },
-];
-
 function AngsuranHeader(props) {
   const dispatch = useDispatch();
   const currentDate = moment().format();
@@ -57,7 +51,6 @@ function AngsuranHeader(props) {
   const [tglKeluar, settglKeluar] = useState(null);
   const [jmlKeluar, setjmlKeluar] = useState("");
   const [stokBarang, setstokBarang] = useState(0);
-  const [triggerAccBasil, settriggerAccBasil] = useState(null);
   const [namaNasabah, setnamaNasabah] = useState(null);
 
   const [stateBody, setStateBody] = useState({
@@ -218,7 +211,7 @@ function AngsuranHeader(props) {
   const downloadPDF = () => {
     const doc = new jsPDF("l", "pt", "legal");
     doc.text(
-      `Laporan Data Barang Keluar KARYA PUTRA 2 Tanggal ${moment().format(
+      `Laporan ${moment().format(
         "LL"
       )}`,
       20,
@@ -248,7 +241,7 @@ function AngsuranHeader(props) {
       body: DataForBody,
       // body: [DataPDF, DataPDF],
     });
-    doc.save(`Data Barang Keluar ${moment().format("LL")}.pdf`);
+    doc.save(`Data ${moment().format("LL")}.pdf`);
   };
   // console.log(data, 'data');
   function exportExcel() {
@@ -315,7 +308,7 @@ function AngsuranHeader(props) {
 
       saveAs(
         blob,
-        `Data barang Keluar Tanggal ${moment().format("LL")}${fileExtension}`
+        `Data Tanggal ${moment().format("LL")}${fileExtension}`
       );
     })();
   }
