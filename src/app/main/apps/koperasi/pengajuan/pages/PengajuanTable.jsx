@@ -459,7 +459,7 @@ export default function PengajuanTable(props) {
   const countJumlahBiayaLuarUsaha =
     parseInt(convertToInteger(dataEdit?.kebutuhanRumahTangga), 10) +
     parseInt(convertToInteger(dataEdit?.biayaPendidikan), 10) +
-    parseInt(convertToInteger(dataEdit?.biayaLainnya), 10);
+    parseInt(convertToInteger(dataEdit?.biayaLainya), 10);
   const countPendapatanBersih =
     countJumlahPendapatan - countJumlahBiayaLuarUsaha;
   const countAccPermohonan =
@@ -1258,7 +1258,9 @@ export default function PengajuanTable(props) {
                         : row?.tujuanPembiayaan}
                     </TableCell>
                     <TableCell className="font-bold">
-                      {row?.jaminan === null ? "-" : row?.jaminan}
+                      {row?.jaminan === null
+                        ? "-"
+                        : formatRupiah(parseInt(row?.jaminan))}
                     </TableCell>
                     <TableCell className="font-bold">
                       {row?.accPermohonan === null

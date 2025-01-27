@@ -213,6 +213,10 @@ function MasterNasabahHeader(props) {
     }
   };
 
+  const isFormComplete = Object.values(stateBody).every(
+    (value) => value !== null && value !== ""
+  );
+
   // console.log(kabupaten, 'kabupaten')
   // console.log(kecamatan, 'kecamatan')
   // console.log(kelurahan, 'kelurahan')
@@ -404,7 +408,12 @@ function MasterNasabahHeader(props) {
           <Button variant="contained" onClick={handleClose}>
             Close
           </Button>
-          <Button variant="contained" onClick={HandelSubmit} autoFocus>
+          <Button
+            variant="contained"
+            onClick={HandelSubmit}
+            disabled={!isFormComplete}
+            autoFocus
+          >
             Save
           </Button>
         </DialogActions>
