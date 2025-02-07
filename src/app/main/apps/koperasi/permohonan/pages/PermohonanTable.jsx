@@ -39,6 +39,8 @@ import Typography from "@mui/material/Typography";
 import CloseIcon from "@mui/icons-material/Close";
 import Slide from "@mui/material/Slide";
 import Analisa from "../analisa/Analisa";
+import { getUserInfo, handleError } from "app/configs/getUserInfo";
+import { fetchApi } from "app/configs/fetchApi";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -55,36 +57,6 @@ const columns = [
   {
     id: "rekening",
     label: "Rekening",
-    minWidth: 170,
-    align: "left",
-  },
-  {
-    id: "jenisKelamin",
-    label: "Jenis Kelamin",
-    minWidth: 170,
-    align: "left",
-  },
-  {
-    id: "alamat",
-    label: "Alamat",
-    minWidth: 170,
-    align: "left",
-  },
-  {
-    id: "kecamatan",
-    label: "Kecamatan",
-    minWidth: 170,
-    align: "left",
-  },
-  {
-    id: "kabupaten",
-    label: "Kabupaten",
-    minWidth: 170,
-    align: "left",
-  },
-  {
-    id: "provinsi",
-    label: "Provinsi",
     minWidth: 170,
     align: "left",
   },
@@ -117,14 +89,8 @@ const columns = [
 
 function createData(
   no,
-  id,
-  namaNasabah,
-  rekening,
-  jenisKelamin,
-  alamat,
-  kecamatan,
-  kabupaten,
-  provinsi,
+  id_permohonans,
+  nasabah,
   statusPermohonan,
   hasilPermohonan,
   persentase,
@@ -132,14 +98,8 @@ function createData(
 ) {
   return {
     no,
-    id,
-    namaNasabah,
-    rekening,
-    jenisKelamin,
-    alamat,
-    kecamatan,
-    kabupaten,
-    provinsi,
+    id_permohonans,
+    nasabah,
     statusPermohonan,
     hasilPermohonan,
     persentase,
@@ -157,18 +117,18 @@ const formatRekening = (value) => {
 };
 export default function PermohonanTable(props) {
   const { dataNasabah } = props;
-  const userRoles = JSON.parse(localStorage.getItem("userRoles"));
+  const userInfo = getUserInfo();
+  const userRoles = userInfo;
   let getAllUserResponse;
   let getResponseName;
   let dataLogin;
   if (userRoles) {
     getAllUserResponse = userRoles?.response?.userRoles;
     getResponseName = userRoles?.response;
-    dataLogin = JSON.parse(getAllUserResponse);
+    dataLogin = userInfo;
   }
   const dataMasterSuplayer = props?.dataMasterSuplayer;
   const dispatch = useDispatch();
-  const { dataMasterBarang } = props;
   // console.log(dataAnalisa, 'dataAnalisa');
   const [data, setData] = useState([]);
   const [getDataEdit, setgetDataEdit] = useState({});
@@ -181,15 +141,10 @@ export default function PermohonanTable(props) {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [dataEdit, setDataEdit] = useState({
-    id: null,
-    namaNasabah: null,
-    rekening: null,
-    jenisKelamin: null,
-    alamat: null,
-    kecamatan: null,
-    kabupaten: null,
-    provinsi: null,
+    id_users: null,
+    id_mst_nasabah: null,
     saldoTabungan: null,
+    row: null,
   });
 
   const rows = props?.data;
@@ -207,19 +162,13 @@ export default function PermohonanTable(props) {
   const propsFromParent = (analisa) => {
     // console.log(analisa, "analisaa");
   };
-  // console.log(rows, "rows");
+  // console.log(props, "rows");
 
   rows?.map((item, index) =>
     createData(
       index + 1,
-      item?.id,
-      item?.namaNasabah,
-      item?.rekening,
-      item?.jenisKelamin,
-      item?.alamat,
-      item?.kecamatan,
-      item?.kabupaten,
-      item?.provinsi,
+      item?.id_permohonans,
+      item?.nasabah,
       item?.statusPermohonan,
       item?.hasilPermohonan,
       item?.persentase,
@@ -239,18 +188,10 @@ export default function PermohonanTable(props) {
     setOpen(true);
     // setDataEdit(row);
     setDataEdit({
-      id: row?.id,
-      namaNasabah: row?.namaNasabah,
-      rekening: row?.rekening,
-      jenisKelamin: row?.jenisKelamin,
-      alamat: row?.alamat,
-      kecamatan: row?.kecamatan,
-      kabupaten: row?.kabupaten,
-      provinsi: row?.provinsi,
-      statusPermohonan: row?.statusPermohonan,
-      hasilPermohonan: row?.hasilPermohonan,
-      persentase: row?.persentase,
+      id_users: null,
+      id_mst_nasabah: row?.nasabah,
       saldoTabungan: row?.saldoTabungan,
+      row,
     });
     // setgetDataEdit(row);
     // console.log(row, 'rrrr');
@@ -258,17 +199,8 @@ export default function PermohonanTable(props) {
   const handleClose = () => {
     setOpen(false);
     setDataEdit({
-      id: null,
-      namaNasabah: null,
-      rekening: null,
-      jenisKelamin: null,
-      alamat: null,
-      kecamatan: null,
-      kabupaten: null,
-      provinsi: null,
-      statusPermohonan: null,
-      hasilPermohonan: null,
-      persentase: null,
+      id_users: null,
+      id_mst_nasabah: null,
       saldoTabungan: null,
     });
   };
@@ -278,18 +210,10 @@ export default function PermohonanTable(props) {
     if (row?.statusPermohonan === false) {
       setopenAnalisa(true);
       setDataEdit({
-        id: row?.id,
-        namaNasabah: row?.namaNasabah,
-        rekening: row?.rekening,
-        jenisKelamin: row?.jenisKelamin,
-        alamat: row?.alamat,
-        kecamatan: row?.kecamatan,
-        kabupaten: row?.kabupaten,
-        provinsi: row?.provinsi,
-        statusPermohonan: row?.statusPermohonan,
-        hasilPermohonan: row?.hasilPermohonan,
-        persentase: row?.persentase,
-        saldoTabungan: row?.saldoTabungan,
+        id_users: null,
+        id_mst_nasabah: null,
+        saldoTabungan: null,
+        row,
       });
     } else {
       dispatch(
@@ -335,28 +259,18 @@ export default function PermohonanTable(props) {
   }, [dataEdit, dataNasabah]);
 
   const body = {
-    namaNasabah: JSON.stringify(dataEdit?.namaNasabah),
-    rekening: dataEdit?.namaNasabah?.mstRekening,
-    jenisKelamin: dataEdit?.jenisKelamin,
-    alamat: dataEdit?.alamat,
-    kecamatan: dataEdit?.kecamatan,
-    kabupaten: dataEdit?.kabupaten,
-    provinsi: dataEdit?.provinsi,
+    id_users: userInfo?.userInfo?.user?.id,
+    id_mst_nasabah: dataEdit?.id_mst_nasabah?.id_mst_nasabah,
     saldoTabungan: dataEdit?.saldoTabungan,
   };
-  console.log(body, 'body');
-  // console.log(dataNasabah, 'dataNasabah');
-  // console.log(getDataNasabahById, 'getDataNasabahById');
-  // console.log(rows, 'rows');
-  // console.log(dataEdit, 'dataEdit')
+  console.log(body, "body");
 
   const HandelEdit = (id) => {
     setLoading(true);
-    axios
-      .put(
-        `${process.env.REACT_APP_API_URL_API_}/Permohonan/${dataEdit?.id}`,
-        body
-      )
+    const api = fetchApi(); // Gunakan instance fetchApi
+
+    api
+      .put(`/Permohonan/${dataEdit?.row?.id_permohonans}`, body)
       .then((res) => {
         props?.getData();
         handleClose();
@@ -374,25 +288,7 @@ export default function PermohonanTable(props) {
         );
       })
       .catch((err) => {
-        handleClose();
-        setLoading(false);
-        const errStatus = err.response.status;
-        const errMessage = err.response.data.message;
-        let messages = "";
-        if (errStatus === 401) {
-          messages = "Unauthorized!!";
-          window.location.href = "/login";
-        } else if (errStatus === 500) {
-          messages = "Server Error!!";
-        } else if (errStatus === 404) {
-          messages = "Not Found Error!!!";
-        } else if (errStatus === 408) {
-          messages = "TimeOut Error!!";
-        } else if (errStatus === 400) {
-          messages = errMessage;
-        } else {
-          messages = "Something Wrong!!";
-        }
+        const messages = handleError(err);
         dispatch(
           showMessage({
             message: messages,
@@ -404,20 +300,20 @@ export default function PermohonanTable(props) {
             variant: "error",
           })
         );
-        console.log(err);
+        setLoading(false);
       });
   };
+
   const handleSaveAnalisa = (row, id) => {
     setLoading(true);
-    axios
-      .put(
-        `${process.env.REACT_APP_API_URL_API_}/approvalPermohonan/${dataEdit?.id}`,
-        {
-          statusPermohonan: true,
-          persentase,
-          hasilPermohonan: !(persentase < 70),
-        }
-      )
+    const api = fetchApi(); // Gunakan instance fetchApi
+
+    api
+      .put(`/approvalPermohonan/${dataEdit?.row?.id_permohonans}`, {
+        statusPermohonan: true,
+        persentase,
+        hasilPermohonan: !(persentase < 70),
+      })
       .then((res) => {
         props?.getData();
         handleCloseAnalisa();
@@ -425,7 +321,7 @@ export default function PermohonanTable(props) {
         setLoading(false);
         dispatch(
           showMessage({
-            message: `Nasabah ${row?.namaNasabah} Berhasil Di approv`,
+            message: `Nasabah ${row?.namaNasabah} Berhasil Di Approve`,
             autoHideDuration: 2000,
             anchorOrigin: {
               vertical: "top",
@@ -436,26 +332,7 @@ export default function PermohonanTable(props) {
         );
       })
       .catch((err) => {
-        handleCloseAnalisa();
-        handleCloseNotifikasi();
-        setLoading(false);
-        const errStatus = err.response.status;
-        const errMessage = err.response.data.message;
-        let messages = "";
-        if (errStatus === 401) {
-          messages = "Unauthorized!!";
-          window.location.href = "/login";
-        } else if (errStatus === 500) {
-          messages = "Server Error!!";
-        } else if (errStatus === 404) {
-          messages = "Not Found Error!!!";
-        } else if (errStatus === 408) {
-          messages = "TimeOut Error!!";
-        } else if (errStatus === 400) {
-          messages = errMessage;
-        } else {
-          messages = "Something Wrong!!";
-        }
+        const messages = handleError(err);
         dispatch(
           showMessage({
             message: messages,
@@ -467,14 +344,18 @@ export default function PermohonanTable(props) {
             variant: "error",
           })
         );
-        console.log(err);
+        handleCloseAnalisa();
+        handleCloseNotifikasi();
+        setLoading(false);
       });
   };
 
   const HandelDelete = (id) => {
     setLoading(true);
-    axios
-      .delete(`${process.env.REACT_APP_API_URL_API_}/Permohonan/${id}`)
+    const api = fetchApi(); // Gunakan instance fetchApi
+
+    api
+      .delete(`/Permohonan/${id}`)
       .then((res) => {
         props?.getData();
         setLoading(false);
@@ -491,25 +372,7 @@ export default function PermohonanTable(props) {
         );
       })
       .catch((err) => {
-        setData([]);
-        setLoading(false);
-        const errStatus = err.response.status;
-        const errMessage = err.response.data.message;
-        let messages = "";
-        if (errStatus === 401) {
-          messages = "Unauthorized!!";
-          window.location.href = "/login";
-        } else if (errStatus === 500) {
-          messages = "Server Error!!";
-        } else if (errStatus === 404) {
-          messages = "Not Found Error!!!";
-        } else if (errStatus === 408) {
-          messages = "TimeOut Error!!";
-        } else if (errStatus === 400) {
-          messages = errMessage;
-        } else {
-          messages = "Something Wrong!!";
-        }
+        const messages = handleError(err);
         dispatch(
           showMessage({
             message: messages,
@@ -521,7 +384,8 @@ export default function PermohonanTable(props) {
             variant: "error",
           })
         );
-        console.log(err);
+        setData([]);
+        setLoading(false);
       });
   };
   if (props?.loading) {
@@ -713,101 +577,15 @@ export default function PermohonanTable(props) {
                 disablePortal
                 id="combo-box-demo"
                 options={dataNasabah}
-                value={dataEdit?.namaNasabah}
+                value={dataEdit?.id_mst_nasabah}
                 getOptionLabel={(option) => option.mstRekening}
                 sx={{ width: 300 }}
                 onChange={(e, newValue) => {
-                  setDataEdit({ ...dataEdit, namaNasabah: newValue });
+                  setDataEdit({ ...dataEdit, id_mst_nasabah: newValue });
                 }}
                 renderInput={(params) => (
                   <TextField {...params} label="Data Nasabah" />
                 )}
-              />
-              <TextField
-                value={getDataNasabahById[0]?.nama}
-                InputProps={{
-                  readOnly: true,
-                }}
-                onChange={(e) => {
-                  setDataEdit({
-                    ...dataEdit,
-                    namaNasabah: getDataNasabahById?.nama,
-                  });
-                }}
-                id="outlined-basic"
-                focused
-                label="Nama Nasabah"
-                variant="outlined"
-              />
-              <TextField
-                // value={dataEdit?.jenisKelamin}
-                InputProps={{
-                  readOnly: true,
-                }}
-                focused
-                value={getDataNasabahById[0]?.mstjenisKelamin?.kelamin}
-                onChange={(e) => {
-                  setDataEdit({ ...dataEdit, jenisKelamin: e.target.value });
-                }}
-                id="outlined-basic"
-                label="Jenis Kelamin"
-                variant="outlined"
-              />
-              <TextField
-                // value={dataEdit?.alamat}
-                InputProps={{
-                  readOnly: true,
-                }}
-                focused
-                value={getDataNasabahById[0]?.mstAlamat}
-                onChange={(e) => {
-                  setDataEdit({ ...dataEdit, alamat: e.target.value });
-                }}
-                id="outlined-basic"
-                label="Alamat"
-                variant="outlined"
-              />
-              <TextField
-                // value={dataEdit?.kecamatan}
-                InputProps={{
-                  readOnly: true,
-                }}
-                focused
-                value={getDataNasabahById[0]?.mstKecamatan}
-                onChange={(e) => {
-                  setDataEdit({ ...dataEdit, kecamatan: e.target.value });
-                }}
-                id="outlined-basic"
-                label="Kecamatan"
-                variant="outlined"
-              />
-              <TextField
-                // value={dataEdit?.kabupaten}
-                InputProps={{
-                  readOnly: true,
-                }}
-                focused
-                value={getDataNasabahById[0]?.mstKabupaten}
-                onChange={(e) => {
-                  setDataEdit({ ...dataEdit, kabupaten: e.target.value });
-                }}
-                id="outlined-basic"
-                label="Kabupaten"
-                variant="outlined"
-              />
-              <TextField
-                // value={dataEdit?.provinsi}
-                InputProps={{
-                  readOnly: true,
-                }}
-                focused
-                value={getDataNasabahById[0]?.mstProvinsi}
-                onChange={(e) => {
-                  setDataEdit({ ...dataEdit, provinsi: e.target.value });
-                }}
-                id="outlined-basic"
-                label="Provinsi"
-                variant="outlined"
               />
               <TextField
                 value={dataEdit?.saldoTabungan}
@@ -861,13 +639,15 @@ export default function PermohonanTable(props) {
                   <TableRow key={row.id} hover role="checkbox" tabIndex={-1}>
                     <TableCell>{index + 1}.</TableCell>
                     <TableCell>
-                      {row?.namaNasabah?.nama === null ? "-" : row?.namaNasabah?.nama}
+                      {row?.nasabah?.nama === null ? "-" : row?.nasabah?.nama}
                     </TableCell>
                     <TableCell>
-                      {row?.rekening === null ? "-" : row?.rekening}
+                      {row?.nasabah?.mstRekening === null
+                        ? "-"
+                        : row?.nasabah?.mstRekening}
                     </TableCell>
-                    <TableCell>
-                      {row?.jenisKelamin === null ? "-" : row?.jenisKelamin}
+                    {/* <TableCell>
+                      {row?.nasabah?.mstjenisKelamin === null ? "-" : row?.nasabah?.mstjenisKelamin}
                     </TableCell>
                     <TableCell>
                       {row?.alamat === null ? "-" : row?.alamat}
@@ -880,7 +660,7 @@ export default function PermohonanTable(props) {
                     </TableCell>
                     <TableCell>
                       {row?.provinsi === null ? "-" : row?.provinsi}
-                    </TableCell>
+                    </TableCell> */}
                     <TableCell>
                       {row?.saldoTabungan === null
                         ? "-"
@@ -933,7 +713,9 @@ export default function PermohonanTable(props) {
                         </div>
                         <div>
                           <IconButton
-                            onClick={(e) => HandelDelete(row.id)}
+                            onClick={(e) =>
+                              HandelDelete(row.id_permohonans)
+                            }
                             color="error"
                             disabled={
                               dataLogin?.roleUser === "Staff" &&

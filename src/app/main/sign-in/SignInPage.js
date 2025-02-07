@@ -8,6 +8,7 @@ import { useState } from "react";
 import { showMessage } from "app/store/fuse/messageSlice";
 import { useDispatch } from "react-redux";
 import axios from "axios";
+import { EncryptStorage } from "encrypt-storage";
 
 /**
  * Form Validation Schema
@@ -31,6 +32,7 @@ const defaultValues = {
 
 function SignInPage() {
   // const api = `http://localhost:3000`;
+  const encryptStorage = new EncryptStorage(process.env.REACT_APP_SECRET_KEY);
   const dispatch = useDispatch();
   const [userName, setuserName] = useState("");
   const [passWord, setpassWord] = useState("");
@@ -43,8 +45,11 @@ function SignInPage() {
         password: passWord,
       })
       .then((res) => {
-        window.location.href = "apps/dashboard/";
+        localStorage.setItem("isLoginUser", true);
+        encryptStorage?.setItem("___user", res?.data);
+        window.location.reload();
         localStorage.setItem("userRoles", JSON.stringify(res?.data));
+        window.location.href = "apps/dashboard/";
         dispatch(
           showMessage({
             message: "Welcome",

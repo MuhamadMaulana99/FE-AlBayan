@@ -34,6 +34,8 @@ import { Workbook } from "exceljs";
 import { styled } from "@mui/material/styles";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import CloseIcon from "@mui/icons-material/Close";
+import { getUserInfo } from "app/configs/getUserInfo";
+import { fetchApi } from "app/configs/fetchApi";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -72,24 +74,26 @@ function convertToInteger(currency) {
 
 function PengajuanHeader(props) {
   const { searchTerm, setSearchTerm } = props;
-  const fileInputRef = useRef(null);
   const dispatch = useDispatch();
   const currentDate = moment().format();
-  const userRoles = JSON.parse(localStorage.getItem("userRoles"));
+  const userInfo = getUserInfo();
+  const userRoles = userInfo;
   let getAllUserResponse;
   let getResponseName;
   let dataLogin;
   if (userRoles) {
     getAllUserResponse = userRoles?.response?.userRoles;
     getResponseName = userRoles?.response;
-    dataLogin = JSON.parse(getAllUserResponse);
+    dataLogin = userInfo;
   }
-  const data = props?.data;
+  // console.log(userInfo, 'userInfo')
   const { dataPermohonanApprove } = props;
   const [loading, setLoading] = React.useState(true);
   const [open, setOpen] = React.useState(false);
   const [getNameFile, setgetNameFile] = useState("");
   const [stateBody, setStateBody] = useState({
+    id_users: null,
+    id_mst_nasabah: null,
     penjualan: 0,
     namaNasabah: null,
     rekening: null,
@@ -112,8 +116,7 @@ function PengajuanHeader(props) {
     accPermohonan: 0,
     nomorAkad: null,
     status: null,
-    statusBy: dataLogin?.roleUser === "admin" ? null : getResponseName?.name,
-    statusAt: dataLogin?.roleUser === "admin" ? null : currentDate,
+    statusAt: userInfo?.userInfo?.user?.roleUser === "1" ? null : currentDate,
     foto: null,
   });
   const [getDataBody, setgetDataBody] = useState({});
@@ -139,7 +142,7 @@ function PengajuanHeader(props) {
     (parseInt(stateBody?.rasioAngsuran, 10) / 100) *
     countPendapatanBersih *
     parseInt(stateBody?.jangkaWaktu, 10);
-  console.log(stateBody, 'stateBody')
+  // console.log(stateBody, "stateBody");
   // console.log(countJumlahBiayaLuarUsaha, 'countJumlahBiayaLuarUsaha')
   // console.log(parseInt(convertToInteger(stateBody?.kebutuhanRumahTangga), 10), 'parseInt(convertToInteger(stateBody?.kebutuhanRumahTangga), 10)')
   // console.log(parseInt(convertToInteger(stateBody?.biayaPendidikan), 10), 'parseInt(convertToInteger(stateBody?.biayaPendidikan), 10)')
@@ -184,11 +187,11 @@ function PengajuanHeader(props) {
       foto: null,
     });
   };
-
+// console.log(getDataBody, 'getDataBody')
   const bodys = {
     penjualan: convertToInteger(getDataBody?.penjualan),
-    namaNasabah: getDataBody?.namaNasabah,
-    rekening: getDataBody?.rekening,
+    id_users: userInfo?.userInfo?.user?.id,
+    id_mst_nasabah: getDataBody?.id_mst_nasabah?.nasabah?.id_mst_nasabah,
     hargaPokok: convertToInteger(getDataBody?.hargaPokok),
     biaya: convertToInteger(getDataBody?.biaya),
     biayaLainya: convertToInteger(getDataBody?.biayaLainya),
@@ -207,19 +210,19 @@ function PengajuanHeader(props) {
     accPermohonan: countAccPermohonan,
     nomorAkad: getDataBody?.nomorAkad,
     status: getDataBody?.status,
-    statusBy: getDataBody?.statusBy,
-    statusAt: getDataBody?.statusAt,
-    foto: null,
+    statusAt: currentDate,
   };
 
-  console.log(bodys, "bodys");
+  // console.log(bodys, "bodys");
+  // console.log(stateBody, 'stateBody')
 
   const HandelSubmit = () => {
     setLoading(true);
-    axios
-      .post(`${process.env.REACT_APP_API_URL_API_}/Pengajuan`, bodys)
+    const api = fetchApi(); // use the custom fetchApi function
+
+    api
+      .post(`/Pengajuan`, bodys) // The baseURL is already set in fetchApi, so no need to repeat it
       .then((res) => {
-        // setData(res?.data);
         props.getData();
         handleClose();
         setLoading(false);
@@ -236,13 +239,12 @@ function PengajuanHeader(props) {
         );
       })
       .catch((err) => {
-        // setData([]);
-        console.log(err);
         handleClose();
         setLoading(false);
-        const errStatus = err.response.status;
-        const errMessage = err.response.data.message;
+        const errStatus = err.response?.status;
+        const errMessage = err.response?.data?.message || "";
         let messages = "";
+
         if (errStatus === 401) {
           messages = "Unauthorized!!";
           window.location.href = "/login";
@@ -257,6 +259,7 @@ function PengajuanHeader(props) {
         } else {
           messages = "Something Wrong!!";
         }
+
         dispatch(
           showMessage({
             message: `${err?.response?.data?.data?.namaBarang}${messages}`,
@@ -271,69 +274,12 @@ function PengajuanHeader(props) {
       });
   };
 
-  // const handleFileChange = async (event) => {
-  //   const selectedFile = event.target.files[0];
-  //   console.log(selectedFile, 'selectedFile')
-
-  //   if (selectedFile) {
-  //     const base64String = await convertToBase64(selectedFile);
-  //     console.log('Base64 String:', selectedFile);
-  //     setgetNameFile(selectedFile);
-  //     setStateBody({ ...stateBody, foto: base64String });
-  //     // Kirim atau lakukan sesuatu dengan string base64 di sini
-  //   }
-  //   if (fileInputRef.current) {
-  //     fileInputRef.current.value = '';
-  //   }
-  // };
-
-  const handleFileChange = async (event) => {
-    const selectedFile = event.target.files[0];
-    console.log(selectedFile, "selectedFile");
-
-    if (selectedFile) {
-      const base64String = await convertToBase64(selectedFile);
-      console.log("Base64 String:", base64String);
-      setgetNameFile(selectedFile);
-      setStateBody({ ...stateBody, foto: base64String });
-      // Kirim atau lakukan sesuatu dengan string base64 di sini
-    }
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-    // const file = event.target.files[0];
-    // setSelectedFile(file);
-  };
-
-  const handleClearFile = () => {
-    setStateBody({ ...stateBody, foto: null });
-    setgetNameFile(null);
-  };
-
-  const convertToBase64 = (file) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-
-      reader.onload = () => {
-        resolve(reader.result.split(",")[1]);
-      };
-
-      reader.onerror = (error) => {
-        reject(error);
-      };
-
-      reader.readAsDataURL(file);
-    });
-  };
-
-  // console.log(`${Math.round(resultAcc)}%`, 'resss');
-  // console.log(getDataBody, "stateBody");
 
   useEffect(() => {
     setgetDataBody({
+      id_users:stateBody?.id_users,
+      id_mst_nasabah:stateBody?.id_mst_nasabah,
       penjualan: stateBody?.penjualan,
-      namaNasabah: stateBody?.rekening?.namaNasabah,
-      rekening: JSON.stringify(stateBody?.rekening),
       hargaPokok: stateBody?.hargaPokok,
       biaya: stateBody?.biaya,
       biayaLainya: stateBody?.biayaLainya,
@@ -354,8 +300,6 @@ function PengajuanHeader(props) {
       status: stateBody?.status,
       statusBy: stateBody?.statusBy,
       statusAt: stateBody?.statusAt,
-      foto: null,
-      // foto: `data:${getNameFile?.type};base64,${stateBody?.foto}`,
     });
   }, [stateBody]);
   // maulana
@@ -377,12 +321,12 @@ function PengajuanHeader(props) {
                 disablePortal
                 id="combo-box-demo"
                 options={dataPermohonanApprove}
-                value={stateBody?.rekening}
-                getOptionLabel={(option) => option.rekening}
+                value={stateBody?.id_mst_nasabah}
+                getOptionLabel={(option) => option?.nasabah?.mstRekening}
                 sx={{ width: 370 }}
                 onChange={(e, newValue) => {
                   // console.log(newValue, '1000000');
-                  setStateBody({ ...stateBody, rekening: newValue });
+                  setStateBody({ ...stateBody, id_mst_nasabah: newValue });
                 }}
                 renderInput={(params) => (
                   <TextField {...params} label="Data Nasabah" />

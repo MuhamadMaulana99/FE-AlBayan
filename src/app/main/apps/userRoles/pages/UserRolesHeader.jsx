@@ -1,13 +1,13 @@
-import Button from '@mui/material/Button';
-import Input from '@mui/material/Input';
-import Paper from '@mui/material/Paper';
-import Typography from '@mui/material/Typography';
-import { motion } from 'framer-motion';
-import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
-import { showMessage } from 'app/store/fuse/messageSlice';
-import axios from 'axios';
-import { useDispatch } from 'react-redux';
-import { useState } from 'react';
+import Button from "@mui/material/Button";
+import Input from "@mui/material/Input";
+import Paper from "@mui/material/Paper";
+import Typography from "@mui/material/Typography";
+import { motion } from "framer-motion";
+import FuseSvgIcon from "@fuse/core/FuseSvgIcon";
+import { showMessage } from "app/store/fuse/messageSlice";
+import axios from "axios";
+import { useDispatch } from "react-redux";
+import { useState } from "react";
 import {
   Autocomplete,
   Dialog,
@@ -16,12 +16,14 @@ import {
   DialogContentText,
   DialogTitle,
   TextField,
-} from '@mui/material';
+} from "@mui/material";
+import { getUserInfo } from "app/configs/getUserInfo";
+import { fetchApi } from "app/configs/fetchApi";
 
 const role = [
-  { roleUser: 'Admin', id: 1 },
-  { roleUser: 'Kasir', id: 2 },
-  { roleUser: 'Staff', id: 3 },
+  { roleUser: "Admin", id: 1 },
+  { roleUser: "Kasir", id: 2 },
+  { roleUser: "Staff", id: 3 },
 ];
 
 function UserRolesHeader(props) {
@@ -29,29 +31,27 @@ function UserRolesHeader(props) {
   const [data, setData] = useState({});
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
-  const [username, setusername] = useState('');
-  const [password, setpassword] = useState('');
+  const [username, setusername] = useState("");
+  const [password, setpassword] = useState("");
   const [userRoles, setuserRoles] = useState(null);
   // console.log(userRoles);
 
-  const userRoless = JSON.parse(localStorage.getItem('userRoles'));
+  const userInfo = getUserInfo();
+  const userRoless = userInfo;
   let getAllUserResponse;
   let getResponseName;
   let dataLogin;
   if (userRoless) {
-    getAllUserResponse = userRoless?.response?.userRoles;
-    getResponseName = userRoless?.response;
-    dataLogin = JSON.parse(getAllUserResponse);
+    getAllUserResponse = userRoles?.response?.userRoles;
+    getResponseName = userRoles?.response;
+    dataLogin = userRoless;
   }
 
   const body = {
     username,
     password,
-    userRoles: JSON.stringify(userRoles),
+    userRoles: userRoles?.id,
   };
-  // const api = `https://652d2c32f9afa8ef4b26e7f0.mockapi.io/tokoBangunan/v1/suplayer`;
-  const api = `http://ner.grit.id:8006`;
-  // const api = `http://localhost:3000`;
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -62,55 +62,55 @@ function UserRolesHeader(props) {
   };
   const HandelSubmit = () => {
     setLoading(true);
-    axios
-      .post(`${process.env.REACT_APP_API_URL_API_}/register`, body)
+    const api = fetchApi(); // Gunakan instance API dari fetchApi
+
+    api
+      .post("/register", body) // Gunakan base URL dari fetchApi
       .then((_res) => {
-        // setData(res?.data);
         props.getData();
         handleClose();
         setLoading(false);
         dispatch(
           showMessage({
-            message: 'Data Berhasil Tambahkan',
+            message: "Data Berhasil Ditambahkan",
             autoHideDuration: 2000,
             anchorOrigin: {
-              vertical: 'top',
-              horizontal: 'center',
+              vertical: "top",
+              horizontal: "center",
             },
-            variant: 'success',
+            variant: "success",
           })
         );
       })
       .catch((err) => {
-        // setData([]);
         handleClose();
         setLoading(false);
-        const errStatus = err.response.status;
-        const errMessage = err.response.data.message;
-        let messages = '';
+        const errStatus = err.response?.status;
+        const errMessage = err.response?.data?.message;
+        let messages = "";
         if (errStatus === 401) {
-          messages = 'Unauthorized!!';
-          window.location.href = '/login';
+          messages = "Unauthorized!!";
+          window.location.href = "/login";
         } else if (errStatus === 500) {
-          messages = 'Server Error!!';
+          messages = "Server Error!!";
         } else if (errStatus === 404) {
-          messages = 'Not Found Error!!!';
+          messages = "Not Found Error!!!";
         } else if (errStatus === 408) {
-          messages = 'TimeOut Error!!';
+          messages = "TimeOut Error!!";
         } else if (errStatus === 400) {
           messages = errMessage;
         } else {
-          messages = 'Something Wrong!!';
+          messages = "Something Went Wrong!!";
         }
         dispatch(
           showMessage({
             message: messages,
             autoHideDuration: 2000,
             anchorOrigin: {
-              vertical: 'top',
-              horizontal: 'center',
+              vertical: "top",
+              horizontal: "center",
             },
-            variant: 'error',
+            variant: "error",
           })
         );
         console.log(err);
@@ -143,7 +143,7 @@ function UserRolesHeader(props) {
                   }
                 }}
                 options={role}
-                sx={{ width: '100%' }}
+                sx={{ width: "100%" }}
                 renderInput={(params) => <TextField {...params} label="Role" />}
               />
             </div>
@@ -204,7 +204,7 @@ function UserRolesHeader(props) {
             fullWidth
             // value={searchText}
             inputProps={{
-              'aria-label': 'Search',
+              "aria-label": "Search",
             }}
             // onChange={(ev) => dispatch(setProductsSearchText(ev))}
           />
@@ -218,7 +218,7 @@ function UserRolesHeader(props) {
             // component={Link}
             // to="/apps/e-commerce/products/new"
             onClick={handleClickOpen}
-            disabled={dataLogin?.roleUser === 'User'}
+            disabled={dataLogin?.roleUser === "User"}
             variant="contained"
             color="secondary"
             startIcon={<FuseSvgIcon>heroicons-outline:plus</FuseSvgIcon>}

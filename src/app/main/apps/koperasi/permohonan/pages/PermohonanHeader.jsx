@@ -22,57 +22,40 @@ import axios from "axios";
 import { showMessage } from "app/store/fuse/messageSlice";
 import { Autocomplete, TextField } from "@mui/material";
 import moment from "moment";
+import { getUserInfo, handleError } from "app/configs/getUserInfo";
+import { fetchApi } from "app/configs/fetchApi";
 
 function PermohonanHeader(props) {
   const { searchTerm, setSearchTerm } = props;
   const dispatch = useDispatch();
   const currentDate = moment().format();
   const { dataNasabah } = props;
-  const userRoles = JSON.parse(localStorage.getItem("userRoles"));
+  const userInfo = getUserInfo();
+  const userRoles = userInfo;
   let getAllUserResponse;
   let getResponseName;
   let dataLogin;
   if (userRoles) {
     getAllUserResponse = userRoles?.response?.userRoles;
     getResponseName = userRoles?.response;
-    dataLogin = JSON.parse(getAllUserResponse);
+    dataLogin = userInfo;
   }
-  const data = props?.data;
-  const { masterStaff } = props;
   const [loading, setLoading] = React.useState(true);
-  const [getDataNasabahById, setgetDataNasabahById] = React.useState([]);
   const [open, setOpen] = React.useState(false);
 
   const [stateBody, setStateBody] = useState({
-    namaNasabah: getDataNasabahById?.nama,
-    rekening: null,
-    jenisKelamin: null,
-    alamat: null,
-    kecamatan: null,
-    kabupaten: null,
-    provinsi: null,
+    id_users: null,
+    id_mst_nasabah: null,
     saldoTabungan: null,
   });
 
-  useEffect(() => {
-    const result = dataNasabah.filter(
-      (item) => item.mstRekening === stateBody?.rekening?.mstRekening
-    );
-    setgetDataNasabahById(result);
-  }, [stateBody?.rekening, dataNasabah]);
-  // console.log(getDataNasabahById, 'sss');
   const body = {
-    namaNasabah: JSON.stringify(getDataNasabahById[0]),
-    rekening: getDataNasabahById[0]?.mstRekening,
-    jenisKelamin: getDataNasabahById[0]?.mstjenisKelamin?.kelamin,
-    alamat: getDataNasabahById[0]?.mstAlamat,
-    kecamatan: getDataNasabahById[0]?.mstKecamatan,
-    kabupaten: getDataNasabahById[0]?.mstKabupaten,
-    provinsi: getDataNasabahById[0]?.mstProvinsi,
+    id_users: userInfo?.userInfo?.user?.id,
+    id_mst_nasabah: stateBody?.id_mst_nasabah,
     saldoTabungan: stateBody?.saldoTabungan?.replace(/[^\d]/g, ""),
   };
   // console.log(body, "body");
-  // console.log(stateBody, 'stateBody')
+  // console.log(userInfo?.userInfo?.user?.id, "userInfo");
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -81,72 +64,32 @@ function PermohonanHeader(props) {
   const handleClose = () => {
     setOpen(false);
     setStateBody({
-      namaNasabah: null,
-      rekening: null,
-      jenisKelamin: null,
-      alamat: null,
-      kecamatan: null,
-      kabupaten: null,
-      provinsi: null,
+      id_users: null,
+      id_mst_nasabah: null,
       saldoTabungan: null,
-    })
+    });
   };
 
-  const HandelSubmit = () => {
+  const handleSubmit = async () => {
     setLoading(true);
-    axios
-      .post(`${process.env.REACT_APP_API_URL_API_}/permohonan`, body)
-      .then((res) => {
-        // setData(res?.data);
-        props.getData();
-        handleClose();
-        setLoading(false);
-        dispatch(
-          showMessage({
-            message: "Data Berhasil Tambahkan",
-            autoHideDuration: 2000,
-            anchorOrigin: {
-              vertical: "top",
-              horizontal: "center",
-            },
-            variant: "success",
-          })
-        );
-      })
-      .catch((err) => {
-        // setData([]);
-        console.log(err);
-        handleClose();
-        setLoading(false);
-        const errStatus = err.response.status;
-        const errMessage = err.response.data.message;
-        let messages = "";
-        if (errStatus === 401) {
-          messages = "Unauthorized!!";
-          window.location.href = "/login";
-        } else if (errStatus === 500) {
-          messages = "Server Error!!";
-        } else if (errStatus === 404) {
-          messages = "Not Found Error!!!";
-        } else if (errStatus === 408) {
-          messages = "TimeOut Error!!";
-        } else if (errStatus === 400) {
-          messages = errMessage;
-        } else {
-          messages = "Something Wrong!!";
-        }
-        dispatch(
-          showMessage({
-            message: `${err?.response?.data?.data?.namaBarang}${messages}`,
-            autoHideDuration: 2000,
-            anchorOrigin: {
-              vertical: "top",
-              horizontal: "center",
-            },
-            variant: "error",
-          })
-        );
-      });
+    try {
+      await fetchApi().post("/permohonan", body);
+      props.getData();
+      handleClose();
+      dispatch(
+        showMessage({
+          message: "Data Berhasil Ditambahkan",
+          autoHideDuration: 2000,
+          anchorOrigin: { vertical: "top", horizontal: "center" },
+          variant: "success",
+        })
+      );
+    } catch (err) {
+      handleClose();
+      handleError(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -169,111 +112,19 @@ function PermohonanHeader(props) {
                 getOptionLabel={(option) => option.mstRekening}
                 sx={{ width: 300 }}
                 onChange={(e, newValue) => {
-                  setStateBody({ ...stateBody, rekening: newValue });
+                  setStateBody({
+                    ...stateBody,
+                    id_mst_nasabah: newValue?.id_mst_nasabah,
+                    id_users: userInfo?.userInfo?.user?.id,
+                  });
+                  // setStateBody({
+                  //   ...stateBody,
+                  //   id_users: userInfo?.userInfo?.user?.id,
+                  // });
                 }}
                 renderInput={(params) => (
                   <TextField {...params} label="Data Nasabah" />
                 )}
-              />
-              <TextField
-                value={getDataNasabahById[0]?.nama}
-                InputProps={{
-                  readOnly: true,
-                }}
-                onChange={(e) => {
-                  setStateBody({
-                    ...stateBody,
-                    namaNasabah: getDataNasabahById?.nama,
-                  });
-                }}
-                id="outlined-basic"
-                focused
-                label="Nama Nasabah"
-                variant="outlined"
-              />
-              <TextField
-                // value={stateBody?.jenisKelamin}
-                InputProps={{
-                  readOnly: true,
-                }}
-                focused
-                value={getDataNasabahById[0]?.mstRekening}
-                onChange={(e) => {
-                  setStateBody({ ...stateBody, rekening: e.target.value });
-                }}
-                id="outlined-basic"
-                label="Rekening"
-                variant="outlined"
-              />
-              <TextField
-                // value={stateBody?.jenisKelamin}
-                InputProps={{
-                  readOnly: true,
-                }}
-                focused
-                value={getDataNasabahById[0]?.mstjenisKelamin?.kelamin}
-                onChange={(e) => {
-                  setStateBody({ ...stateBody, jenisKelamin: e.target.value });
-                }}
-                id="outlined-basic"
-                label="Jenis Kelamin"
-                variant="outlined"
-              />
-              <TextField
-                // value={stateBody?.alamat}
-                InputProps={{
-                  readOnly: true,
-                }}
-                focused
-                value={getDataNasabahById[0]?.mstAlamat}
-                onChange={(e) => {
-                  setStateBody({ ...stateBody, alamat: e.target.value });
-                }}
-                id="outlined-basic"
-                label="Alamat"
-                variant="outlined"
-              />
-              <TextField
-                // value={stateBody?.kecamatan}
-                InputProps={{
-                  readOnly: true,
-                }}
-                focused
-                value={getDataNasabahById[0]?.mstKecamatan}
-                onChange={(e) => {
-                  setStateBody({ ...stateBody, kecamatan: e.target.value });
-                }}
-                id="outlined-basic"
-                label="Kecamatan"
-                variant="outlined"
-              />
-              <TextField
-                // value={stateBody?.kabupaten}
-                InputProps={{
-                  readOnly: true,
-                }}
-                focused
-                value={getDataNasabahById[0]?.mstKabupaten}
-                onChange={(e) => {
-                  setStateBody({ ...stateBody, kabupaten: e.target.value });
-                }}
-                id="outlined-basic"
-                label="Kabupaten"
-                variant="outlined"
-              />
-              <TextField
-                // value={stateBody?.provinsi}
-                InputProps={{
-                  readOnly: true,
-                }}
-                focused
-                value={getDataNasabahById[0]?.mstProvinsi}
-                onChange={(e) => {
-                  setStateBody({ ...stateBody, provinsi: e.target.value });
-                }}
-                id="outlined-basic"
-                label="Provinsi"
-                variant="outlined"
               />
               <TextField
                 value={stateBody?.saldoTabungan}
@@ -302,7 +153,7 @@ function PermohonanHeader(props) {
             // disabled={
             //   kodeBarang === '' || namaBarang === '' || tglKeluar === '' || jmlKeluar === ''
             // }
-            onClick={HandelSubmit}
+            onClick={handleSubmit}
             autoFocus
           >
             Save

@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { showMessage } from "app/store/fuse/messageSlice";
 import MasterNasabahTable from "./MasterNasabahTable";
 import MasterNasabahHeader from "./MasterNasabahHeader";
+import { fetchApi } from "app/configs/fetchApi";
 
 function MasterNasabah() {
   const dispatch = useDispatch();
@@ -24,46 +25,48 @@ function MasterNasabah() {
 
   const getData = async () => {
     setLoading(true);
-    const response = await axios
-      .get(`${process.env.REACT_APP_API_URL_API_}/masterNasabah`)
-      .then((res) => {
-        setData(res?.data);
-        setLoading(false);
-        // console.log(res.data, 'rrr');
-      })
-      .catch((err) => {
-        setData([]);
-        setLoading(false);
-        const errStatus = err.response.status;
-        const errMessage = err.response.data.message;
-        let messages = "";
-        if (errStatus === 401) {
-          messages = "Unauthorized!!";
-          window.location.href = "/login";
-        } else if (errStatus === 500) {
-          messages = "Server Error!!";
-        } else if (errStatus === 404) {
-          messages = "Not Found Error!!!";
-        } else if (errStatus === 408) {
-          messages = "TimeOut Error!!";
-        } else if (errStatus === 400) {
-          messages = errMessage;
-        } else {
-          messages = "Something Wrong!!";
-        }
-        dispatch(
-          showMessage({
-            message: messages,
-            autoHideDuration: 2000,
-            anchorOrigin: {
-              vertical: "top",
-              horizontal: "center",
-            },
-            variant: "error",
-          })
-        );
-        console.log(err);
-      });
+
+    const api = fetchApi(); // get an Axios instance with your authorization headers
+
+    try {
+      const response = await api.get("/masterNasabah"); // use the baseURL from fetchApi
+      setData(response?.data);
+      setLoading(false);
+    } catch (err) {
+      setData([]);
+      setLoading(false);
+      const errStatus = err.response?.status;
+      const errMessage = err.response?.data?.message;
+      let messages = "";
+
+      if (errStatus === 401) {
+        messages = "Unauthorized!!";
+        window.location.href = "/login";
+      } else if (errStatus === 500) {
+        messages = "Server Error!!";
+      } else if (errStatus === 404) {
+        messages = "Not Found Error!!!";
+      } else if (errStatus === 408) {
+        messages = "TimeOut Error!!";
+      } else if (errStatus === 400) {
+        messages = errMessage;
+      } else {
+        messages = "Something Wrong!!";
+      }
+
+      dispatch(
+        showMessage({
+          message: messages,
+          autoHideDuration: 2000,
+          anchorOrigin: {
+            vertical: "top",
+            horizontal: "center",
+          },
+          variant: "error",
+        })
+      );
+      console.log(err);
+    }
   };
   useEffect(() => {
     let isUnmout = false;

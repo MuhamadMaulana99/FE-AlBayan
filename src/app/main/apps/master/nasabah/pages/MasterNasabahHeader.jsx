@@ -18,10 +18,11 @@ import {
   DialogTitle,
   TextField,
 } from "@mui/material";
+import { fetchApi } from "app/configs/fetchApi";
 
 const jenKel = [
-  { kelamin: "Laki-laki", id: 1 },
-  { kelamin: "Perempuan", id: 2 },
+  { nama: "Laki-laki", id: 1 },
+  { nama: "Perempuan", id: 2 },
 ];
 
 function MasterNasabahHeader(props) {
@@ -97,18 +98,20 @@ function MasterNasabahHeader(props) {
       mstProvinsi: null,
     });
   };
+
   const HandelSubmit = () => {
     setLoading(true);
-    axios
-      .post(`${process.env.REACT_APP_API_URL_API_}/masterNasabah`, body)
+    const api = fetchApi(); // Gunakan instance API dari fetchApi
+
+    api
+      .post("/masterNasabah", body) // Gunakan base URL dari fetchApi
       .then((res) => {
-        // setData(res?.data);
         props.getData();
         handleClose();
         setLoading(false);
         dispatch(
           showMessage({
-            message: "Data Berhasil Tambahkan",
+            message: "Data Berhasil Ditambahkan",
             autoHideDuration: 2000,
             anchorOrigin: {
               vertical: "top",
@@ -119,11 +122,10 @@ function MasterNasabahHeader(props) {
         );
       })
       .catch((err) => {
-        // setData([]);
         handleClose();
         setLoading(false);
-        const errStatus = err.response.status;
-        const errMessage = err.response.data.message;
+        const errStatus = err.response?.status;
+        const errMessage = err.response?.data?.message;
         let messages = "";
         if (errStatus === 401) {
           messages = "Unauthorized!!";
@@ -274,7 +276,7 @@ function MasterNasabahHeader(props) {
                   disablePortal
                   fullWidth
                   id="combo-box-demo"
-                  getOptionLabel={(option) => option.kelamin}
+                  getOptionLabel={(option) => option.nama}
                   value={stateBody?.mstjenisKelamin}
                   onChange={(e, newValue) =>
                     setStateBody({ ...stateBody, mstjenisKelamin: newValue })

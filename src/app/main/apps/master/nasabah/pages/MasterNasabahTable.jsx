@@ -32,6 +32,7 @@ import FuseLoading from "@fuse/core/FuseLoading";
 import FuseAnimate from "@fuse/core/FuseAnimate";
 import jsPDF from "jspdf";
 import { useState } from "react";
+import { fetchApi } from "app/configs/fetchApi";
 
 const columns = [
   { id: "no", label: "NO", minWidth: 60, align: "left" },
@@ -102,7 +103,7 @@ const columns = [
 
 function createData(
   no,
-  id,
+  id_mst_nasabah,
   nama,
   mstNik,
   mstRekening,
@@ -114,7 +115,7 @@ function createData(
 ) {
   return {
     no,
-    id,
+    id_mst_nasabah,
     nama,
     mstNik,
     mstRekening,
@@ -127,15 +128,15 @@ function createData(
 }
 
 const jenKel = [
-  { kelamin: "Laki-laki", id: 1 },
-  { kelamin: "Perempuan", id: 2 },
+  { nama: "Laki-laki", id: 1 },
+  { nama: "Perempuan", id: 2 },
 ];
 
 export default function MasterNasabahTable(props) {
   const dispatch = useDispatch();
   const [data, setData] = React.useState([]);
   const [dataEdit, setDataEdit] = React.useState({
-    id: null,
+    id_mst_nasabah: null,
     nama: null,
     mstNik: null,
     mstRekening: null,
@@ -156,6 +157,7 @@ export default function MasterNasabahTable(props) {
   const [selectedProvinsi, setSelectedProvinsi] = useState(null);
   const [selectedKabupaten, setSelectedKabupaten] = useState(null);
   const [selectedKecamatan, setSelectedKecamatan] = useState(null);
+  console.log(dataEdit, 'dataEdit')
 
   const urlProvinsi = "https://ibnux.github.io/data-indonesia/provinsi.json";
   const urlKabupaten = "https://ibnux.github.io/data-indonesia/kabupaten/";
@@ -165,7 +167,7 @@ export default function MasterNasabahTable(props) {
   const rows = props?.data?.map((item, index) =>
     createData(
       index + 1,
-      item?.id,
+      item?.id_mst_nasabah,
       item?.nama,
       item?.mstNik,
       item?.mstRekening,
@@ -198,7 +200,7 @@ export default function MasterNasabahTable(props) {
   const handleClickOpen = (id, row) => {
     setOpen(true);
     setDataEdit({
-      id: row?.id,
+      id_mst_nasabah: row?.id_mst_nasabah,
       nama: row?.nama,
       mstNik: row?.mstNik,
       mstRekening: row?.mstRekening,
@@ -237,11 +239,10 @@ export default function MasterNasabahTable(props) {
 
   const HandelEdit = (id) => {
     setLoading(true);
-    axios
-      .put(
-        `${process.env.REACT_APP_API_URL_API_}/masterNasabah/${dataEdit?.id}`,
-        body
-      )
+    const api = fetchApi(); // Use the API instance created by fetchApi
+
+    api
+      .put(`/masterNasabah/${dataEdit?.id_mst_nasabah}`, body) // Use base URL from fetchApi
       .then((res) => {
         props?.getData();
         handleClose();
@@ -261,8 +262,8 @@ export default function MasterNasabahTable(props) {
       .catch((err) => {
         handleClose();
         setLoading(false);
-        const errStatus = err.response.status;
-        const errMessage = err.response.data.message;
+        const errStatus = err.response?.status;
+        const errMessage = err.response?.data?.message;
         let messages = "";
         if (errStatus === 401) {
           messages = "Unauthorized!!";
@@ -292,10 +293,13 @@ export default function MasterNasabahTable(props) {
         console.log(err);
       });
   };
+
   const HandelDelete = (id) => {
     setLoading(true);
-    axios
-      .delete(`${process.env.REACT_APP_API_URL_API_}/masterNasabah/${id}`)
+    const api = fetchApi(); // Use the API instance created by fetchApi
+
+    api
+      .delete(`/masterNasabah/${id}`) // Use base URL from fetchApi
       .then((res) => {
         props?.getData();
         setLoading(false);
@@ -314,8 +318,8 @@ export default function MasterNasabahTable(props) {
       .catch((err) => {
         setData([]);
         setLoading(false);
-        const errStatus = err.response.status;
-        const errMessage = err.response.data.message;
+        const errStatus = err.response?.status;
+        const errMessage = err.response?.data?.message;
         let messages = "";
         if (errStatus === 401) {
           messages = "Unauthorized!!";
@@ -561,7 +565,7 @@ export default function MasterNasabahTable(props) {
                   disablePortal
                   fullWidth
                   id="combo-box-demo"
-                  getOptionLabel={(option) => option.kelamin}
+                  getOptionLabel={(option) => option.nama}
                   value={dataEdit?.mstjenisKelamin}
                   onChange={(e, newValue) =>
                     setDataEdit({ ...dataEdit, mstjenisKelamin: newValue })
@@ -726,7 +730,7 @@ export default function MasterNasabahTable(props) {
                     <TableCell>{row?.nama}</TableCell>
                     <TableCell>{row?.mstNik}</TableCell>
                     <TableCell>{formatRekening(row?.mstRekening)}</TableCell>
-                    <TableCell>{row?.mstjenisKelamin?.kelamin}</TableCell>
+                    <TableCell>{row?.mstjenisKelamin?.nama}</TableCell>
                     <TableCell>{row?.mstAlamat}</TableCell>
                     <TableCell>{row?.mstKecamatan}</TableCell>
                     <TableCell>{row?.mstKabupaten}</TableCell>
@@ -744,7 +748,7 @@ export default function MasterNasabahTable(props) {
                         </div>
                         <div>
                           <IconButton
-                            onClick={(e) => HandelDelete(row.id)}
+                            onClick={(e) => HandelDelete(row.id_mst_nasabah)}
                             color="error"
                             className=""
                           >

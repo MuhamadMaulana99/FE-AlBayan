@@ -34,12 +34,8 @@ import PrintIcon from "@mui/icons-material/Print";
 import jsPDF from "jspdf";
 import FuseAnimate from "@fuse/core/FuseAnimate";
 import moment from "moment";
-
-const top100Films = [
-  { label: "KG", year: 1994 },
-  { label: "Lusin", year: 1972 },
-  { label: "Bal", year: 1994 },
-];
+import { getUserInfo } from "app/configs/getUserInfo";
+import { fetchApi } from "app/configs/fetchApi";
 
 const columns = [
   {
@@ -252,7 +248,7 @@ function convertToInteger(currency) {
 
 function createData(
   no,
-  id,
+  id_pengajuans,
   rekening,
   penjualan,
   hargaPokok,
@@ -279,7 +275,7 @@ function createData(
 ) {
   return {
     no,
-    id,
+    id_pengajuans,
     rekening,
     penjualan,
     hargaPokok,
@@ -309,22 +305,20 @@ function createData(
 export default function PengajuanTable(props) {
   const { dataPermohonanApprove } = props;
   const currentDate = moment().format();
-  const userRoles = JSON.parse(localStorage.getItem("userRoles"));
+  const userInfo = getUserInfo();
+  const userRoles = userInfo;
   let getAllUserResponse;
   let getResponseName;
   let dataLogin;
   if (userRoles) {
     getAllUserResponse = userRoles?.response?.userRoles;
     getResponseName = userRoles?.response;
-    dataLogin = JSON.parse(getAllUserResponse);
+    dataLogin = userInfo;
   }
-  const dataMasterSuplayer = props?.dataMasterSuplayer;
   const dispatch = useDispatch();
-  const { dataMasterBarang } = props;
-  // console.log(getResponseName, "getResponseName");
-  const [data, setData] = useState([]);
   const [getDataEdit, setgetDataEdit] = useState({});
   const [dataEdit, setDataEdit] = useState({
+    id: null,
     penjualan: 0,
     namaNasabah: null,
     rekening: null,
@@ -411,13 +405,13 @@ export default function PengajuanTable(props) {
     return parseInt(String(value).replace(/[^0-9]/g, ""), 10);
   }
 
-  console.log(getDataEdit, "getDataEdit");
+  console.log(dataEdit, "dataEdit");
 
   const handleClickOpen = (id, row) => {
     setOpen(true);
     setDataEdit(row);
     const formattedDataEdit = {
-      id: row?.id,
+      id: row?.id_pengajuans,
       penjualan: formatToRupiah(row?.penjualan),
       hargaPokok: formatToRupiah(row?.hargaPokok),
       biaya: formatToRupiah(row?.biaya),
@@ -433,7 +427,7 @@ export default function PengajuanTable(props) {
       jangkaWaktu: row?.jangkaWaktu,
       nominalPermohonan: formatToRupiah(row?.nominalPermohonan),
       jaminan: formatToRupiah(row?.jaminan),
-      rekening: row?.rekening,
+      rekening: row?.nasabah,
       tujuanPembiayaan: row?.tujuanPembiayaan,
       nomorAkad: row?.nomorAkad,
     };
@@ -522,191 +516,49 @@ export default function PengajuanTable(props) {
       status: dataEdit?.status,
       statusBy: dataEdit?.statusBy,
       statusAt: dataEdit?.statusAt,
-      foto: null,
     });
   }, [dataEdit]);
   // console.log(getDataBody, "getDataBody");
 
-  const HandelEdit = (id) => {
+  const HandelEdit = (id, row) => {
     setLoading(true);
-    axios
-      .put(
-        `${process.env.REACT_APP_API_URL_API_}/pengajuan/${dataEdit?.id}`,
-        getDataBody
-      )
+    fetchApi()
+      .put(`/pengajuan/${dataEdit?.id}`, getDataBody)
       .then((res) => {
-        props?.getData();
+        props.getData();
         handleClose();
         setLoading(false);
         dispatch(
           showMessage({
-            message: "Data Berhasil Di Edit",
+            message: "Data Berhasil Diedit",
             autoHideDuration: 2000,
-            anchorOrigin: {
-              vertical: "top",
-              horizontal: "center",
-            },
+            anchorOrigin: { vertical: "top", horizontal: "center" },
             variant: "success",
           })
         );
       })
-      .catch((err) => {
-        handleClose();
-        setLoading(false);
-        const errStatus = err.response.status;
-        const errMessage = err.response.data.message;
-        let messages = "";
-        if (errStatus === 401) {
-          messages = "Unauthorized!!";
-          window.location.href = "/login";
-        } else if (errStatus === 500) {
-          messages = "Server Error!!";
-        } else if (errStatus === 404) {
-          messages = "Not Found Error!!!";
-        } else if (errStatus === 408) {
-          messages = "TimeOut Error!!";
-        } else if (errStatus === 400) {
-          messages = errMessage;
-        } else {
-          messages = "Something Wrong!!";
-        }
-        dispatch(
-          showMessage({
-            message: messages,
-            autoHideDuration: 2000,
-            anchorOrigin: {
-              vertical: "top",
-              horizontal: "center",
-            },
-            variant: "error",
-          })
-        );
-        console.log(err);
-      });
+      .catch((err) => handleApiError(err));
   };
-  const HandelApprove = (id, row) => {
-    setLoading(true);
-    if (dataLogin?.roleUser === "Kasir" || dataLogin?.roleUser === "Admin") {
-      axios
-        .put(`${process.env.REACT_APP_API_URL_API_}/pengajuanByApprove/${id}`, {
-          status: getResponseName?.name,
-        })
-        .then((res) => {
-          props?.getData();
-          handleClose();
-          setLoading(false);
-          dispatch(
-            showMessage({
-              message: `Data Berhasil Di Approve oleh ${getResponseName?.name}`,
-              autoHideDuration: 2000,
-              anchorOrigin: {
-                vertical: "top",
-                horizontal: "center",
-              },
-              variant: "success",
-            })
-          );
-        })
-        .catch((err) => {
-          handleClose();
-          setLoading(false);
-          const errStatus = err.response.status;
-          const errMessage = err.response.data.message;
-          let messages = "";
-          if (errStatus === 401) {
-            messages = "Unauthorized!!";
-            window.location.href = "/login";
-          } else if (errStatus === 500) {
-            messages = "Server Error!!";
-          } else if (errStatus === 404) {
-            messages = "Not Found Error!!!";
-          } else if (errStatus === 408) {
-            messages = "TimeOut Error!!";
-          } else if (errStatus === 400) {
-            messages = errMessage;
-          } else {
-            messages = "Something Wrong!!";
-          }
-          dispatch(
-            showMessage({
-              message: messages,
-              autoHideDuration: 2000,
-              anchorOrigin: {
-                vertical: "top",
-                horizontal: "center",
-              },
-              variant: "error",
-            })
-          );
-          console.log(err);
-        });
-    } else {
-      dispatch(
-        showMessage({
-          message: "Silahkan Hubungi Kasir Untuk Aprove ",
-          autoHideDuration: 2000,
-          anchorOrigin: {
-            vertical: "top",
-            horizontal: "center",
-          },
-          variant: "warning",
-        })
-      );
-    }
-  };
+
   const HandelDelete = (id) => {
     setLoading(true);
-    axios
-      .delete(`${process.env.REACT_APP_API_URL_API_}/pengajuan/${id}`)
+    fetchApi()
+      .delete(`/pengajuan/${id}`)
       .then((res) => {
-        props?.getData();
+        props.getData();
         setLoading(false);
         dispatch(
           showMessage({
-            message: "Data Berhasil Di Hapus",
+            message: "Data Berhasil Dihapus",
             autoHideDuration: 2000,
-            anchorOrigin: {
-              vertical: "top",
-              horizontal: "center",
-            },
+            anchorOrigin: { vertical: "top", horizontal: "center" },
             variant: "success",
           })
         );
       })
-      .catch((err) => {
-        setData([]);
-        setLoading(false);
-        const errStatus = err.response.status;
-        const errMessage = err.response.data.message;
-        let messages = "";
-        if (errStatus === 401) {
-          messages = "Unauthorized!!";
-          window.location.href = "/login";
-        } else if (errStatus === 500) {
-          messages = "Server Error!!";
-        } else if (errStatus === 404) {
-          messages = "Not Found Error!!!";
-        } else if (errStatus === 408) {
-          messages = "TimeOut Error!!";
-        } else if (errStatus === 400) {
-          messages = errMessage;
-        } else {
-          messages = "Something Wrong!!";
-        }
-        dispatch(
-          showMessage({
-            message: messages,
-            autoHideDuration: 2000,
-            anchorOrigin: {
-              vertical: "top",
-              horizontal: "center",
-            },
-            variant: "error",
-          })
-        );
-        console.log(err);
-      });
+      .catch((err) => handleApiError(err));
   };
+
   if (props?.loading) {
     return <FuseLoading />;
   }
@@ -720,174 +572,8 @@ export default function PengajuanTable(props) {
     );
   }
 
-  const downloadPDF = () => {
-    const doc = new jsPDF("landscape");
-
-    // Filter out the 'aksi' column
-    const filteredColumns = columns.filter((column) => column.id !== "aksi");
-
-    // Table headers from the filtered columns
-    const tableColumn = filteredColumns.map((column) => column.label);
-
-    // Generate table rows using the mapped rows data
-    const tableRows = rows?.map((item, index) => [
-      index + 1,
-      item?.id,
-      item?.penjualan,
-      item?.hargaPokok,
-      item?.biaya,
-      item?.labaUsaha,
-      item?.pendapatanLain,
-      item?.jumlahPendapatan,
-      item?.kebutuhanRumahTangga,
-      item?.biayaPendidikan,
-      item?.biayaLainya,
-      item?.jumlahBiayaLuarUsaha,
-      item?.pendapatanBersih,
-      item?.rasioAngsuran,
-      item?.jangkaWaktu,
-      item?.nominalPermohonan,
-      item?.tujuanPembiayaan,
-      item?.jaminan,
-      item?.accPermohonan,
-      item?.nomorAkad,
-      item?.status,
-      item?.statusBy,
-      item?.statusAt,
-      item?.foto,
-    ]);
-
-    // Table styling adjustments
-    const tableStyle = {
-      headStyles: {
-        fillColor: [0, 0, 255], // blue color for header
-        textColor: [255, 255, 255], // white text color
-        fontSize: 10,
-        fontStyle: "bold",
-        halign: "center",
-        valign: "middle",
-      },
-      bodyStyles: {
-        fontSize: 8,
-        halign: "center",
-        valign: "middle",
-      },
-      columnStyles: {
-        // Adjust the width of the columns based on content
-        0: { cellWidth: 15 },
-        1: { cellWidth: 25 },
-        2: { cellWidth: 30 },
-        3: { cellWidth: 30 },
-        4: { cellWidth: 30 },
-        // 5: { cellWidth: 30 },
-        // 6: { cellWidth: 30 },
-        // 7: { cellWidth: 30 },
-        // 8: { cellWidth: 30 },
-        // 9: { cellWidth: 30 },
-        // 10: { cellWidth: 30 },
-        // You can continue setting widths for other columns as needed
-      },
-    };
-
-    // Add title or other content on the first page
-    doc.text("Data Table Report", 10, 10);
-
-    // Add the table to the PDF
-    doc.autoTable(tableColumn, tableRows, tableStyle);
-
-    // Save the PDF file
-    doc.save("data.pdf");
-  };
-
-  // Fungsi untuk ekspor ke Excel
-  const exportExcel = async () => {
-    const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet("Data");
-
-    // Filter out the 'aksi' column and create the worksheet columns
-    const filteredColumns = columns.filter((column) => column.id !== "aksi");
-    worksheet.columns = filteredColumns.map((column) => ({
-      header: column.label,
-      key: column.id,
-      width: column?.id === "no" ? 5 : 20,
-    }));
-
-    // Generate data rows using the mapped rows data
-    rows?.map((item, index) => {
-      worksheet.addRow({
-        no: index + 1,
-        id: item?.id,
-        penjualan: item?.penjualan,
-        hargaPokok: item?.hargaPokok,
-        biaya: item?.biaya,
-        labaUsaha: item?.labaUsaha,
-        pendapatanLain: item?.pendapatanLain,
-        jumlahPendapatan: item?.jumlahPendapatan,
-        kebutuhanRumahTangga: item?.kebutuhanRumahTangga,
-        biayaPendidikan: item?.biayaPendidikan,
-        biayaLainya: item?.biayaLainya,
-        jumlahBiayaLuarUsaha: item?.jumlahBiayaLuarUsaha,
-        pendapatanBersih: item?.pendapatanBersih,
-        rasioAngsuran: item?.rasioAngsuran,
-        jangkaWaktu: item?.jangkaWaktu,
-        nominalPermohonan: item?.nominalPermohonan,
-        tujuanPembiayaan: item?.tujuanPembiayaan,
-        jaminan: item?.jaminan,
-        accPermohonan: item?.accPermohonan,
-        nomorAkad: item?.nomorAkad,
-        status: item?.status,
-        statusBy: item?.statusBy,
-        statusAt: item?.statusAt,
-        foto: item?.foto,
-      });
-    });
-
-    // Save the Excel file
-    const buffer = await workbook.xlsx.writeBuffer();
-    const blob = new Blob([buffer], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "data.xlsx";
-    link.click();
-  };
-
-  // console.log(dataPermohonanApprove, 'dataPermohonanApprove')
-  // console.log(dataEdit, "dataEdit");
-
   return (
     <Paper sx={{ width: "100%", overflow: "hidden" }}>
-      {/* <div className="flex flex-auto items-center gap-4 grid-rows-1 ">
-        <div className="flex items-left mt-10 ml-20 w-1/2 flex-col md:flex-row md:items-center md:mt-0">
-          <div className="w-full flex">
-            <div>
-              <FuseAnimate animation="transition.slideLeftIn" delay={100}>
-                <Button
-                  color="primary"
-                  variant="contained"
-                  onClick={downloadPDF}
-                >
-                  <PictureAsPdfIcon className="mr-2" />
-                  <div className="hidden md:contents">Export To PDF</div>
-                </Button>
-              </FuseAnimate>
-            </div>
-            <div className="ml-10">
-              <FuseAnimate animation="transition.slideLeftIn" delay={100}>
-                <Button
-                  variant="contained"
-                  color="success"
-                  onClick={exportExcel}
-                >
-                  <PrintIcon className="mr-2" />
-                  <div className="hidden md:contents">Export To Excel</div>
-                </Button>
-              </FuseAnimate>
-            </div>
-          </div>
-        </div>
-      </div> */}
       <Dialog
         maxWidth="lg"
         className="py-20"
@@ -905,7 +591,7 @@ export default function PengajuanTable(props) {
                 id="combo-box-demo"
                 options={dataPermohonanApprove}
                 value={dataEdit?.rekening}
-                getOptionLabel={(option) => option.rekening}
+                getOptionLabel={(option) => option.mstRekening}
                 sx={{ width: 370 }}
                 onChange={(e, newValue) => {
                   // console.log(newValue, '1000000');
@@ -1175,18 +861,17 @@ export default function PengajuanTable(props) {
                     amount.toLocaleString("id-ID", { minimumFractionDigits: 0 })
                   );
                 }
+                console.log(row, "rrr");
                 return (
                   <TableRow key={row.id} hover role="checkbox" tabIndex={-1}>
                     <TableCell>{index + 1}.</TableCell>
                     <TableCell>
-                      {row?.namaNasabah?.nama === null
-                        ? "-"
-                        : row?.namaNasabah?.nama}
+                      {row?.nasabah?.nama === null ? "-" : row?.nasabah?.nama}
                     </TableCell>
                     <TableCell>
-                      {row?.rekening?.rekening === null
+                      {row?.nasabah?.mstRekening === null
                         ? "-"
-                        : row?.rekening?.rekening}
+                        : row?.nasabah?.mstRekening}
                     </TableCell>
                     <TableCell>
                       {row?.penjualan === null
@@ -1286,7 +971,7 @@ export default function PengajuanTable(props) {
                       )}
                     </TableCell> */}
                     <TableCell>
-                      {row?.statusBy === null ? "-" : row?.statusBy}
+                      {row?.user?.username === null ? "-" : row?.user?.username}
                     </TableCell>
                     <TableCell>
                       {row?.statusAt === null ? "-" : row?.statusAt}
@@ -1307,7 +992,9 @@ export default function PengajuanTable(props) {
                       <div className="flex justify-center">
                         <div>
                           <IconButton
-                            onClick={() => handleClickOpen(row.id, row)}
+                            onClick={() =>
+                              handleClickOpen(row.id_pengajuans, row)
+                            }
                             color="info"
                             disabled={
                               dataLogin?.roleUser === "Staff" &&
@@ -1320,7 +1007,7 @@ export default function PengajuanTable(props) {
                         </div>
                         <div>
                           <IconButton
-                            onClick={(e) => HandelDelete(row.id)}
+                            onClick={(e) => HandelDelete(row.id_pengajuans)}
                             color="error"
                             disabled={
                               dataLogin?.roleUser === "Staff" &&

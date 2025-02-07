@@ -3,6 +3,7 @@ import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
 import { useSelector } from 'react-redux';
 import { selectUser } from 'app/store/userSlice';
+import { getUserInfo } from 'app/configs/getUserInfo';
 
 const Root = styled('div')(({ theme }) => ({
   '& .username, & .email': {
@@ -27,14 +28,15 @@ const Root = styled('div')(({ theme }) => ({
 
 function UserNavbarHeader(props) {
   const user = useSelector(selectUser);
-  const userRoles = JSON.parse(localStorage.getItem('userRoles'));
+  const userInfo = getUserInfo();
+  const userRoles = userInfo
   let getAllUserResponse;
   let getResponseName;
   let dataLogin;
   if (userRoles) {
     getAllUserResponse = userRoles?.response?.userRoles;
     getResponseName = userRoles?.response;
-    dataLogin = JSON.parse(getAllUserResponse);
+    dataLogin = userInfo?.userInfo
   }
   // const dataLogin = JSON.parse(getAllUserResponse);
   // console.log(dataLogin)

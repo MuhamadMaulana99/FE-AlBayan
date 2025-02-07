@@ -8,6 +8,7 @@ import axios from "axios";
 import { showMessage } from "app/store/fuse/messageSlice";
 import PengajuanHeader from "./PengajuanHeader";
 import PengajuanTable from "./PengajuanTable";
+import { fetchApi } from "app/configs/fetchApi";
 
 function Pengajuan() {
   const dispatch = useDispatch();
@@ -16,97 +17,53 @@ function Pengajuan() {
   const [dataPermohonanApprove, setDatadataPermohonanApprove] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
 
-  console.log(data, "dataa");
-  const filteredUsers = data?.filter(
-    (user) =>
-     user?.namaNasabah?.nama?.toLowerCase().includes(searchTerm.toLowerCase())
+  // console.log(dataPermohonanApprove, "dataPermohonanApprove");
+  const filteredUsers = data?.filter((user) =>
+    user?.nasabah?.nama?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const isMobile = useThemeMediaQuery((theme) => theme.breakpoints.down("lg"));
-  const getData = async () => {
+  const getDataFromApi = async (endpoint, setDataFunction) => {
     setLoading(true);
-    const response = await axios
-      .get(`${process.env.REACT_APP_API_URL_API_}/Pengajuan`)
-      .then((res) => {
-        setData(res?.data);
-        setLoading(false);
-        // console.log(res.data, 'rrr');
-      })
-      .catch((err) => {
-        setData([]);
-        setLoading(false);
-        const errStatus = err.response.status;
-        const errMessage = err.response.data.message;
-        let messages = "";
-        if (errStatus === 401) {
-          messages = "Unauthorized!!";
-          window.location.href = "/login";
-        } else if (errStatus === 500) {
-          messages = "Server Error!!";
-        } else if (errStatus === 404) {
-          messages = "Not Found Error!!!";
-        } else if (errStatus === 408) {
-          messages = "TimeOut Error!!";
-        } else if (errStatus === 400) {
-          messages = errMessage;
-        } else {
-          messages = "Something Wrong!!";
-        }
-        dispatch(
-          showMessage({
-            message: messages,
-            autoHideDuration: 2000,
-            anchorOrigin: {
-              vertical: "top",
-              horizontal: "center",
-            },
-            variant: "error",
-          })
-        );
-        console.log(err);
-      });
+    const api = fetchApi(); // Gunakan instance fetchApi
+
+    try {
+      const response = await api.get(endpoint);
+      setDataFunction(response?.data);
+      setLoading(false);
+    } catch (err) {
+      setDataFunction([]);
+      setLoading(false);
+      const messages = handleError(err);
+      dispatch(
+        showMessage({
+          message: messages,
+          autoHideDuration: 2000,
+          anchorOrigin: {
+            vertical: "top",
+            horizontal: "center",
+          },
+          variant: "error",
+        })
+      );
+      console.log(err);
+    }
   };
+
+  // Menggunakan getDataFromApi untuk getData
+  const getData = async () => {
+    await getDataFromApi(
+      `${process.env.REACT_APP_API_URL_API_}/Pengajuan`,
+      setData
+    );
+  };
+
+  // Menggunakan getDataFromApi untuk getDataPermohonanApprove
   const getDataPermohonanApprove = () => {
-    setLoading(true);
-    axios
-      .get(`${process.env.REACT_APP_API_URL_API_}/permohonanByApprove`)
-      .then((res) => {
-        setDatadataPermohonanApprove(res?.data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setDatadataPermohonanApprove([]);
-        setLoading(false);
-        const errStatus = err?.response?.status;
-        const errMessage = err?.response?.data?.message;
-        let messages = "";
-        if (errStatus === 401) {
-          messages = "Unauthorized!!";
-          window.location.href = "/login";
-        } else if (errStatus === 500) {
-          messages = "Server Error!!";
-        } else if (errStatus === 404) {
-          messages = "Not Found Error!!!";
-        } else if (errStatus === 408) {
-          messages = "TimeOut Error!!";
-        } else if (errStatus === 400) {
-          messages = errMessage;
-        } else {
-          messages = "Something Wrong!!";
-        }
-        dispatch(
-          showMessage({
-            message: messages,
-            autoHideDuration: 2000,
-            anchorOrigin: {
-              vertical: "top",
-              horizontal: "center",
-            },
-            variant: "error",
-          })
-        );
-        console.log(err);
-      });
+    getDataFromApi(
+      `${process.env.REACT_APP_API_URL_API_}/permohonanByApprove`,
+      setDatadataPermohonanApprove
+    );
   };
   React.useEffect(() => {
     let isUnmout = false;
