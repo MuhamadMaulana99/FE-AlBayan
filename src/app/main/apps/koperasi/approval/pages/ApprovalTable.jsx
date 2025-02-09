@@ -64,7 +64,13 @@ const columns = [
     minWidth: 170,
     align: "left",
     textSytle: "",
-    // format: (value) => value.toFixed(2),
+  },
+  {
+    id: "edit",
+    label: "Edit",
+    minWidth: 170,
+    align: "left",
+    textSytle: "",
   },
 ];
 
@@ -132,9 +138,11 @@ export default function ApprovalTable(props) {
   // console.log(userInfo?.userInfo?.user, 'userInfo')
   const [openNotifikasi, setOpenNotifikasi] = useState(false);
   const [getDataEdit, setgetDataEdit] = useState({});
-  const [dataEdit, setDataEdit] = useState({
-    id: null,
-    status: null,
+  const [trigger, setTrigger] = useState({
+    id_pengajuans: null,
+    row: null,
+    trueFalse: null,
+    trigger: null,
   });
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -142,14 +150,8 @@ export default function ApprovalTable(props) {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const rows = props?.data;
 
-
   rows?.map((item, index) =>
-    createData(
-      index + 1,
-      item?.id,
-      item?.nasabah,
-      item?.status,
-    )
+    createData(index + 1, item?.id, item?.nasabah, item?.status)
   );
 
   const handleChangePage = (event, newPage) => {
@@ -160,7 +162,13 @@ export default function ApprovalTable(props) {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
-  const handleClickOpenNotifikasi = (id, row, trueFalse) => {
+  const handleClickOpenNotifikasi = (
+    id_pengajuans,
+    row,
+    trueFalse,
+    trigger
+  ) => {
+    setTrigger({ id_pengajuans, row, trueFalse, trigger });
     setOpenNotifikasi(true);
     setgetDataEdit({
       id: row?.id_pengajuans,
@@ -246,6 +254,7 @@ export default function ApprovalTable(props) {
       </div>
     );
   }
+  console.log(trigger, "trigger");
 
   function extractInteger(harga) {
     if (typeof harga !== "string") {
@@ -900,14 +909,61 @@ export default function ApprovalTable(props) {
         <DialogTitle id="alert-dialog-title">Keputusan</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Apakah anda yakin dengan keputusan ini?
+            {trigger?.trigger === "edit" ? (
+              <>
+                <div>
+                  <Button
+                    onClick={() =>
+                      handleClickOpenNotifikasi(trigger?.id, trigger?.row, true)
+                    }
+                    color="info"
+                    variant="contained"
+                  >
+                    Layak
+                  </Button>
+                  <Button
+                    onClick={() =>
+                      handleClickOpenNotifikasi(
+                        trigger?.id,
+                        trigger?.row,
+                        false
+                      )
+                    }
+                    color="warning"
+                    variant="contained"
+                  >
+                    Tidak Layak
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <div>
+                Apakah anda yakin dengan keputusan 
+                {trigger?.trueFalse === true ? (
+                  <span className="font-bold"> "Layak"</span>
+                ) : (
+                  <span className="font-bold"> "Tidak Layak" </span>
+                )} ini?
+              </div>
+            )}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseNotifikasi}>Tutup</Button>
-          <Button onClick={HandelApprove} autoFocus>
-            Simpan
-          </Button>
+          {trigger?.trigger === "edit" ? (
+            <>
+              <Button onClick={handleCloseNotifikasi}>Tutup</Button>
+              {/* <Button onClick={HandelApprove} autoFocus>
+                Simpan
+              </Button> */}
+            </>
+          ) : (
+            <>
+              <Button onClick={handleCloseNotifikasi}>Tutup</Button>
+              <Button onClick={HandelApprove} autoFocus>
+                Simpan
+              </Button>
+            </>
+          )}
         </DialogActions>
       </Dialog>
       <TableContainer sx={{ maxHeight: 440 }}>
@@ -943,10 +999,9 @@ export default function ApprovalTable(props) {
                         extractInteger(row?.jangkaWaktu),
                         extractInteger(row?.jaminan)
                       )}
-                      {/* {fuzzySakamotos(10000000, 60000000, 7, 570000)} */}
                     </TableCell>
                     <TableCell>
-                      {row?.status === null ? (
+                      {row?.status === null || row?.status === "" ? (
                         <div>
                           <Button
                             onClick={() =>
@@ -989,9 +1044,23 @@ export default function ApprovalTable(props) {
                           variant="contained"
                           onClick={() => HandleNotifikasi("Error")}
                         >
-                          {row?.status === null ? "-" : row?.status}
+                          {row?.status === null || row?.status === ""
+                            ? "-"
+                            : row?.status}
                         </Button>
                       )}
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        color="success"
+                        disabled={row?.status === null || row?.status === ""}
+                        variant="contained"
+                        onClick={() =>
+                          handleClickOpenNotifikasi(row?.id, row, true, "edit")
+                        }
+                      >
+                        Edit
+                      </Button>
                     </TableCell>
                   </TableRow>
                 );

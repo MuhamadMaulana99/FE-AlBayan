@@ -73,7 +73,8 @@ function convertToInteger(currency) {
 }
 
 function PengajuanHeader(props) {
-  const { searchTerm, setSearchTerm } = props;
+  const { searchTerm, setSearchTerm, hasilMerge } = props;
+  console.log(hasilMerge, 'hasilMerge')
   const dispatch = useDispatch();
   const currentDate = moment().format();
   const userInfo = getUserInfo();
@@ -320,9 +321,10 @@ function PengajuanHeader(props) {
               <Autocomplete
                 disablePortal
                 id="combo-box-demo"
-                options={dataPermohonanApprove}
+                options={hasilMerge}
+                getOptionLabel={(option) => option.namaRek}
                 value={stateBody?.id_mst_nasabah}
-                getOptionLabel={(option) => option?.nasabah?.mstRekening}
+                // getOptionLabel={(option) => option?.nasabah?.mstRekening}
                 sx={{ width: 370 }}
                 onChange={(e, newValue) => {
                   // console.log(newValue, '1000000');

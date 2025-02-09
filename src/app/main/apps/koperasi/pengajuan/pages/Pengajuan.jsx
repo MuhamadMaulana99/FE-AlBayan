@@ -9,6 +9,7 @@ import { showMessage } from "app/store/fuse/messageSlice";
 import PengajuanHeader from "./PengajuanHeader";
 import PengajuanTable from "./PengajuanTable";
 import { fetchApi } from "app/configs/fetchApi";
+import { tambahNamaRe, tambahNamaReApprove } from "app/configs/getUserInfo";
 
 function Pengajuan() {
   const dispatch = useDispatch();
@@ -21,6 +22,8 @@ function Pengajuan() {
   const filteredUsers = data?.filter((user) =>
     user?.nasabah?.nama?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const hasilMerge = tambahNamaReApprove(dataPermohonanApprove);
 
   const isMobile = useThemeMediaQuery((theme) => theme.breakpoints.down("lg"));
   const getDataFromApi = async (endpoint, setDataFunction) => {
@@ -86,6 +89,7 @@ function Pengajuan() {
           getData={getData}
           data={filteredUsers}
           loading={loading}
+          hasilMerge={hasilMerge}
         />
       }
       content={
@@ -96,6 +100,7 @@ function Pengajuan() {
           getData={getData}
           data={filteredUsers}
           loading={loading}
+          hasilMerge={hasilMerge}
         />
       }
       scroll={isMobile ? "normal" : "content"}

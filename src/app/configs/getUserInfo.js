@@ -56,7 +56,6 @@ export const handleError = (err) => {
   console.error(err);
 };
 
-
 export const handleErrors = (err) => {
   const errStatus = err?.response?.status;
   const errMessage = err?.response?.data?.message;
@@ -83,4 +82,38 @@ export const handleErrors = (err) => {
       break;
   }
   return messages;
+};
+
+export const tambahNamaRe = (data) => {
+  return data.map((item) => {
+    const mstRekening =
+      item?.mstRekening?.length > 8
+        ? item?.mstRekening?.slice(0, 8) + "..."
+        : item?.mstRekening;
+
+    const nama =
+      item?.nama?.length > 18 ? item?.nama?.slice(0, 18) + "..." : item?.nama;
+
+    return {
+      ...item,
+      namaRek: `${mstRekening} - ${nama}`,
+    };
+  });
+};
+
+export const tambahNamaReApprove = (data) => {
+  return data.map((item) => {
+    const mstRekening =
+      item?.nasabah?.mstRekening?.length > 8
+        ? item?.nasabah?.mstRekening?.slice(0, 8) + "..."
+        : item?.nasabah?.mstRekening;
+
+    const nama =
+      item?.nasabah?.nama?.length > 18 ? item?.nasabahnama?.slice(0, 18) + "..." : item?.nasabah?.nama;
+
+    return {
+      ...item,
+      namaRek: `${mstRekening} - ${nama}`,
+    };
+  });
 };

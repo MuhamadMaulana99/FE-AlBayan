@@ -405,7 +405,7 @@ export default function PengajuanTable(props) {
     return parseInt(String(value).replace(/[^0-9]/g, ""), 10);
   }
 
-  console.log(dataEdit, "dataEdit");
+  // console.log(dataEdit, "dataEdit");
 
   const handleClickOpen = (id, row) => {
     setOpen(true);

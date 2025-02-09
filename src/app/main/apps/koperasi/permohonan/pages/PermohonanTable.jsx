@@ -263,7 +263,7 @@ export default function PermohonanTable(props) {
     id_mst_nasabah: dataEdit?.id_mst_nasabah?.id_mst_nasabah,
     saldoTabungan: dataEdit?.saldoTabungan,
   };
-  console.log(body, "body");
+  // console.log(body, "body");
 
   const HandelEdit = (id) => {
     setLoading(true);

@@ -2,17 +2,13 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import FusePageCarded from "@fuse/core/FusePageCarded";
 import { useThemeMediaQuery } from "@fuse/hooks";
-import { useDispatch } from "react-redux";
 import React, { useState } from "react";
-import axios from "axios";
-import { showMessage } from "app/store/fuse/messageSlice";
 import PermohonanTable from "./PermohonanTable";
 import PermohonanHeader from "./PermohonanHeader";
 import { fetchApi } from "app/configs/fetchApi";
-import { handleError } from "app/configs/getUserInfo";
+import { handleError, tambahNamaRe } from "app/configs/getUserInfo";
 
 function Permohonan() {
-  const dispatch = useDispatch();
   const [data, setData] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const [dataNasabah, setDataNasabah] = useState([]);
@@ -22,6 +18,9 @@ function Permohonan() {
   const filteredUsers = data?.filter((user) =>
     user?.nasabah?.nama?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const hasilMerge = tambahNamaRe(dataNasabah);
+  // console.log(hasilMerge, 'hasilMerge')
 
   const isMobile = useThemeMediaQuery((theme) => theme.breakpoints.down("lg"));
   // console.log(data, 'datadata')
@@ -53,6 +52,7 @@ function Permohonan() {
       setLoading(false);
     }
   };
+
   React.useEffect(() => {
     let isUnmout = false;
     if (!isUnmout) {
@@ -74,6 +74,7 @@ function Permohonan() {
           getData={getData}
           data={filteredUsers}
           loading={loading}
+          hasilMerge={hasilMerge}
         />
       }
       content={
@@ -84,6 +85,7 @@ function Permohonan() {
           getData={getData}
           data={filteredUsers}
           loading={loading}
+          hasilMerge={hasilMerge}
         />
       }
       scroll={isMobile ? "normal" : "content"}

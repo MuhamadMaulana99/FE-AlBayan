@@ -26,10 +26,8 @@ import { getUserInfo, handleError } from "app/configs/getUserInfo";
 import { fetchApi } from "app/configs/fetchApi";
 
 function PermohonanHeader(props) {
-  const { searchTerm, setSearchTerm } = props;
+  const { searchTerm, setSearchTerm,  hasilMerge } = props;
   const dispatch = useDispatch();
-  const currentDate = moment().format();
-  const { dataNasabah } = props;
   const userInfo = getUserInfo();
   const userRoles = userInfo;
   let getAllUserResponse;
@@ -107,9 +105,9 @@ function PermohonanHeader(props) {
             <div className="flex flex-wrap gap-5 p-10">
               <Autocomplete
                 id="combo-box-demo"
-                options={dataNasabah}
+                options={hasilMerge}
                 value={stateBody?.rekening}
-                getOptionLabel={(option) => option.mstRekening}
+                getOptionLabel={(option) => option.namaRek}
                 sx={{ width: 300 }}
                 onChange={(e, newValue) => {
                   setStateBody({
