@@ -1,5 +1,6 @@
 import axios from "axios";
 import { EncryptStorage } from "encrypt-storage";
+import { handleErrors } from "./getUserInfo";
 
 const fetchApi = (type = "") => {
   const encryptStorage = new EncryptStorage(process.env.REACT_APP_SECRET_KEY);
@@ -25,7 +26,8 @@ const fetchApi = (type = "") => {
       if (type === "auth") {
         return Promise.reject(error);
       } else {
-        if (error?.response?.status === 401) {
+        if (error?.response?.status === 401 || error?.response?.status === 403) {
+          handleErrors()
           //Token Habis
           encryptStorage.clear();
           localStorage.clear();
