@@ -77,7 +77,11 @@ export const handleErrors = (err) => {
   switch (errStatus) {
     case 401:
       messages = "Unauthorized!!";
-      window.location.href = "/login";
+      navigate("/sign-in");
+      break;
+    case 403:
+      messages = "Unauthorized!!";
+      navigate("/sign-in");
       break;
     case 500:
       messages = "Server Error!!";

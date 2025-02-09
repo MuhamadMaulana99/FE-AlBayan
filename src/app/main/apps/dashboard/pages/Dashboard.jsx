@@ -9,7 +9,7 @@ import { showMessage } from "app/store/fuse/messageSlice";
 import DashboardHeader from "./DashboardHeader";
 import DashboardTable from "./DashboardTable";
 import DashboardPage from "./DashboardPage";
-import { getUserInfo } from "app/configs/getUserInfo";
+import { getUserInfo, handleErrors } from "app/configs/getUserInfo";
 import { fetchApi } from "app/configs/fetchApi";
 
 function Dashboard() {
@@ -31,35 +31,7 @@ function Dashboard() {
       setData([]);
       const errStatus = err.response?.status || 500;
       const errMessage = err.response?.data?.message || "Something went wrong!";
-
-      let messages = "Something Wrong!!";
-      switch (errStatus) {
-        case 401:
-          messages = "Unauthorized!!";
-          navigate("/login");
-          break;
-        case 500:
-          messages = "Server Error!!";
-          break;
-        case 404:
-          messages = "Not Found Error!!!";
-          break;
-        case 408:
-          messages = "Timeout Error!!";
-          break;
-        case 400:
-          messages = errMessage;
-          break;
-      }
-
-      dispatch(
-        showMessage({
-          message: messages,
-          autoHideDuration: 2000,
-          anchorOrigin: { vertical: "top", horizontal: "center" },
-          variant: "error",
-        })
-      );
+      handleErrors(errStatus)
       console.error(err);
     } finally {
       setLoading(false);
@@ -75,35 +47,8 @@ function Dashboard() {
       setOptionNoAkad([]);
       const errStatus = err.response?.status || 500;
       const errMessage = err.response?.data?.message || "Something went wrong!";
+      handleErrors(errStatus)
 
-      let messages = "Something Wrong!!";
-      switch (errStatus) {
-        case 401:
-          messages = "Unauthorized!!";
-          navigate("/login");
-          break;
-        case 500:
-          messages = "Server Error!!";
-          break;
-        case 404:
-          messages = "Not Found Error!!!";
-          break;
-        case 408:
-          messages = "Timeout Error!!";
-          break;
-        case 400:
-          messages = errMessage;
-          break;
-      }
-
-      dispatch(
-        showMessage({
-          message: messages,
-          autoHideDuration: 2000,
-          anchorOrigin: { vertical: "top", horizontal: "center" },
-          variant: "error",
-        })
-      );
       console.error(err);
     } finally {
       setLoading(false);
