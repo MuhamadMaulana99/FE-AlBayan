@@ -66,8 +66,8 @@ const columns = [
     textSytle: "",
   },
   {
-    id: "edit",
-    label: "Edit",
+    id: "aksi",
+    label: "Aksi",
     minWidth: 170,
     align: "left",
     textSytle: "",
@@ -938,12 +938,13 @@ export default function ApprovalTable(props) {
               </>
             ) : (
               <div>
-                Apakah anda yakin dengan keputusan 
+                Apakah anda yakin dengan keputusan
                 {trigger?.trueFalse === true ? (
                   <span className="font-bold"> "Layak"</span>
                 ) : (
                   <span className="font-bold"> "Tidak Layak" </span>
-                )} ini?
+                )}{" "}
+                ini?
               </div>
             )}
           </DialogContentText>

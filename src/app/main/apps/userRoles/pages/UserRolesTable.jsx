@@ -56,9 +56,9 @@ const columns = [
   },
 ];
 const role = [
-  { roleUser: "Super Admin", id: 1 },
-  { roleUser: "Admin", id: 2 },
-  { roleUser: "User", id: 3 },
+  { roleUser: "Admin", id: 1 },
+  { roleUser: "Kasir", id: 2 },
+  { roleUser: "Staff", id: 3 },
 ];
 function getRoleById(id) {
   return role.find((role) => role.id === id);
