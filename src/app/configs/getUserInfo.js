@@ -4,22 +4,32 @@ const encryptStorage = new EncryptStorage(process.env.REACT_APP_SECRET_KEY);
 
 export function getUserInfo() {
   try {
-    const userInfo = encryptStorage.getItem("___user");
-    const baseURL = process.env.REACT_APP_API_URL_API_;
+    // Mengambil data user dari encryptStorage
+    const storedUser = encryptStorage.getItem("___user");
+    
+    // Pastikan userInfo tidak undefined
+    const userInfo = storedUser ? storedUser : {};
+
+    // Pastikan baseURL tidak undefined (gunakan default jika tidak ada)
+    const baseURL = process.env.REACT_APP_API_URL_API_ || "http://default-url.com";
+
+    // Konfigurasi Header API
     const config = {
       headers: {
         Authorization: `Bearer ${userInfo?.token || ""}`,
-        "Access-Control-Allow-Origin": true,
-        "Access-Control-Allow-Credentials": true,
+        "Access-Control-Allow-Origin": "*", // Harus string, bukan boolean
+        "Access-Control-Allow-Credentials": "true", // Sesuai standar
         "Accept-Language": "en",
       },
     };
+
     return { baseURL, userInfo, config };
   } catch (error) {
     console.error("Failed to retrieve user info:", error);
     return null;
   }
 }
+
 
 export const handleError = (err) => {
   const errStatus = err?.response?.status || 500;
